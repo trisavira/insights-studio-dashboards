@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CARVYKTI · Insights Studio Operator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?fffdisplay=swap" rel="stylesheet">
+<style>
+:root{
+  /* Avira brand */
+  --teal:#1D98B6; --teal-dk:#0C6F8A; --teal-deep:#0A5270;
+  --orange:#F79138; --orange-dk:#D97516;
+
+  /* Status — richer palette */
+  --crit:#DC2626;   --crit-bg:#FEF2F2;
+  --action:#F79138; --action-bg:#FFF3E6;
+  --watch:#1D98B6;  --watch-bg:#E0F5FA;
+  --commit:#6366F1; --commit-bg:#EEF2FF;
+  --success:#16A34A;--success-bg:#DCFCE7;
+  --purple:#9333EA; --purple-bg:#F5F3FF;
+  --amber:#D97706;  --amber-bg:#FFFBEB;
+
+  /* Surfaces */
+  --bg:#F7FAFB; --panel:#FFFFFF; --panel-alt:#F8FAFC;
+  --border:#E2E8F0; --line:#CBD5E1; --hair:#EEF2F6;
+
+  /* Text */
+  --ink:#1A1F24; --ink-muted:#3F4A55; --ink-soft:#62748E; --ink-dim:#9AA3AC;
+
+  /* Signal */
+  --s-strong:#16A34A; --s-contest:#D97706; --s-thin:#9AA3AC;
+  --s-stable:#1D98B6; --s-mixed:#9333EA;
+
+  /* Tokens */
+  --r:12px; --r-sm:6px;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 1px 3px rgba(0,0,0,.06);
+  --shadow-panel:0 1px 3px rgba(0,0,0,.05),0 4px 12px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:'Inter',system-ui,sans-serif;font-size:13.5px;line-height:1.6;
+  -webkit-font-smoothing:antialiased}
+.serif{font-family:'Inter',sans-serif;font-weight:700}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-feature-settings:'tnum' on}
+
+/* === BRAND BAR === */
+.brand{background:#fff;color:var(--ink);padding:12px 28px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:20px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.brand-logo{height:32px;width:auto;display:block;flex-shrink:0}
+.brand-divider{width:1px;height:28px;background:var(--border);flex-shrink:0}
+.brand-left{display:flex;flex-direction:column;gap:3px}
+.brand-studio{
+  font-family:'Inter';font-size:11px;letter-spacing:0.01em;
+  color:#F79138;font-style:italic;font-weight:700;
+  display:inline-flex;align-items:center;
+  background:#FFF3E6;border:1px solid rgba(247,148,29,.2);
+  border-radius:4px;padding:3px 8px;width:fit-content;line-height:1.4;
+}
+.brand-asset{font-family:'Inter';font-weight:700;font-size:17px;letter-spacing:-0.02em;color:var(--ink);line-height:1.2}
+.brand-codes{font-family:'JetBrains Mono';font-size:10px;color:var(--ink-dim);padding:2px 8px;background:var(--hair);border-radius:100px;border:1px solid var(--border);flex-shrink:0}
+.brand-meta{margin-left:auto;display:flex;gap:10px;align-items:center;font-size:11px;color:var(--ink-soft);flex-wrap:wrap;flex-shrink:0}
+.brand-meta b{color:var(--ink);font-weight:600}
+.brand-stage{font-family:'Inter';font-size:10px;padding:3px 10px;background:var(--watch-bg);border:1px solid rgba(29,152,182,.2);border-radius:100px;font-weight:700;letter-spacing:0.06em;color:var(--teal)}
+.brand-posture{font-family:'Inter';font-size:10px;padding:3px 10px;background:var(--action-bg);font-weight:700;letter-spacing:0.04em;color:var(--orange-dk);border-radius:100px;border:1px solid rgba(247,145,56,.25)}
+.brand-link{color:var(--ink-soft);font-size:11px;text-decoration:none;font-weight:500;font-family:'Inter'}
+.brand-link:hover{color:var(--teal)}
+
+/* === KPI STRIP === */
+.kpi{display:grid;grid-template-columns:repeat(5,1fr);background:var(--panel);border-bottom:1px solid var(--border);box-shadow:var(--shadow)}
+.kpi-cell{padding:20px 28px;border-left:1px solid var(--hair)}
+.kpi-cell:first-child{border-left:none}
+.kpi-cell .l{font-family:'Inter';font-size:9.5px;letter-spacing:0.08em;text-transform:uppercase;color:#9DACC1;font-weight:700;margin-bottom:10px}
+.kpi-cell .v{font-family:'Inter';font-size:28px;font-weight:800;color:var(--ink);line-height:1;letter-spacing:-0.02em}
+.kpi-cell .v.crit{color:var(--crit)}
+.kpi-cell .v.action{color:var(--orange-dk)}
+.kpi-cell .v.watch{color:var(--teal)}
+.kpi-cell .n{font-size:11.5px;color:var(--ink-soft);margin-top:8px;line-height:1.5;font-weight:500}
+
+/* === DASHBOARD GRID === */
+main{padding:24px;max-width:1480px;margin:0 auto}
+.dash{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:20px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);display:flex;flex-direction:column;box-shadow:var(--shadow-panel)}
+.panel-h{padding:16px 20px;border-bottom:1px solid var(--hair);display:flex;align-items:center;justify-content:space-between;gap:8px;border-radius:var(--r) var(--r) 0 0}
+.panel-h .t{font-family:'Inter';font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+.panel-h .c{font-family:'Inter';font-size:10px;color:var(--ink-dim);letter-spacing:0.04em}
+.panel-body{padding:20px;flex:1;overflow:auto}
+
+/* spans */
+.span-1{grid-column:span 1}
+.span-2{grid-column:span 2}
+.span-3{grid-column:span 3}
+
+/* === THEME BOARD === */
+.theme-board{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.theme-col{display:flex;flex-direction:column;gap:6px}
+.theme-col-h{font-family:'Inter';font-size:9.5px;letter-spacing:0.06em;text-transform:uppercase;font-weight:700;padding:5px 10px;color:#fff;display:flex;justify-content:space-between;align-items:center;border-radius:var(--r-sm)}
+.theme-chip{background:var(--panel-alt);border:1px solid var(--hair);border-left:3px solid;padding:12px 14px;cursor:pointer;font-size:12px;line-height:1.35;color:var(--ink);transition:background .15s,border-color .15s;position:relative;border-radius:0 var(--r-sm) var(--r-sm) 0}
+.theme-chip:hover{background:#FFFFFF;border-color:var(--teal)}
+.theme-chip .why{position:absolute;top:5px;right:5px}
+
+/* === GAP RADAR === */
+.gap-bars{display:flex;flex-direction:column;gap:14px}
+.gap-row{display:grid;grid-template-columns:80px 1fr 60px 24px;gap:10px;align-items:center;font-size:12px}
+.gap-lbl{font-family:'Inter';font-size:11px;color:var(--ink);font-weight:600;letter-spacing:0.02em}
+.gap-track{height:8px;background:var(--hair);position:relative;cursor:pointer;border-radius:100px;overflow:hidden}
+.gap-track:hover{outline:1px solid var(--teal)}
+.gap-fill{height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:5px;font-family:'Inter';font-size:9px;color:#fff;font-weight:600;letter-spacing:0.04em;border-radius:2px}
+.gap-val{font-family:'JetBrains Mono';font-size:11px;color:var(--ink-soft);font-weight:500;text-align:right}
+
+/* === MOVEMENT === */
+.mv-list{display:flex;flex-direction:column}
+.mv-row{display:grid;grid-template-columns:74px 64px 1fr 24px;gap:8px;padding:12px 0;border-top:1px solid var(--hair);align-items:start;cursor:pointer;position:relative}
+.mv-row:hover{background:var(--panel-alt)}
+.mv-row:first-child{border-top:none;padding-top:2px}
+.mv-date{font-family:'JetBrains Mono';font-size:10.5px;color:var(--ink-soft);font-weight:500}
+.mv-cap{font-family:'Inter';font-size:9px;font-weight:700;padding:2px 8px;color:#fff;text-align:center;letter-spacing:0.04em;height:fit-content;border-radius:100px}
+.mv-title{font-size:12px;color:var(--ink);font-weight:500;line-height:1.35}
+.mv-title .so{font-size:11px;color:var(--ink-soft);margin-top:2px;line-height:1.35;font-weight:400}
+
+/* === DECISIONS REGISTER === */
+.dec-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.dec-card{background:var(--panel-alt);border:1px solid var(--hair);border-left:3px solid;padding:14px 16px;cursor:pointer;font-size:11.5px;line-height:1.35;position:relative;transition:background .15s,border-color .15s;border-radius:0 var(--r-sm) var(--r-sm) 0}
+.dec-card:hover{background:#fff;border-color:var(--teal)}
+.dec-card.urgent{border-left-color:var(--crit)}
+.dec-card.action{border-left-color:var(--orange)}
+.dec-card.watch{border-left-color:var(--watch)}
+.dec-card.commit{border-left-color:var(--commit)}
+.dec-id{font-family:'Inter';font-size:9.5px;color:var(--ink-dim);font-weight:600;letter-spacing:0.04em;margin-bottom:2px}
+.dec-title{color:var(--ink);font-weight:500;font-size:12px;line-height:1.3;padding-right:18px}
+.dec-cat{font-family:'Inter';font-size:9px;font-weight:600;color:var(--ink-soft);margin-top:5px;letter-spacing:0.06em;text-transform:uppercase}
+.dec-card .why{position:absolute;top:6px;right:6px}
+
+/* === ? icon === */
+.why{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;border:1px solid var(--border);background:#fff;color:var(--ink-soft);font-family:'JetBrains Mono';font-size:10px;font-weight:700;cursor:pointer;line-height:1;flex-shrink:0;transition:background .15s,color .15s,border-color .15s}
+.why:hover{background:var(--teal-deep);color:#fff;border-color:var(--teal-deep)}
+.why:focus{outline:2px solid var(--teal);outline-offset:1px}
+
+/* === SUPPLEMENTARY (below dashboard) === */
+.supp-h{display:flex;align-items:baseline;justify-content:space-between;padding:6px 4px;margin-top:10px}
+.supp-h .t{font-family:'Inter';font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft);font-weight:700}
+.supp-h .n{font-family:'Inter';font-size:10.5px;color:var(--ink-dim);letter-spacing:0.04em}
+
+/* state-chip helper */
+.state-chip{font-family:'Inter';font-size:9px;font-weight:700;padding:2px 8px;color:#fff;letter-spacing:0.04em;display:inline-block;line-height:1.35;border-radius:100px}
+
+/* mini stacked bars (KOL sentiment small panel) */
+.kbar{display:grid;grid-template-columns:1fr;gap:5px}
+.kbar-row{display:grid;grid-template-columns:130px 1fr;gap:8px;align-items:center;font-size:11px}
+.kbar-lbl{color:var(--ink);line-height:1.3}
+.kbar-track{display:flex;height:13px;background:var(--hair);overflow:hidden}
+.kbar-seg{height:100%}
+.kbar-seg.pos{background:var(--s-strong)}
+.kbar-seg.split{background:var(--s-contest)}
+.kbar-seg.neg{background:var(--crit)}
+.kbar-seg.neu{background:var(--s-thin)}
+
+/* horizontal compact bars (topic freq) */
+.tbar-row{display:grid;grid-template-columns:170px 1fr 30px;gap:8px;padding:4px 0;align-items:center;font-size:11.5px}
+.tbar-lbl{color:var(--ink);line-height:1.3}
+.tbar-track{height:11px;background:var(--hair)}
+.tbar-fill{height:100%}
+.tbar-val{font-family:'JetBrains Mono';font-size:10px;color:var(--ink-soft);text-align:right;font-weight:500}
+
+/* cost bar mini */
+.ce-mini{display:grid;grid-template-columns:1fr;gap:7px}
+.ce-mrow{display:grid;grid-template-columns:120px 1fr;gap:8px;align-items:center;font-size:11px}
+.ce-mlbl{color:var(--ink);line-height:1.3}
+.ce-mtrack{position:relative;height:14px;background:var(--hair)}
+.ce-mfill{height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:5px;color:#fff;font-family:'JetBrains Mono';font-size:10px;font-weight:600}
+
+/* === DRAWER === */
+.drawer-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(12,71,84,0.45);opacity:0;pointer-events:none;transition:opacity .22s ease;z-index:90}
+.drawer-overlay.open{opacity:1;pointer-events:all}
+.drawer{position:fixed;top:0;right:0;width:480px;max-width:92vw;height:100vh;background:var(--panel);border-left:1px solid var(--border);box-shadow:-12px 0 36px rgba(0,0,0,0.10);transform:translateX(100%);transition:transform .26s ease;z-index:95;display:flex;flex-direction:column;overflow:hidden}
+.drawer.open{transform:translateX(0)}
+.drawer-h{padding:24px 28px 20px;border-bottom:1px solid var(--hair);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-shrink:0}
+.drawer-h-l{flex:1}
+.drawer-eyebrow{font-family:'Inter';font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--teal);font-weight:700;margin-bottom:6px;display:flex;gap:8px;align-items:center}
+.drawer-title{font-family:'Inter';font-size:18px;line-height:1.3;font-weight:700;color:var(--ink);letter-spacing:-0.02em}
+.drawer-close{background:none;border:1px solid var(--border);border-radius:8px;color:var(--ink-soft);width:30px;height:30px;cursor:pointer;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit;transition:background .15s}
+.drawer-close:hover{background:var(--hair);color:var(--ink)}
+.drawer-body{flex:1;overflow-y:auto;padding:24px 28px 40px}
+.drawer-section{margin-bottom:28px}
+.drawer-section h4{font-family:'Inter';font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:#9DACC1;font-weight:700;margin:0 0 8px;display:flex;align-items:baseline;gap:8px}
+.drawer-section h4 .meta{color:var(--ink-dim);font-size:10px;letter-spacing:0.04em;text-transform:none;font-family:'JetBrains Mono';font-weight:500}
+.drawer-section p{margin:0 0 8px;font-size:13.5px;color:var(--ink-muted);line-height:1.55}
+.drawer-section p:last-child{margin-bottom:0}
+.drawer-section .quote{background:var(--watch-bg);border-left:3px solid var(--teal);padding:10px 14px;border-radius:0 8px 8px 0;font-family:'Inter';font-size:13.5px;line-height:1.6;color:var(--ink);font-style:italic;margin-bottom:6px;border:1px solid rgba(29,152,182,.15);border-left:3px solid var(--teal)}
+.drawer-list{display:flex;flex-direction:column;gap:10px}
+.drawer-item{background:var(--panel-alt);border:1px solid var(--hair);padding:8px 12px;border-radius:8px;font-size:12px;color:var(--ink);display:flex;justify-content:space-between;align-items:center;gap:8px;transition:background .15s,border-color .15s}
+.drawer-item .sub{font-size:10.5px;color:var(--ink-soft);font-family:'Inter';letter-spacing:0.04em}
+.kv{display:grid;grid-template-columns:130px 1fr;gap:10px;padding:10px 0;border-top:1px solid var(--hair);font-size:12.5px}
+.kv:first-child{border-top:none;padding-top:0}
+.kv .k{font-family:'Inter';font-size:9.5px;color:#9DACC1;letter-spacing:0.08em;text-transform:uppercase;font-weight:700}
+.kv .v{color:var(--ink);line-height:1.5;font-weight:500}
+.kv .v .pill{font-family:'Inter';font-size:10px;background:var(--hair);color:var(--ink-muted);padding:2px 8px;letter-spacing:0.04em;display:inline-block;margin-right:5px;border-radius:100px}
+.confidence-bar{display:inline-flex;gap:3px;align-items:center;margin-left:5px}
+.confidence-bar .dot{width:7px;height:7px;border-radius:50%;background:var(--hair)}
+.confidence-bar .dot.on{background:var(--s-strong)}
+.confidence-bar .dot.med{background:var(--orange)}
+
+@media (max-width:1100px){
+  .dash{grid-template-columns:1fr 1fr}
+  .span-3{grid-column:span 2}
+  .theme-board{grid-template-columns:repeat(2,1fr)}
+  .dec-grid{grid-template-columns:repeat(2,1fr)}
+  .kpi{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:700px){
+  .dash{grid-template-columns:1fr}
+  .span-1,.span-2,.span-3{grid-column:span 1}
+  .theme-board,.dec-grid{grid-template-columns:1fr}
+  .drawer{width:100%}
+}
+
+.drawer-item.rich{display:block;cursor:pointer;line-height:1.4}
+.drawer-item.rich .desc{color:var(--ink);display:block;margin-bottom:5px;font-weight:600}
+.drawer-item.rich .meta{display:flex;gap:6px;align-items:center;font-family:'Inter';font-size:9.5px;color:var(--ink-soft);letter-spacing:0.04em;flex-wrap:wrap}
+.drawer-item.rich .meta .sep{color:var(--ink-dim)}
+.drawer-item.rich .meta .arrow{margin-left:auto;color:var(--orange);font-weight:600;font-size:13px}
+.drawer-item.rich:hover{background:#fff;border-color:var(--teal)}
+.drawer-item.rich:hover .arrow{color:var(--orange-dk)}
+.sig-state{font-family:'Inter';font-size:9px;padding:2px 8px;color:#fff;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;border-radius:100px}
+
+/* Panel left-accent color variants */
+.panel.teal{border-top:3px solid var(--teal)}
+.panel.orange{border-top:3px solid var(--orange)}
+.panel.purple{border-top:3px solid var(--purple)}
+.panel.green{border-top:3px solid var(--success)}
+.panel.red{border-top:3px solid var(--crit)}
+.panel.indigo{border-top:3px solid var(--commit)}
+.panel.amber{border-top:3px solid var(--amber)}
+
+/* KPI cell color accents */
+.kpi-cell.hi-teal .v{color:var(--teal)}
+.kpi-cell.hi-orange .v{color:var(--orange-dk)}
+.kpi-cell.hi-green .v{color:var(--success)}
+.kpi-cell.hi-red .v{color:var(--crit)}
+.kpi-cell.hi-purple .v{color:var(--purple)}
+
+</style>
+
+<style>
+:root{ --s-comp:#8E5BA0; --s-comp-bg:#F3ECF7; }
+.theme-board{grid-template-columns:repeat(6,1fr) !important}
+.gap-row.na .gap-track{background:repeating-linear-gradient(45deg,#EDF0F3,#EDF0F3 5px,#E4E8EC 5px,#E4E8EC 10px);cursor:default}
+.gap-row.na .gap-track:hover{outline:none}
+.gap-row.na .gap-val{color:var(--ink-dim);font-style:italic}
+.na-tag{font-family:'Inter';font-size:8.5px;color:var(--ink-dim);letter-spacing:0.04em;text-transform:uppercase}
+.countdown{display:flex;gap:14px;align-items:baseline}
+.cd-num{font-family:'Inter';font-weight:700;font-size:30px;font-weight:600;color:var(--orange-dk);line-height:1;letter-spacing:-0.02em}
+.cd-unit{font-family:'Inter';font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft);margin-left:3px}
+.reg-hero{display:flex;flex-direction:column;gap:10px}
+.reg-step{display:grid;grid-template-columns:92px 1fr;gap:12px;align-items:start;padding:9px 0;border-top:1px dotted var(--hair)}
+.reg-step:first-child{border-top:none}
+.reg-date{font-family:'Inter';font-size:10.5px;color:var(--ink-soft);font-weight:600;letter-spacing:0.02em;padding-top:2px}
+.reg-step .h{font-weight:600;color:var(--ink);font-size:12.5px;margin-bottom:2px;display:flex;gap:7px;align-items:center}
+.reg-step .d{font-size:11.5px;color:var(--ink-muted);line-height:1.4}
+.reg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;display:inline-block}
+.pip{font-family:'Inter';font-size:8.5px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;color:#fff;text-transform:uppercase}
+.brand-stage.prelaunch{background:#7A4A12;border-color:#A9701F}
+.intgr-banner{background:var(--s-comp-bg);border:1px solid #D9C4E4;border-left:3px solid var(--s-comp);padding:10px 14px;font-size:12px;color:#5A3A6B;line-height:1.45;display:flex;gap:10px;align-items:flex-start}
+.intgr-banner .ic{font-family:'Inter';font-size:9px;font-weight:700;letter-spacing:0.06em;color:#fff;background:var(--s-comp);padding:2px 7px;flex-shrink:0;text-transform:uppercase}
+.sig-state.compromised,.state-chip.compromised{background:var(--s-comp)}
+</style>
+</head>
+<body>
+<header class="brand">
+ <a href="index.html"><img src="../Avira Logo.svg" class="brand-logo" alt="Avira Digital"></a>
+ <span class="brand-divider"></span>
+ <span class="brand-studio">Insights Studio · Operator view</span>
+ <span class="brand-asset">CARVYKTI</span>
+ <span class="brand-codes">ciltacabtagene autoleucel / cilta-cel · R/R multiple myeloma</span>
+ <span class="brand-meta">
+  <span>Autologous BCMA CAR-T</span>
+  <span class="brand-stage">LAUNCHED · GROWTH</span>
+  <span class="brand-posture">FIRST / ONLY CAR-T @ ≥1 PRIOR LINE</span>
+  <a class="brand-link" href="carvykti_pressure_test_visual.html">Architecture pressure test →</a>
+ </span>
+</header>
+
+<div class="kpi">
+ <div class="kpi-cell"><div class="l">Vein-to-vein</div><div class="countdown"><span class="cd-num">79</span><span class="cd-unit">days median</span></div><div class="n">apheresis → infusion · the access clock</div></div>
+ <div class="kpi-cell"><div class="l">Themes live</div><div class="v">15</div><div class="n">across 3 strategic tests</div></div>
+ <div class="kpi-cell"><div class="l">Decisions</div><div class="v crit">3<span style="font-size:15px;color:var(--ink-dim)"> urgent</span></div><div class="n">of 11 · 5 action · 3 watch</div></div>
+ <div class="kpi-cell"><div class="l">Evidence integrity</div><div class="v" style="color:var(--s-comp)">1</div><div class="n">SPM / insertional-mutagenesis under watch</div></div>
+ <div class="kpi-cell"><div class="l">Supply</div><div class="v" style="font-size:21px">10K→20K</div><div class="n">slots/yr · demand is slot-gated</div></div>
+</div>
+
+<main>
+
+<div class="intgr-banner">
+ <span class="ic">Integrity</span>
+ <div>CARVYKTI carries an <b>evidence-integrity overhang</b>. The FDA opened a class-wide secondary-malignancy investigation (Jan 2024), and the first SPM case <b>“almost certainly from insertional mutagenesis”</b> was reported in early 2025. This is neither a classic efficacy nor a safety event — it is an evidence-integrity / causality question the architecture holds in a <b>Compromised</b> state (purple). <span class="why" onclick="openTheme('t-spm')" title="Details" style="display:inline-flex;vertical-align:middle">?</span></div>
+</div>
+
+<div class="dash" style="margin-top:12px">
+<div class="panel span-3">
+  <div class="panel-h"><span class="t">Themes board</span><span class="c">15 themes · 6 states · click any for chain of evidence</span></div>
+  <div class="panel-body"><div class="theme-board"><div class="theme-col"><div class="theme-col-h" style="background:#5AAB60"><span>Strengthening</span><span>3</span></div><div class="theme-chip" style="border-left-color:#5AAB60" onclick="openTheme('t-efficacy')">Best-in-class efficacy at earlier line<button class="why" onclick="event.stopPropagation();openTheme('t-efficacy')" title="Details">?</button></div><div class="theme-chip" style="border-left-color:#5AAB60" onclick="openTheme('t-value')">OS benefit strengthens the value & access case<button class="why" onclick="event.stopPropagation();openTheme('t-value')" title="Details">?</button></div><div class="theme-chip" style="border-left-color:#5AAB60" onclick="openTheme('t-carttfirst')">CAR-T-first preference holds among experts<button class="why" onclick="event.stopPropagation();openTheme('t-carttfirst')" title="Details">?</button></div></div><div class="theme-col"><div class="theme-col-h" style="background:#B49563"><span>Strengthening-Thin</span><span>2</span></div><div class="theme-chip" style="border-left-color:#B49563" onclick="openTheme('t-community')">Community / outpatient expansion is the growth lever<button class="why" onclick="event.stopPropagation();openTheme('t-community')" title="Details">?</button></div><div class="theme-chip" style="border-left-color:#B49563" onclick="openTheme('t-frontline')">Frontline trajectory is the long-term moat<button class="why" onclick="event.stopPropagation();openTheme('t-frontline')" title="Details">?</button></div></div><div class="theme-col"><div class="theme-col-h" style="background:#5B92D1"><span>Stable</span><span>3</span></div><div class="theme-chip" style="border-left-color:#5B92D1" onclick="openTheme('t-acute')">Acute toxicity is managed, improving earlier-line<button class="why" onclick="event.stopPropagation();openTheme('t-acute')" title="Details">?</button></div><div class="theme-chip" style="border-left-color:#5B92D1" onclick="openTheme('t-onetime')">One-time-treatment structural advantage<button class="why" onclick="event.stopPropagation();openTheme('t-onetime')" title="Details">?</button></div><div class="theme-chip" style="border-left-color:#5B92D1" onclick="openTheme('t-supplybind')">Supply is the binding constraint, not demand<button class="why" onclick="event.stopPropagation();openTheme('t-supplybind')" title="Details">?</button></div></div><div class="theme-col"><div class="theme-col-h" style="background:#E89327"><span>Contested</span><span>4</span></div><div class="theme-chip" style="border-left-color:#E89327" onclick="openTheme('t-anito')">Anito-cel's safety edge is the emerging threat<button class="why" onclick="event.stopPropagation();openTheme('t-anito')" title="Details">?</button></div><div class="theme-chip" style="border-left-color:#E89327" onclick="openTheme('t-commodi')">BCMA commoditization by bispecifics squeezes late line<button class="why" onclick="event.stopPropagation();openTheme('t-commodi')" title="Details">?</button></div><div class="theme-chip" style="border-left-color:#E89327" onclick="openTheme('t-veintovein')">Vein-to-vein attrition is an unowned loss channel<button class="why" onclick="event.stopPropagation();openTheme('t-veintovein')" title="Details">?</button></div><div class="theme-chip" style="border-left-color:#E89327" onclick="openTheme('t-sequencing')">Sequencing order is becoming outcome-determining<button class="why" onclick="event.stopPropagation();openTheme('t-sequencing')" title="Details">?</button></div></div><div class="theme-col"><div class="theme-col-h" style="background:#9AA3AC"><span>Thin</span><span>2</span></div><div class="theme-chip" style="border-left-color:#9AA3AC" onclick="openTheme('t-communitygap')">Community-vs-academic outcomes gap<button class="why" onclick="event.stopPropagation();openTheme('t-communitygap')" title="Details">?</button></div><div class="theme-chip" style="border-left-color:#9AA3AC" onclick="openTheme('t-longlatency')">Multi-year surveillance vs immature data<button class="why" onclick="event.stopPropagation();openTheme('t-longlatency')" title="Details">?</button></div></div><div class="theme-col"><div class="theme-col-h" style="background:#8E5BA0"><span>Compromised</span><span>1</span></div><div class="theme-chip" style="border-left-color:#8E5BA0" onclick="openTheme('t-spm')">SPM / insertional-mutagenesis integrity overhang<button class="why" onclick="event.stopPropagation();openTheme('t-spm')" title="Details">?</button></div></div></div></div>
+</div>
+</div>
+
+<div class="dash">
+<div class="panel span-1">
+  <div class="panel-h"><span class="t">Gap radar · capability coverage</span><span class="c">8 live + 1 proposed</span></div>
+  <div class="panel-body"><div class="gap-bars"><div class="gap-row"><span class="gap-lbl">TL</span><div class="gap-track" onclick="openGap('TL')"><div class="gap-fill" style="width:83%;background:#5AAB60">83%</div></div><span class="gap-val">5/6</span><span></span></div><div class="gap-row"><span class="gap-lbl">RWE</span><div class="gap-track" onclick="openGap('RWE')"><div class="gap-fill" style="width:83%;background:#5AAB60">83%</div></div><span class="gap-val">5/6</span><span></span></div><div class="gap-row"><span class="gap-lbl">PAY</span><div class="gap-track" onclick="openGap('PAY')"><div class="gap-fill" style="width:80%;background:#5AAB60">80%</div></div><span class="gap-val">4/5</span><span></span></div><div class="gap-row"><span class="gap-lbl">CON</span><div class="gap-track" onclick="openGap('CON')"><div class="gap-fill" style="width:50%;background:#E89327">50%</div></div><span class="gap-val">2/4</span><span></span></div><div class="gap-row"><span class="gap-lbl">LIT</span><div class="gap-track" onclick="openGap('LIT')"><div class="gap-fill" style="width:47%;background:#D74F2A">47%</div></div><span class="gap-val">7/15</span><span></span></div><div class="gap-row"><span class="gap-lbl">KOL</span><div class="gap-track" onclick="openGap('KOL')"><div class="gap-fill" style="width:40%;background:#D74F2A">40%</div></div><span class="gap-val">2/5</span><span></span></div><div class="gap-row"><span class="gap-lbl">REG</span><div class="gap-track" onclick="openGap('REG')"><div class="gap-fill" style="width:40%;background:#D74F2A">40%</div></div><span class="gap-val">2/5</span><span></span></div><div class="gap-row"><span class="gap-lbl">DIG</span><div class="gap-track" onclick="openGap('DIG')"><div class="gap-fill" style="width:20%;background:#D74F2A">20%</div></div><span class="gap-val">1/5</span><span></span></div><div class="gap-row na"><span class="gap-lbl" style="color:#D97516">SUP</span><div class="gap-track" style="cursor:pointer;background:repeating-linear-gradient(45deg,#FCEFDD,#FCEFDD 5px,#F7E0C2 5px,#F7E0C2 10px)" onclick="openSeam('supply')" title="Proposed 9th capability"><div class="gap-fill" style="width:0%"></div></div><span class="gap-val" style="color:#D97516">seam</span><span class="na-tag" style="color:#D97516">9th?</span></div></div>
+  <div style="margin-top:10px;font-size:10.5px;color:var(--ink-soft);line-height:1.4;font-family:'JetBrains Mono'; ~1/3 of US ATCs are community/regional, ~80% of patients live within 50 miles of a site.</div></div></div>
+    <div class="reg-step"><span class="reg-date">~44 days</span><div><div class="h"><span class="reg-dot" style="background:#5AAB60"></span>Manufacture & release <span class="why" onclick="openSignal('MFG-001')" title="Details">?</span></div><div class="d">Across 4 nodes (Raritan NJ, Ghent BE, Novartis toll, NL lentivirus). 97% manufacturing success (99% Jul'24–Oct'25); out-of-spec 6.5% early / 9.2% late line.</div></div></div>
+    <div class="reg-step"><span class="reg-date">~79 days</span><div><div class="h"><span class="reg-dot" style="background:#E89327"></span>Vein-to-vein — the bridging window <span class="why" onclick="openSignal('RWE-G02')" title="Details">?</span></div><div class="d">Median apheresis-to-infusion is ~79 days. Pre-infusion attrition (progression / death on bridging) is a real loss channel with <b>no owning KBQ</b> — an architecture seam.</div></div></div>
+    <div class="reg-step"><span class="reg-date">10K→20K</span><div><div class="h"><span class="reg-dot" style="background:#5B92D1"></span>Slot capacity — the binding constraint <span class="why" onclick="openSignal('RWE-011')" title="Details">?</span></div><div class="d">Demand is slot-gated, not prescription-gated; capacity expansion toward 20K/yr is the principal revenue & access driver.</div></div></div>
+  </div></div>
+</div>
+</div>
+
+<div class="dash">
+<div class="panel span-2">
+  <div class="panel-h"><span class="t">Movement · the CARVYKTI timeline</span><span class="c">10 events · integrity events highlighted</span></div>
+  <div class="panel-body" style="padding-top:6px"><div class="mv-list"><div class="mv-row" onclick="openMovement(0)"><span class="mv-date">Feb 2022</span><span class="state-chip" style="background:#5AAB60">Strengthening</span><span class="mv-txt">FDA approval — 5L+ (CARTITUDE-1)</span><button class="why" onclick="event.stopPropagation();openMovement(0)" title="Details">?</button></div><div class="mv-row" onclick="openMovement(1)"><span class="mv-date">Jan 2024</span><span class="state-chip compromised" style="background:#8E5BA0">Compromised</span><span class="mv-txt">FDA class secondary-malignancy investigation; boxed warning</span><button class="why" onclick="event.stopPropagation();openMovement(1)" title="Details">?</button></div><div class="mv-row" onclick="openMovement(2)"><span class="mv-date">Mar 2024</span><span class="state-chip" style="background:#5AAB60">Strengthening</span><span class="mv-txt">ODAC votes 11–0 favorable (earlier line)</span><button class="why" onclick="event.stopPropagation();openMovement(2)" title="Details">?</button></div><div class="mv-row" onclick="openMovement(3)"><span class="mv-date">Apr 2024</span><span class="state-chip" style="background:#5AAB60">Strengthening</span><span class="mv-txt">FDA earlier-line approval (≥1 prior, len-refractory)</span><button class="why" onclick="event.stopPropagation();openMovement(3)" title="Details">?</button></div><div class="mv-row" onclick="openMovement(4)"><span class="mv-date">early 2025</span><span class="state-chip compromised" style="background:#8E5BA0">Compromised</span><span class="mv-txt">First SPM “almost certainly insertional mutagenesis”</span><button class="why" onclick="event.stopPropagation();openMovement(4)" title="Details">?</button></div><div class="mv-row" onclick="openMovement(5)"><span class="mv-date">Jun 2025</span><span class="state-chip" style="background:#E89327">Contested</span><span class="mv-txt">EHA: anito-cel iMMagine-1 (97% ORR, safety edge)</span><button class="why" onclick="event.stopPropagation();openMovement(5)" title="Details">?</button></div><div class="mv-row" onclick="openMovement(6)"><span class="mv-date">Oct 2025</span><span class="state-chip" style="background:#5AAB60">Strengthening</span><span class="mv-txt">FDA/EC OS-benefit label update; IEC-EC added to Boxed Warning</span><button class="why" onclick="event.stopPropagation();openMovement(6)" title="Details">?</button></div><div class="mv-row" onclick="openMovement(7)"><span class="mv-date">Dec 2025</span><span class="state-chip" style="background:#5AAB60">Strengthening</span><span class="mv-txt">ASH: 2.5-yr treatment-free remission; earlier-line immune fitness</span><button class="why" onclick="event.stopPropagation();openMovement(7)" title="Details">?</button></div><div class="mv-row" onclick="openMovement(8)"><span class="mv-date">2026</span><span class="state-chip" style="background:#5B92D1">Stable</span><span class="mv-txt">Capacity scaling 10K→20K; CARTITUDE-5 / -6 maturing</span><button class="why" onclick="event.stopPropagation();openMovement(8)" title="Details">?</button></div><div class="mv-row" onclick="openMovement(9)"><span class="mv-date">expected</span><span class="state-chip" style="background:#E89327">Contested</span><span class="mv-txt">Anito-cel Ph3 (iMMagine-3) readout</span><button class="why" onclick="event.stopPropagation();openMovement(9)" title="Details">?</button></div></div></div>
+</div>
+<div class="panel span-1">
+  <div class="panel-h"><span class="t">KOL / treater pulse</span><span class="c">where sentiment sits</span></div>
+  <div class="panel-body"><div class="kbar">
+    <div class="kbar-row"><span class="kbar-lbl">CAR-T-first preference</span><div class="kbar-track"><div class="kbar-seg pos" style="width:64%"></div><div class="kbar-seg split" style="width:26%"></div><div class="kbar-seg neu" style="width:10%"></div></div></div>
+    <div class="kbar-row"><span class="kbar-lbl">Anito-cel safety-edge concern</span><div class="kbar-track"><div class="kbar-seg pos" style="width:30%"></div><div class="kbar-seg split" style="width:42%"></div><div class="kbar-seg neg" style="width:28%"></div></div></div>
+    <div class="kbar-row"><span class="kbar-lbl">Sequencing clarity (order)</span><div class="kbar-track"><div class="kbar-seg pos" style="width:28%"></div><div class="kbar-seg split" style="width:50%"></div><div class="kbar-seg neg" style="width:22%"></div></div></div>
+    <div class="kbar-row"><span class="kbar-lbl">Community / outpatient confidence</span><div class="kbar-track"><div class="kbar-seg pos" style="width:38%"></div><div class="kbar-seg split" style="width:40%"></div><div class="kbar-seg neg" style="width:22%"></div></div></div>
+    <div class="kbar-row"><span class="kbar-lbl">SPM risk-benefit acceptance</span><div class="kbar-track"><div class="kbar-seg pos" style="width:48%"></div><div class="kbar-seg split" style="width:32%"></div><div class="kbar-seg neg" style="width:20%"></div></div></div>
+    <div class="kbar-row"><span class="kbar-lbl">Frontline (CARTITUDE-5/6) enthusiasm</span><div class="kbar-track"><div class="kbar-seg pos" style="width:60%"></div><div class="kbar-seg split" style="width:28%"></div><div class="kbar-seg neu" style="width:12%"></div></div></div>
+  </div></div>
+</div>
+</div>
+
+<div class="dash">
+<div class="panel span-3">
+  <div class="panel-h"><span class="t">Decisions register</span><span class="c">11 decisions · sorted by urgency · click any for revisit conditions + linked themes</span></div>
+  <div class="panel-body"><div class="dec-grid"><div class="dec-card urgent" onclick="openDecision('d-supply')"><div class="dec-cat">Field & medical strategy</div><div class="dec-title">Resource field toward community/outpatient ATC enablement + earlier referral</div><button class="why" onclick="event.stopPropagation();openDecision('d-supply')" title="Details">?</button></div><div class="dec-card urgent" onclick="openDecision('d-spm')"><div class="dec-cat">Integrity / risk management</div><div class="dec-title">Stand up SPM / insertional-mutagenesis as a watched integrity signal</div><button class="why" onclick="event.stopPropagation();openDecision('d-spm')" title="Details">?</button></div><div class="dec-card urgent" onclick="openDecision('d-anito')"><div class="dec-cat">Positioning</div><div class="dec-title">Own “CAR-T-first, earlier-is-better, immune-fitness” to pre-empt anito-cel</div><button class="why" onclick="event.stopPropagation();openDecision('d-anito')" title="Details">?</button></div><div class="dec-card action" onclick="openDecision('d-veintovein')"><div class="dec-cat">Evidence generation</div><div class="dec-title">Commission community-vs-academic + vein-to-vein attrition RWE study</div><button class="why" onclick="event.stopPropagation();openDecision('d-veintovein')" title="Details">?</button></div><div class="dec-card action" onclick="openDecision('d-value')"><div class="dec-cat">Access & value</div><div class="dec-title">Outcome-based contracting on OS / TFR; payer site-of-care engagement</div><button class="why" onclick="event.stopPropagation();openDecision('d-value')" title="Details">?</button></div><div class="dec-card action" onclick="openDecision('d-sequencing')"><div class="dec-cat">Evidence generation</div><div class="dec-title">Prioritize sequencing evidence (CAR-T-first vs prior-BCMA penalty)</div><button class="why" onclick="event.stopPropagation();openDecision('d-sequencing')" title="Details">?</button></div><div class="dec-card action" onclick="openDecision('d-frontline')"><div class="dec-cat">Positioning / evidence</div><div class="dec-title">Advance the frontline / NDMM narrative (CARTITUDE-5 / -6)</div><button class="why" onclick="event.stopPropagation();openDecision('d-frontline')" title="Details">?</button></div><div class="dec-card action" onclick="openDecision('d-narrative')"><div class="dec-cat">Communications / field</div><div class="dec-title">Field enablement: acute-tox-managed + SPM shared-decision</div><button class="why" onclick="event.stopPropagation();openDecision('d-narrative')" title="Details">?</button></div><div class="dec-card watch" onclick="openDecision('d-compwatch')"><div class="dec-cat">Competitive response</div><div class="dec-title">Competitive watch on anito-cel + bispecific encroachment</div><button class="why" onclick="event.stopPropagation();openDecision('d-compwatch')" title="Details">?</button></div><div class="dec-card watch" onclick="openDecision('d-longhorizon')"><div class="dec-cat">Evidence generation / planning</div><div class="dec-title">Arm long-term FU registry surveillance (long-horizon)</div><button class="why" onclick="event.stopPropagation();openDecision('d-longhorizon')" title="Details">?</button></div><div class="dec-card watch" onclick="openDecision('d-capacity')"><div class="dec-cat">Planning / operations</div><div class="dec-title">Track slot-capacity vs referral throughput; rebalance when supply unbinds</div><button class="why" onclick="event.stopPropagation();openDecision('d-capacity')" title="Details">?</button></div></div></div>
+</div>
+</div>
+
+<div class="dash" style="grid-template-columns:1fr">
+ <div class="panel">
+  <div class="panel-body" style="padding:14px 18px;font-size:12.5px;color:#3F4A55;line-height:1.55">
+   <b>Reading this view.</b> This is the same architecture as the schizophrenia and ADP operator views, pointed at a <b>launched, growth-stage, supply-constrained cell therapy</b>. Three things look different on purpose: the <b>gap radar surfaces a missing 9th “Supply & Delivery Operations” capability</b> — CARVYKTI’s rate-limiter (slots, vein-to-vein, out-of-spec, ATC network) has no native sensing home; a new <b>Compromised</b> state carries the <b>SPM / insertional-mutagenesis</b> integrity overhang; and <b>sequencing / modality competition</b> plus the <b>15-year surveillance horizon</b> appear as themes and decisions this surface can display but the <b>Act backend must execute</b>. All three are documented seams in the pressure-test workbook. Every theme, signal, decision and movement is click-through: theme → signals → KBQ source, and back again.
+  </div>
+ </div>
+</div>
+
+</main>
+
+<style>
+.linked-wrap{--ls:#5B92D1;--ly:#6B5BA0;--ld:#9C6A1F;--la:#5AAB60;--lx:#1F7A92}
+.linked-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.linked-col{display:flex;flex-direction:column;gap:6px}
+.linked-h{font-family:'Inter';font-size:9px;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;color:#fff;padding:3px 7px}
+.linked-item{display:block;background:var(--panel-alt);border:1px dashed var(--line);border-left:3px solid var(--ink-dim);padding:6px 9px;font-size:11.5px;color:var(--ink);text-decoration:none;line-height:1.3;transition:background .1s,border-color .1s;position:relative}
+.linked-item:hover{background:#fff;border-left-color:var(--teal);border-color:var(--teal)}
+.linked-item .meta{display:block;font-family:'Inter';font-size:8.5px;color:var(--ink-soft);letter-spacing:0.03em;margin-top:3px}
+.linked-item .pl{position:absolute;top:5px;right:6px;font-family:'Inter';font-size:7.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:0.06em}
+.linked-item.seam{border-left-color:#D97516 !important;border-color:#E8A35A;background:#FCEFDD}
+.linked-item.seam .pl{color:#D97516}
+.linked-note{font-size:11px;color:var(--ink-soft);margin-top:10px;line-height:1.4}
+</style>
+<div class="dash linked-wrap" style="grid-template-columns:1fr">
+ <div class="panel">
+  <div class="panel-h"><span class="t">Linked dashboards · planned drill-downs</span><span class="c">referenced from this surface · deep-dive build later</span></div>
+  <div class="panel-body"><div class="linked-grid">
+   <div class="linked-col"><div class="linked-h" style="background:var(--ls)">Sense</div>
+     <a class="linked-item seam" href="#planned-supply" style="border-left-color:var(--ls)"><span class="pl">seam · 9th</span>Supply & Delivery Operations<span class="meta">apheresis · slots · vein-to-vein · ATC net</span></a>
+     <a class="linked-item" href="#planned-social" style="border-left-color:var(--ls)"><span class="pl">planned</span>Social & Digital Listening<span class="meta">patient voice · social</span></a>
+     <a class="linked-item" href="#planned-congress" style="border-left-color:var(--ls)"><span class="pl">planned</span>Congress Intelligence<span class="meta">ASH / EHA · share-of-voice</span></a>
+     <a class="linked-item" href="#planned-kol" style="border-left-color:var(--ls)"><span class="pl">planned</span>KOL / DOL Influence Map<span class="meta">DOL · referral · 3D</span></a>
+   </div>
+   <div class="linked-col"><div class="linked-h" style="background:var(--ly)">Synthesize</div>
+     <a class="linked-item" href="#planned-fm" style="border-left-color:var(--ly)"><span class="pl">planned</span>Field Medical Insight Synthesis<span class="meta">interactions · K&B · NPSE</span></a>
+     <a class="linked-item" href="#planned-evidence" style="border-left-color:var(--ly)"><span class="pl">planned</span>Evidence & Surrogate Map<span class="meta">MRD · PFS ↔ OS</span></a>
+   </div>
+   <div class="linked-col"><div class="linked-h" style="background:var(--ld)">Decide</div>
+     <a class="linked-item" href="#planned-risk" style="border-left-color:var(--ld)"><span class="pl">planned</span>Study-at-Risk & Book-of-Work<span class="meta">iSTAR · LDBOW · MDG</span></a>
+     <a class="linked-item" href="#planned-let" style="border-left-color:var(--ld)"><span class="pl">planned</span>Launch / Lifecycle Tracker<span class="meta">line expansion · at-risk</span></a>
+     <a class="linked-item" href="#planned-comp" style="border-left-color:var(--ld)"><span class="pl">planned</span>Competitive & Pipeline Landscape<span class="meta">anito-cel · bispecifics · modality</span></a>
+   </div>
+   <div class="linked-col"><div class="linked-h" style="background:var(--la)">Act</div>
+     <a class="linked-item" href="#planned-orch" style="border-left-color:var(--la)"><span class="pl">planned</span>Decision & Revisit Orchestration<span class="meta">triggers · long-horizon · forum decks</span></a>
+     <a class="linked-item" href="#planned-msl" style="border-left-color:var(--la)"><span class="pl">planned</span>MSL / Field Action<span class="meta">site recs · referral · coverage</span></a>
+   </div>
+   <div class="linked-col"><div class="linked-h" style="background:var(--lx)">Cross-cutting</div>
+     <a class="linked-item" href="#planned-value" style="border-left-color:var(--lx)"><span class="pl">planned</span>Value & Access / HTA<span class="meta">ICER · payer · site-of-care</span></a>
+     <a class="linked-item" href="#planned-portfolio" style="border-left-color:var(--lx)"><span class="pl">planned</span>Portfolio Book-of-Work<span class="meta">multi-asset · by TA</span></a>
+     <a class="linked-item" href="#planned-lineage" style="border-left-color:var(--lx)"><span class="pl">planned</span>Data Lineage & Source Health<span class="meta">freshness · coverage</span></a>
+   </div>
+  </div>
+  <div class="linked-note">Placeholders — each modernizes an existing MA BI&A tool and is a future drill-down from this surface. The highlighted <b style="color:#D97516">Supply & Delivery Operations</b> tile is the proposed 9th sensing capability the CARVYKTI pressure test surfaced.</div>
+  </div>
+ </div>
+</div>
+
+<div class="drawer-overlay" id="drawer-overlay"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-h">
+    <div class="drawer-h-l">
+      <div class="drawer-eyebrow" id="drawer-eyebrow">—</div>
+      <div class="drawer-title serif" id="drawer-title">—</div>
+    </div>
+    <button class="drawer-close" id="drawer-close" aria-label="Close">×</button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+</aside>
+
+<script>
+const DATA = {"themes": {"t-efficacy": {"title": "Best-in-class efficacy at earlier line", "state": "Strengthening", "summary": "Depth and durability lead the approved CAR-Ts at ≥1 prior line: a statistically significant OS benefit now in the label (Oct 2025), 2.5-year treatment-free remission, and evidence that earlier-line use yields better immune fitness. This is the defensible core.", "signals": ["LIT-051", "REG-014", "RWE-001"], "decisions": ["d-anito", "d-frontline"], "kbq": "KBQ-LIT-F"}, "t-value": {"title": "OS benefit strengthens the value & access case", "state": "Strengthening", "summary": "The OS label update materially improves the value framing for a high one-time price and supports outcome-based contracting; access friction eases as coverage opens, though it remains operationally heavy.", "signals": ["PAY-011", "PAY-013", "REG-014"], "decisions": ["d-value"], "kbq": "KBQ-PAY-B"}, "t-carttfirst": {"title": "CAR-T-first preference holds among experts", "state": "Strengthening", "summary": "Expert preference leans toward CAR-T-first for fit patients, with bispecifics reserved where CAR-T is infeasible — a tailwind to defend as anito-cel and sequencing debates intensify.", "signals": ["KOL-006", "TL-007"], "decisions": ["d-anito", "d-sequencing"], "kbq": "KBQ-KOL-B"}, "t-community": {"title": "Community / outpatient expansion is the growth lever", "state": "Strengthening-Thin", "summary": "~50% of infusions are outpatient and ~1/3 of US ATCs are community/regional. Certifying and enabling more community sites is the principal access lever — but outcomes data outside academic centers is still thin.", "signals": ["RWE-013", "REG-012", "RWE-G01"], "decisions": ["d-supply", "d-veintovein"], "kbq": "KBQ-RWE-C"}, "t-frontline": {"title": "Frontline trajectory is the long-term moat", "state": "Strengthening-Thin", "summary": "CARTITUDE-5 / -6 push toward frontline / NDMM. If they read out, they extend the franchise well beyond the current line — the long-term moat, but the data is not yet mature.", "signals": ["LIT-075"], "decisions": ["d-frontline"], "kbq": "KBQ-LIT-I"}, "t-acute": {"title": "Acute toxicity is managed, improving earlier-line", "state": "Stable", "summary": "CRS is near-universal but mostly low-grade and protocol-managed; ICANS is lower-grade in earlier line; delayed neurotoxicity is rare but serious and mitigated by earlier-line use. The management paradigm is mature.", "signals": ["LIT-026", "LIT-028", "KOL-007"], "decisions": ["d-narrative"], "kbq": "KBQ-LIT-C"}, "t-onetime": {"title": "One-time-treatment structural advantage", "state": "Stable", "summary": "A single infusion delivering treatment-free remission is CAR-T's structural advantage over continuous bispecific dosing — the MOA-level differentiator most resistant to commoditization.", "signals": ["TL-007", "TL-010"], "decisions": ["d-anito"], "kbq": "KBQ-TL-B"}, "t-supplybind": {"title": "Supply is the binding constraint, not demand", "state": "Stable", "summary": "Uptake is gated by manufacturing slots (~10K/yr, scaling toward 20K), 97% manufacturing success, and a ~79-day median vein-to-vein time — not by prescriptions. Capacity expansion is the revenue and access driver. The signals have no native home (seam).", "signals": ["RWE-011", "MFG-001", "REG-012"], "decisions": ["d-supply", "d-capacity"], "kbq": "KBQ-RWE-C"}, "t-anito": {"title": "Anito-cel's safety edge is the emerging threat", "state": "Contested", "summary": "Anito-cel (Ph3 iMMagine-3, Fast Track) posts comparable efficacy with a claimed cleaner safety profile (1% grade-3 ICANS). The threat is ~2+ years out but real — the position to defend.", "signals": ["LIT-054", "TL-021"], "decisions": ["d-anito", "d-compwatch"], "kbq": "KBQ-LIT-I"}, "t-commodi": {"title": "BCMA commoditization by bispecifics squeezes late line", "state": "Contested", "summary": "Four approved bispecifics (off-the-shelf, no vein-to-vein) commoditize BCMA in 4L+, pressuring late-line CAR-T volume. Competition here is modality-level, not just molecule-level.", "signals": ["LIT-072", "TL-024"], "decisions": ["d-compwatch"], "kbq": "KBQ-TL-D"}, "t-veintovein": {"title": "Vein-to-vein attrition is an unowned loss channel", "state": "Contested", "summary": "The ~79-day apheresis-to-infusion window means some patients progress or die on bridging therapy before infusion. This pre-infusion attrition is a real loss channel with no owning KBQ — an architecture seam.", "signals": ["RWE-G02", "RWE-011"], "decisions": ["d-veintovein"], "kbq": "KBQ-RWE-C"}, "t-sequencing": {"title": "Sequencing order is becoming outcome-determining", "state": "Contested", "summary": "CAR-T-then-bispecific vs the reverse, and the prior-BCMA-exposure penalty, increasingly determine outcomes. Sequencing is order-dependent and inter-asset — it has no first-class home in the catalog (seam) and the evidence is thin.", "signals": ["TL-014", "TL-018", "LIT-G07"], "decisions": ["d-sequencing"], "kbq": "KBQ-TL-C"}, "t-communitygap": {"title": "Community-vs-academic outcomes gap", "state": "Thin", "summary": "As use shifts to community/regional centers, outcomes and durability data outside academic ATCs is a genuine gap that needs filling before community expansion is fully de-risked.", "signals": ["RWE-G01"], "decisions": ["d-veintovein"], "kbq": "KBQ-PAY-D"}, "t-longlatency": {"title": "Multi-year surveillance vs immature data", "state": "Thin", "summary": "The 15-year mandated follow-up and the SPM question run on a multi-year horizon, but the data is inherently immature. The revisit engine's weeks/months cadence cannot watch this clock — a missing long-horizon trigger type.", "signals": ["REG-016", "LIT-G03"], "decisions": ["d-longhorizon"], "kbq": "KBQ-REG-C"}, "t-spm": {"title": "SPM / insertional-mutagenesis integrity overhang", "state": "Compromised", "summary": "The class carries an FDA secondary-malignancy investigation, and the first SPM case “almost certainly from insertional mutagenesis” was reported early 2025. This is an evidence-integrity / causality event — neither classic efficacy nor safety — held in the Compromised state. If causality firms, it would reclassify part of the long-term safety base and require quarantine of dependent claims.", "signals": ["LIT-110", "LIT-030", "DIG-009"], "decisions": ["d-spm", "d-narrative", "d-longhorizon"], "kbq": "KBQ-LIT-M"}}, "signals": {"LIT-051": {"desc": "Depth & durability of response (sCR, MRD-negativity, DOR) vs comparators", "state": "active", "cap": "Literature", "family": "Comparative & Positioning", "mode": "B", "sources": "NEJM / JCO / Blood; CARTITUDE-1 & -4", "last_seen": "May 2026"}, "REG-014": {"desc": "Earlier-line + OS-benefit label (≥1 prior line Apr 2024; OS update Oct 2025)", "state": "active", "cap": "Regulatory & Guideline", "family": "Label & Post-Market", "mode": "C", "sources": "FDA label diffs; EC decision", "last_seen": "Oct 2025"}, "RWE-001": {"desc": "Real-world effectiveness broadly consistent with the pivotal trials", "state": "active", "cap": "Real-World Evidence", "family": "Effectiveness & Outcomes", "mode": "B", "sources": "CIBMTR; real-world cohorts", "last_seen": "Apr 2026"}, "PAY-011": {"desc": "One-time list price; CAR-T value framing improved by OS / TFR", "state": "active", "cap": "Payer & Access", "family": "Pricing & Contracting", "mode": "C", "sources": "list price; ICER CAR-T value report", "last_seen": "Mar 2026"}, "PAY-013": {"desc": "Outcome-based contracts emerging, anchored on OS / treatment-free remission", "state": "emerging", "cap": "Payer & Access", "family": "Pricing & Contracting", "mode": "C", "sources": "contract trackers", "last_seen": "Feb 2026"}, "KOL-006": {"desc": "Expert preference leans CAR-T-first for fit patients", "state": "active", "cap": "KOL & Stakeholder", "family": "Sentiment & Position", "mode": "B+A", "sources": "society statements; KOL commentary", "last_seen": "Apr 2026"}, "KOL-007": {"desc": "Expert risk-benefit stance favorable, esp. earlier line; SPM contextualized vs myeloma mortality", "state": "active", "cap": "KOL & Stakeholder", "family": "Sentiment & Position", "mode": "B+A", "sources": "ASTCT / ASH; KOL commentary", "last_seen": "Apr 2026"}, "TL-007": {"desc": "One-time treatment + treatment-free remission vs continuous bispecific dosing", "state": "active", "cap": "Treatment Landscape", "family": "MOA Landscape", "mode": "B", "sources": "MOA / durability literature", "last_seen": "Mar 2026"}, "TL-010": {"desc": "Antigen-escape / BCMA target dynamics under continued pressure", "state": "emerging", "cap": "Treatment Landscape", "family": "MOA Landscape", "mode": "B", "sources": "target biology literature", "last_seen": "Mar 2026"}, "RWE-011": {"desc": "Demand is slot-gated: earlier-line eligible pool far exceeds the ~10K annual slots", "state": "active", "cap": "Real-World Evidence", "family": "Utilization & Treatment Patterns", "mode": "B", "sources": "claims; capacity disclosures", "last_seen": "Apr 2026"}, "RWE-013": {"desc": "Outpatient shift (~50%); community / regional ATC adoption (~1/3 of US sites)", "state": "active", "cap": "Real-World Evidence", "family": "Utilization & Treatment Patterns", "mode": "B", "sources": "claims; ATC throughput", "last_seen": "Apr 2026"}, "RWE-G01": {"desc": "Community-vs-academic-center outcomes & durability data gap", "state": "gap", "cap": "Real-World Evidence", "family": "RWE Gaps", "mode": "B", "sources": "coverage probe (access × geography × line)", "last_seen": "—"}, "RWE-G02": {"desc": "Vein-to-vein attrition (progression / death on bridging) — an unowned loss channel", "state": "gap", "cap": "Real-World Evidence", "family": "RWE Gaps", "mode": "B", "sources": "coverage probe — no native owning KBQ (seam)", "last_seen": "—"}, "MFG-001": {"desc": "Manufacturing success 97% (99% Jul'24–Oct'25); out-of-spec 6.5% early / 9.2% late; vein-to-vein ~79d median", "state": "active", "cap": "No native home — hosted across RWE-C / PAY-D / REG-C (seam)", "family": "Supply (proposed)", "mode": "—", "sources": "company disclosures; manufacturing-process page", "last_seen": "FY 2025"}, "LIT-075": {"desc": "Frontline / NDMM trajectory (CARTITUDE-5 / -6) is the long-term moat", "state": "emerging", "cap": "Literature", "family": "Lifecycle & Competitive Dynamics", "mode": "B", "sources": "pipeline DB; ASH", "last_seen": "Dec 2025"}, "LIT-026": {"desc": "CRS / ICANS profile — largely low-grade and protocol-managed; lower-grade earlier line", "state": "active", "cap": "Literature", "family": "Safety", "mode": "B", "sources": "NEJM / JCO; class safety reviews", "last_seen": "Mar 2026"}, "LIT-028": {"desc": "Delayed neurotoxicity (Parkinsonism, GBS, cranial-nerve palsy) — rare but serious; mitigated by earlier-line use", "state": "active", "cap": "Literature", "family": "Safety", "mode": "B", "sources": "long-term FU; class reviews", "last_seen": "Mar 2026"}, "LIT-030": {"desc": "SPM incl. T-cell malignancy — rare; subject of a class-wide FDA action", "state": "emerging", "cap": "Literature", "family": "Safety", "mode": "B", "sources": "FAERS; literature", "last_seen": "2025"}, "LIT-110": {"desc": "First SPM case “almost certainly related to insertional mutagenesis” following CAR-T manufacturing", "state": "compromised", "cap": "Literature", "family": "Integrity / Quality", "mode": "C", "sources": "causality-assessment literature; retraction / expression-of-concern feeds", "last_seen": "early 2025"}, "REG-012": {"desc": "REMS + ATC certification gate delivery; IEC-EC added to the Boxed Warning (Oct 2025)", "state": "active", "cap": "Regulatory & Guideline", "family": "Label & Post-Market", "mode": "C", "sources": "DailyMed; REMS; ATC certification registry", "last_seen": "Oct 2025"}, "REG-016": {"desc": "15-year long-term follow-up mandate — an obligatory multi-year surveillance horizon", "state": "active", "cap": "Regulatory & Guideline", "family": "Label & Post-Market", "mode": "C", "sources": "REMS; label", "last_seen": "ongoing"}, "LIT-054": {"desc": "Anito-cel cross-trial efficacy comparable, safety claimed cleaner (1% grade-3 ICANS)", "state": "emerging", "cap": "Literature", "family": "Comparative & Positioning", "mode": "B", "sources": "iMMagine-1; cross-trial comparison", "last_seen": "Jun 2025"}, "TL-021": {"desc": "Anito-cel in Ph3 iMMagine-3 (earlier line), Fast Track — threat ~2+ yrs out", "state": "emerging", "cap": "Treatment Landscape", "family": "Competitive & Pipeline Structure", "mode": "C", "sources": "pipeline DB; trial registry", "last_seen": "2025-26"}, "LIT-072": {"desc": "Bispecifics commoditizing BCMA in 4L+ (off-the-shelf, no vein-to-vein)", "state": "active", "cap": "Literature", "family": "Lifecycle & Competitive Dynamics", "mode": "B", "sources": "literature; approvals", "last_seen": "2025"}, "TL-024": {"desc": "Bispecific class expansion — four approved (teclistamab, elranatamab, linvoseltamab, talquetamab)", "state": "active", "cap": "Treatment Landscape", "family": "Competitive & Pipeline Structure", "mode": "C", "sources": "pipeline DB", "last_seen": "2025"}, "TL-014": {"desc": "Sequencing paradigm: CAR-T ↔ bispecific order increasingly outcome-determining", "state": "emerging", "cap": "Treatment Landscape", "family": "Treatment Paradigm", "mode": "B+C", "sources": "NCCN; sequencing literature", "last_seen": "2025-26"}, "TL-018": {"desc": "Prior BCMA exposure (e.g. post-bispecific) reduces CAR-T efficacy", "state": "emerging", "cap": "Treatment Landscape", "family": "Treatment Paradigm", "mode": "B", "sources": "sequencing literature", "last_seen": "2025"}, "LIT-G07": {"desc": "Sequencing-order RCT gap; no prospective CAR-T-vs-anito-cel head-to-head", "state": "gap", "cap": "Literature", "family": "Evidence Gaps", "mode": "B", "sources": "coverage probe", "last_seen": "—"}, "LIT-G03": {"desc": "Long-latency SPM data inherently immature — needs years to mature", "state": "gap", "cap": "Literature", "family": "Evidence Gaps", "mode": "B", "sources": "coverage probe", "last_seen": "—"}, "DIG-009": {"desc": "Patient-reported SPM anxiety & cognitive sequelae shape shared decision-making", "state": "emerging", "cap": "Digital & Social", "family": "Patient Digital Voice", "mode": "B", "sources": "myeloma patient communities", "last_seen": "Apr 2026"}}, "kbqs": {"KBQ-LIT-F": {"text": "Where do we win, hold parity, or lose against standard of care and competitors?", "capability": "LIT", "cap_name": "Literature · Comparative & Positioning", "method": "RET", "method_name": "Retrieval pipeline", "mode": "B", "mode_name": "Query the corpus → retrieve", "sources": "Cross-trial comparisons; head-to-head literature", "refreshed": "current to Jun 2026", "confidence": "High", "confidence_basis": "Multiple pivotal datasets + congress updates", "contributing": ["LIT-051", "LIT-054"]}, "KBQ-PAY-B": {"text": "Is the value case landing with HTAs — recommended, restricted, or rejected?", "capability": "PAY", "cap_name": "Payer & Access · HTA & Value Assessment", "method": "WCH", "method_name": "Watch / feed monitor", "mode": "C", "mode_name": "Watch the structured feed for change", "sources": "ICER CAR-T value; payer policy; outcome-based-contract trackers", "refreshed": "current to Jun 2026", "confidence": "Medium", "confidence_basis": "OS label improves framing; contracts still emerging", "contributing": ["PAY-011", "PAY-013", "REG-014"]}, "KBQ-KOL-B": {"text": "Where do experts stand on the asset or its class — who supports, who is cautious?", "capability": "KOL", "cap_name": "KOL & Stakeholder · Sentiment & Position", "method": "RET+PRB", "method_name": "Retrieval + probe", "mode": "B+A", "mode_name": "Corpus query + per-object probe", "sources": "Society statements (ASTCT / ASH); KOL commentary", "refreshed": "current to Jun 2026", "confidence": "Medium", "confidence_basis": "Consistent CAR-T-first signal; safety nuance", "contributing": ["KOL-006", "KOL-007"]}, "KBQ-RWE-C": {"text": "How is the asset actually being used — where do utilization patterns confirm or undercut positioning?", "capability": "RWE", "cap_name": "Real-World Evidence · Utilization & Treatment Patterns", "method": "RET", "method_name": "Retrieval pipeline", "mode": "B", "mode_name": "Query the corpus → retrieve", "sources": "Claims; ATC throughput; CIBMTR registry; capacity disclosures", "refreshed": "current to Jun 2026", "confidence": "Medium", "confidence_basis": "Strong utilization signal; access detail partly unowned", "contributing": ["RWE-011", "RWE-013", "RWE-G01", "RWE-G02", "MFG-001"]}, "KBQ-LIT-I": {"text": "How is the competitive & lifecycle picture moving — are competitors gaining, is the asset advancing?", "capability": "LIT", "cap_name": "Literature · Lifecycle & Competitive Dynamics", "method": "RET", "method_name": "Retrieval pipeline", "mode": "B", "mode_name": "Query the corpus → retrieve", "sources": "Competitive literature; pipeline DB; ASH / EHA", "refreshed": "current to Jun 2026", "confidence": "High", "confidence_basis": "Dense competitive + frontline coverage", "contributing": ["LIT-072", "LIT-075", "LIT-054"]}, "KBQ-LIT-C": {"text": "What are the adverse events — clinically meaningful, class-wide or long-term, questions remaining?", "capability": "LIT", "cap_name": "Literature · Safety", "method": "RET", "method_name": "Retrieval pipeline", "mode": "B", "mode_name": "Query the corpus → retrieve", "sources": "NEJM / JCO / Blood; CARTITUDE long-term FU; class safety reviews", "refreshed": "current to Jun 2026", "confidence": "High", "confidence_basis": "Mature acute-tox literature; long-latency immature", "contributing": ["LIT-026", "LIT-028", "LIT-030"]}, "KBQ-TL-B": {"text": "Where does the MOA create a defensible advantage — which mechanisms win where?", "capability": "TL", "cap_name": "Treatment Landscape · MOA Landscape", "method": "RET", "method_name": "Retrieval pipeline", "mode": "B", "mode_name": "Query the corpus → retrieve", "sources": "MOA / target literature (CAR-T vs bispecific durability)", "refreshed": "current to Jun 2026", "confidence": "Medium", "confidence_basis": "Clear one-time-vs-continuous structural argument", "contributing": ["TL-007", "TL-010"]}, "KBQ-TL-D": {"text": "How is the competitive pipeline reshaping the indication — what is advancing, stalling, arriving?", "capability": "TL", "cap_name": "Treatment Landscape · Competitive & Pipeline Structure", "method": "WCH", "method_name": "Watch / feed monitor", "mode": "C", "mode_name": "Watch the structured feed for change", "sources": "Pipeline DB; trial registries", "refreshed": "current to Jun 2026", "confidence": "High", "confidence_basis": "Anito-cel & bispecific trajectories well-tracked", "contributing": ["TL-021", "TL-024"]}, "KBQ-TL-C": {"text": "How is the treatment paradigm moving — SoC, lines, sequencing, setting of care?", "capability": "TL", "cap_name": "Treatment Landscape · Treatment Paradigm", "method": "RET+WCH", "method_name": "Retrieval + watch", "mode": "B+C", "mode_name": "Corpus query + feed monitor", "sources": "NCCN; sequencing & setting-of-care literature", "refreshed": "current to Jun 2026", "confidence": "Medium", "confidence_basis": "Sequencing live but evidence-thin (no order RCT)", "contributing": ["TL-014", "TL-018", "LIT-G07"]}, "KBQ-LIT-M": {"text": "Is any part of the evidence base becoming unreliable — retraction, integrity, causality dispute?", "capability": "LIT", "cap_name": "Literature · Integrity / Quality", "method": "WCH", "method_name": "Watch / feed monitor", "mode": "C", "mode_name": "Watch the structured feed for change", "sources": "Retraction / expression-of-concern feeds; causality-assessment literature", "refreshed": "current to Jun 2026", "confidence": "Low", "confidence_basis": "Single early case; causality still firming", "contributing": ["LIT-110", "LIT-030"]}, "KBQ-REG-C": {"text": "Where is permitted use expanding or constraining — label, REMS, safety language, FU mandates?", "capability": "REG", "cap_name": "Regulatory & Guideline · Label & Post-Market", "method": "WCH", "method_name": "Watch / feed monitor", "mode": "C", "mode_name": "Watch the structured feed for change", "sources": "DailyMed label diffs; FDA safety communications; REMS; ATC certification", "refreshed": "current to Jun 2026", "confidence": "High", "confidence_basis": "Direct from regulatory feeds", "contributing": ["REG-014", "REG-012", "REG-016"]}, "KBQ-PAY-D": {"text": "What barriers stand between the asset and the patient — access, site-of-care, referral?", "capability": "PAY", "cap_name": "Payer & Access · Access Barriers", "method": "RET+WCH", "method_name": "Retrieval + watch", "mode": "B+C", "mode_name": "Corpus query + feed monitor", "sources": "ATC directory; site-of-care policy; referral-pattern data", "refreshed": "current to Jun 2026", "confidence": "Medium", "confidence_basis": "Access mapped; supply-side smeared (seam)", "contributing": ["RWE-013", "RWE-G01", "MFG-001"]}}, "decisions": {"d-supply": {"title": "Resource field toward community/outpatient ATC enablement + earlier referral", "summary": "Supply is the binding constraint. Resource MSL and medical education toward certified-community / outpatient ATC enablement and referral-pathway de-frictioning; use the OS benefit to drive earlier referral so eligible patients reach a slot before progressing on bridging.", "urgency": "urgent", "category": "Field & medical strategy", "status": "Open", "revisit": "Revisit if slot capacity outpaces referral throughput (supply no longer binding), or if community outcomes read materially worse than academic centers.", "themes": ["t-supplybind", "t-community"], "kbq": "KBQ-RWE-C"}, "d-spm": {"title": "Stand up SPM / insertional-mutagenesis as a watched integrity signal", "summary": "Treat the insertional-mutagenesis SPM thread as a first-class WATCHED integrity signal. Pre-define the evidence that would move it from origin/contested to confirmed Compromised, and what that would quarantine (which long-term-safety and efficacy claims depend on the affected evidence).", "urgency": "urgent", "category": "Integrity / risk management", "status": "Open", "revisit": "Revisit on any regulatory safety communication, causality-assessment publication, or registry SPM-rate inflection.", "themes": ["t-spm"], "kbq": "KBQ-LIT-M"}, "d-anito": {"title": "Own “CAR-T-first, earlier-is-better, immune-fitness” to pre-empt anito-cel", "summary": "Anchor on best-in-class depth/durability + OS + one-time treatment-free remission at earlier line, and pre-empt anito-cel by owning the CAR-T-first, earlier-is-better, immune-fitness narrative before its Ph3 reads out.", "urgency": "urgent", "category": "Positioning", "status": "Open", "revisit": "Revisit when anito-cel reads out Ph3 (iMMagine-3), or a head-to-head / real-world comparison publishes.", "themes": ["t-efficacy", "t-anito", "t-carttfirst"], "kbq": "KBQ-LIT-F"}, "d-veintovein": {"title": "Commission community-vs-academic + vein-to-vein attrition RWE study", "summary": "Commission a real-world community-vs-academic outcomes and vein-to-vein attrition study (CIBMTR-linked) with predefined access endpoints, to close the community-outcomes gap and quantify pre-infusion attrition.", "urgency": "action", "category": "Evidence generation", "status": "Open", "revisit": "Revisit when interim community-outcomes data reads out, or a competitor publishes comparable real-world access data first.", "themes": ["t-veintovein", "t-communitygap"], "kbq": "KBQ-RWE-C"}, "d-value": {"title": "Outcome-based contracting on OS / TFR; payer site-of-care engagement", "summary": "Support outcome-based contracting anchored on the OS benefit and treatment-free remission, and engage payers on site-of-care policy to ease operational access friction.", "urgency": "action", "category": "Access & value", "status": "Open", "revisit": "Revisit if a payer imposes restrictive site-of-care policy, or ICER re-evaluates CAR-T value.", "themes": ["t-value"], "kbq": "KBQ-PAY-B"}, "d-sequencing": {"title": "Prioritize sequencing evidence (CAR-T-first vs prior-BCMA penalty)", "summary": "Prioritize generation of sequencing evidence — CAR-T-first vs the prior-BCMA-exposure penalty — and plan a real-world CAR-T-vs-anito-cel comparison once anito-cel is approved.", "urgency": "action", "category": "Evidence generation", "status": "Open", "revisit": "Revisit at iMMagine-3 readout and CARTITUDE-5 / -6 milestones.", "themes": ["t-sequencing", "t-carttfirst"], "kbq": "KBQ-TL-C"}, "d-frontline": {"title": "Advance the frontline / NDMM narrative (CARTITUDE-5 / -6)", "summary": "Build and sequence the frontline / newly-diagnosed narrative as CARTITUDE-5 / -6 mature — the long-term moat that extends the franchise beyond the current line.", "urgency": "action", "category": "Positioning / evidence", "status": "Open", "revisit": "Revisit at CARTITUDE-5 / -6 milestones.", "themes": ["t-frontline", "t-efficacy"], "kbq": "KBQ-LIT-I"}, "d-narrative": {"title": "Field enablement: acute-tox-managed + SPM shared-decision", "summary": "Equip field with “acute toxicity is real, protocolized and lower in earlier line; SPM risk is rare and contextualized against myeloma mortality” and with SPM / shared-decision talking points.", "urgency": "action", "category": "Communications / field", "status": "Open", "revisit": "Revisit if SPM causality firms toward insertional mutagenesis, or patient sentiment turns net-negative on safety.", "themes": ["t-acute", "t-spm"], "kbq": "KBQ-LIT-C"}, "d-compwatch": {"title": "Competitive watch on anito-cel + bispecific encroachment", "summary": "Stand up a competitive-theatre watch on anito-cel (congress share-of-voice, regulatory milestones) and on bispecific late-line encroachment.", "urgency": "watch", "category": "Competitive response", "status": "Armed", "revisit": "Revisit on any anito-cel regulatory / clinical milestone, or a new bispecific approval.", "themes": ["t-anito", "t-commodi"], "kbq": "KBQ-TL-D"}, "d-longhorizon": {"title": "Arm long-term FU registry surveillance (long-horizon)", "summary": "Sustain and expand long-term follow-up registry participation (CIBMTR) and pre-register SPM surveillance analyses on a multi-year cadence — a long-horizon, arm-and-sleep trigger the current engine does not support.", "urgency": "watch", "category": "Evidence generation / planning", "status": "Armed", "revisit": "Revisit at each annual registry milestone (long-horizon).", "themes": ["t-longlatency", "t-spm"], "kbq": "KBQ-REG-C"}, "d-capacity": {"title": "Track slot-capacity vs referral throughput; rebalance when supply unbinds", "summary": "Monitor manufacturing slot capacity (scaling toward 20K) against referral throughput, and rebalance field / evidence priorities when supply stops being the binding constraint.", "urgency": "watch", "category": "Planning / operations", "status": "Armed", "revisit": "Revisit when capacity scaling outpaces referral throughput.", "themes": ["t-supplybind", "t-community"], "kbq": "KBQ-RWE-C"}}, "decision_titles": {"d-supply": "Resource field toward community/outpatient ATC enablement + earlier referral", "d-spm": "Stand up SPM / insertional-mutagenesis as a watched integrity signal", "d-anito": "Own “CAR-T-first, earlier-is-better, immune-fitness” to pre-empt anito-cel", "d-veintovein": "Commission community-vs-academic + vein-to-vein attrition RWE study", "d-value": "Outcome-based contracting on OS / TFR; payer site-of-care engagement", "d-sequencing": "Prioritize sequencing evidence (CAR-T-first vs prior-BCMA penalty)", "d-frontline": "Advance the frontline / NDMM narrative (CARTITUDE-5 / -6)", "d-narrative": "Field enablement: acute-tox-managed + SPM shared-decision", "d-compwatch": "Competitive watch on anito-cel + bispecific encroachment", "d-longhorizon": "Arm long-term FU registry surveillance (long-horizon)", "d-capacity": "Track slot-capacity vs referral throughput; rebalance when supply unbinds"}, "theme_titles": {"t-efficacy": "Best-in-class efficacy at earlier line", "t-value": "OS benefit strengthens the value & access case", "t-carttfirst": "CAR-T-first preference holds among experts", "t-community": "Community / outpatient expansion is the growth lever", "t-frontline": "Frontline trajectory is the long-term moat", "t-acute": "Acute toxicity is managed, improving earlier-line", "t-onetime": "One-time-treatment structural advantage", "t-supplybind": "Supply is the binding constraint, not demand", "t-anito": "Anito-cel's safety edge is the emerging threat", "t-commodi": "BCMA commoditization by bispecifics squeezes late line", "t-veintovein": "Vein-to-vein attrition is an unowned loss channel", "t-sequencing": "Sequencing order is becoming outcome-determining", "t-communitygap": "Community-vs-academic outcomes gap", "t-longlatency": "Multi-year surveillance vs immature data", "t-spm": "SPM / insertional-mutagenesis integrity overhang"}, "gaps": {"TL": {"name": "Treatment Landscape", "fired": 5, "total": 6, "pct": 83, "na": false}, "RWE": {"name": "Real-World Evidence", "fired": 5, "total": 6, "pct": 83, "na": false}, "PAY": {"name": "Payer & Access", "fired": 4, "total": 5, "pct": 80, "na": false}, "CON": {"name": "Congress", "fired": 2, "total": 4, "pct": 50, "na": false}, "LIT": {"name": "Literature", "fired": 7, "total": 15, "pct": 47, "na": false}, "KOL": {"name": "KOL & Stakeholder", "fired": 2, "total": 5, "pct": 40, "na": false}, "REG": {"name": "Regulatory & Guideline", "fired": 2, "total": 5, "pct": 40, "na": false}, "DIG": {"name": "Digital & Social", "fired": 1, "total": 5, "pct": 20, "na": false}}, "movements": [{"date": "Feb 2022", "title": "FDA approval — 5L+ (CARTITUDE-1)", "state": "Strengthening", "capability": "Regulatory & Guideline", "theme": "t-efficacy", "so": "First approval establishes the asset and its deep, durable response profile in late-line myeloma."}, {"date": "Jan 2024", "title": "FDA class secondary-malignancy investigation; boxed warning", "state": "Compromised", "capability": "Regulatory & Guideline", "theme": "t-spm", "so": "A class-wide integrity / safety overhang opens — the origin of the Compromised thread for the whole CAR-T class."}, {"date": "Mar 2024", "title": "ODAC votes 11–0 favorable (earlier line)", "state": "Strengthening", "capability": "Regulatory & Guideline", "theme": "t-efficacy", "so": "Unanimous panel support for ≥1-prior-line use — clears the path to the earlier-line label."}, {"date": "Apr 2024", "title": "FDA earlier-line approval (≥1 prior, len-refractory)", "state": "Strengthening", "capability": "Regulatory & Guideline", "theme": "t-supplybind", "so": "First & only CAR-T at this line — eligibility expands sharply, and supply becomes the binding constraint."}, {"date": "early 2025", "title": "First SPM “almost certainly insertional mutagenesis”", "state": "Compromised", "capability": "Literature", "theme": "t-spm", "so": "A genuine evidence-integrity event: a causality attribution that, if it firms, would reclassify part of the safety base."}, {"date": "Jun 2025", "title": "EHA: anito-cel iMMagine-1 (97% ORR, safety edge)", "state": "Contested", "capability": "Congress", "theme": "t-anito", "so": "A next-gen CAR-T posts comparable efficacy with a cleaner safety claim — the threat to defend."}, {"date": "Oct 2025", "title": "FDA/EC OS-benefit label update; IEC-EC added to Boxed Warning", "state": "Strengthening", "capability": "Regulatory & Guideline", "theme": "t-value", "so": "OS in the label strengthens the value case; simultaneously a new delayed toxicity (IEC-EC) is added — a single event feeding two themes."}, {"date": "Dec 2025", "title": "ASH: 2.5-yr treatment-free remission; earlier-line immune fitness", "state": "Strengthening", "capability": "Congress", "theme": "t-efficacy", "so": "The durability story deepens and supports the earlier-is-better positioning."}, {"date": "2026", "title": "Capacity scaling 10K→20K; CARTITUDE-5 / -6 maturing", "state": "Stable", "capability": "Treatment Landscape", "theme": "t-supplybind", "so": "Supply expansion is the revenue / access driver; frontline trials are the long-term moat."}, {"date": "expected", "title": "Anito-cel Ph3 (iMMagine-3) readout", "state": "Contested", "capability": "Treatment Landscape", "theme": "t-anito", "so": "The competitive catalyst — a ~2-year-out threat that needs a long-horizon watch the current engine lacks."}]};
+
+const drawer=document.getElementById('drawer'), overlay=document.getElementById('drawer-overlay');
+const drawerEyebrow=document.getElementById('drawer-eyebrow'), drawerTitle=document.getElementById('drawer-title'), drawerBody=document.getElementById('drawer-body');
+function open(){drawer.classList.add('open');overlay.classList.add('open');}
+function close(){drawer.classList.remove('open');overlay.classList.remove('open');}
+document.getElementById('drawer-close').addEventListener('click',close);
+overlay.addEventListener('click',close);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+function chipState(state){const c={'Strengthening':'#5AAB60','Strengthening-Thin':'#B49563','Contested':'#E89327','Stable':'#5B92D1','Thin':'#9AA3AC','Compromised':'#8E5BA0'};return `<span class="state-chip" style="background:${c[state]||'#9AA3AC'}">${state}</span>`;}
+function renderConfidence(level){const n={High:3,Medium:2,Low:1}[level]||1;let dots='';for(let i=0;i<3;i++){dots+=`<span class="dot ${i<n?'on':''}"></span>`;}return `<span class="confidence-bar">${dots}</span> <b>${level}</b>`;}
+function renderSignalItem(sid){const sig=DATA.signals[sid];if(!sig){return `<div class="drawer-item">${sid} <span class="sub">catalog signal</span></div>`;}
+ const sc={'active':'#5AAB60','emerging':'#B49563','gap':'#D74F2A','inactive':'#9AA3AC','compromised':'#8E5BA0'};const col=sc[sig.state]||'#9AA3AC';
+ return `<div class="drawer-item rich" onclick="openSignal('${sid}')"><span class="desc">${sig.desc}</span><span class="meta"><span class="sig-state" style="background:${col}">${sig.state}</span><span>${sid}</span><span class="sep">·</span><span>${sig.cap}</span><span class="sep">·</span><span>${sig.family}</span><span class="sep">·</span><span>last ${sig.last_seen}</span><span class="arrow">→</span></span></div>`;}
+function kbqBlock(kid){const k=DATA.kbqs[kid];if(!k)return '';const s=(k.contributing||[]).map(renderSignalItem).join('');
+ return `<div class="drawer-section"><h4>How we know this <span class="meta">${kid}</span></h4><div class="quote">${k.text}</div>
+ <div class="kv"><span class="k">Capability</span><span class="v"><span class="pill">${k.capability}</span> ${k.cap_name}</span></div>
+ <div class="kv"><span class="k">Method</span><span class="v"><span class="pill">${k.method}</span> ${k.method_name}</span></div>
+ <div class="kv"><span class="k">Mining mode</span><span class="v"><span class="pill">Mode ${k.mode}</span> ${k.mode_name}</span></div>
+ <div class="kv"><span class="k">Sources</span><span class="v">${k.sources}</span></div>
+ <div class="kv"><span class="k">Last refreshed</span><span class="v">${k.refreshed}</span></div>
+ <div class="kv"><span class="k">Confidence</span><span class="v">${renderConfidence(k.confidence)} <span style="display:block;margin-top:4px;font-family:'JetBrains Mono';font-size:10px;color:#6B7280">${k.confidence_basis}</span></span></div>
+ <div class="drawer-section" style="margin-top:12px;margin-bottom:0"><h4 style="font-size:10px">Contributing signals <span class="meta">${(k.contributing||[]).length}</span></h4><div class="drawer-list">${s}</div></div></div>`;}
+function openTheme(tid){const t=DATA.themes[tid];if(!t)return;
+ drawerEyebrow.innerHTML=`Theme ${chipState(t.state)} <span style="color:#9AA3AC">· ${tid}</span>`;drawerTitle.textContent=t.title;
+ const decs=(t.decisions||[]).map(d=>`<div class="drawer-item" onclick="openDecision('${d}')" style="cursor:pointer">${DATA.decision_titles[d]||d} <span class="sub">${d}</span></div>`).join('');
+ const sigs=(t.signals||[]).map(renderSignalItem).join('');
+ drawerBody.innerHTML=`<div class="drawer-section"><h4>What it means</h4><p>${t.summary}</p></div>
+ <div class="drawer-section"><h4>Contributing signals <span class="meta">${(t.signals||[]).length}</span></h4><div class="drawer-list">${sigs}</div></div>
+ <div class="drawer-section"><h4>Linked decisions <span class="meta">${(t.decisions||[]).length}</span></h4><div class="drawer-list">${decs}</div></div>${kbqBlock(t.kbq)}`;open();}
+function openDecision(did){const d=DATA.decisions[did];if(!d)return;
+ const uc={urgent:'#D74F2A',action:'#F79138',watch:'#1F7A92',commit:'#5A6470'};const ul={urgent:'Decide now',action:'Action',watch:'Watch',commit:'Committed'};
+ drawerEyebrow.innerHTML=`Decision <span class="state-chip" style="background:${uc[d.urgency]}">${ul[d.urgency]}</span> <span style="color:#9AA3AC">· ${did}</span>`;drawerTitle.textContent=d.title;
+ const th=(d.themes||[]).map(t=>`<div class="drawer-item" onclick="openTheme('${t}')" style="cursor:pointer">${DATA.theme_titles[t]||t} <span class="sub">${t}</span></div>`).join('');
+ const ss=new Set();(d.themes||[]).forEach(t=>{const tt=DATA.themes[t];if(tt)(tt.signals||[]).forEach(s=>ss.add(s));});const sl=Array.from(ss);
+ drawerBody.innerHTML=`<div class="drawer-section"><h4>The ask</h4><p>${d.summary}</p></div>
+ <div class="drawer-section"><h4>Linked themes <span class="meta">${(d.themes||[]).length}</span></h4><div class="drawer-list">${th}</div></div>
+ <div class="drawer-section"><h4>Underlying signals <span class="meta">${sl.length} · via themes</span></h4><div class="drawer-list">${sl.map(renderSignalItem).join('')}</div></div>
+ <div class="drawer-section"><h4>Revisit condition</h4><p>${d.revisit}</p></div>
+ <div class="drawer-section"><h4>Status &amp; category</h4><div class="kv"><span class="k">Category</span><span class="v">${d.category}</span></div><div class="kv"><span class="k">Status</span><span class="v">${d.status}</span></div><div class="kv"><span class="k">Urgency</span><span class="v">${ul[d.urgency]}</span></div></div>${kbqBlock(d.kbq)}`;open();}
+function openGap(code){const g=DATA.gaps[code];if(!g)return;const kbqs=Object.values(DATA.kbqs).filter(k=>k.capability===code);
+ drawerEyebrow.innerHTML=`Capability gap <span style="color:#9AA3AC">· ${code}</span>`;drawerTitle.textContent=g.name;
+ const kh=kbqs.map(k=>`<div class="drawer-item" style="display:block"><div style="font-size:12.5px;font-style:italic;color:#161D24;line-height:1.45;margin-bottom:5px">${k.text}</div><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="sub">${k.id} · Mode ${k.mode} · ${k.method}</span><span class="sub">confidence ${k.confidence}</span></div></div>`).join('');
+ const status=g.pct>=70?'good coverage':(g.pct>=50?'partial coverage':'thin coverage');
+ drawerBody.innerHTML=`<div class="drawer-section"><h4>Probe coverage</h4><p><b>${g.fired} of ${g.total}</b> KBQs in this capability fired during the ADP pressure test — <b>${g.pct}%</b> (${status}).</p></div>
+ <div class="drawer-section"><h4>KBQs in this capability <span class="meta">${kbqs.length} shown</span></h4><div class="drawer-list">${kh||'<div class="drawer-item">No KBQ sample in current build.</div>'}</div></div>`;open();}
+function openMovement(idx){const m=DATA.movements[idx];if(!m)return;
+ drawerEyebrow.innerHTML=`Movement event ${chipState(m.state)} <span style="color:#9AA3AC">· ${m.date}</span>`;drawerTitle.textContent=m.title;
+ drawerBody.innerHTML=`<div class="drawer-section"><h4>So what</h4><p>${m.so}</p></div>
+ <div class="drawer-section"><h4>Linked theme</h4><div class="drawer-list"><div class="drawer-item" onclick="openTheme('${m.theme}')" style="cursor:pointer">${DATA.theme_titles[m.theme]||m.theme} <span class="sub">${m.theme}</span></div></div></div>
+ <div class="drawer-section"><h4>Source capability</h4><div class="kv"><span class="k">Capability</span><span class="v">${m.capability}</span></div><div class="kv"><span class="k">Detected</span><span class="v">${m.date}</span></div><div class="kv"><span class="k">State</span><span class="v">${chipState(m.state)}</span></div></div>`;open();}
+function openWhy(kid,title){drawerEyebrow.innerHTML=`How we know this <span style="color:#9AA3AC">· ${kid}</span>`;drawerTitle.textContent=title||'Source & method';drawerBody.innerHTML=kbqBlock(kid);open();}
+function openSignal(sid){const s=DATA.signals[sid];if(!s)return;
+ const sc={'active':'#5AAB60','emerging':'#B49563','gap':'#D74F2A','inactive':'#9AA3AC','compromised':'#8E5BA0'};const col=sc[s.state]||'#9AA3AC';
+ const lt=Object.entries(DATA.themes).filter(([id,t])=>(t.signals||[]).includes(sid)).map(([id,t])=>({id,title:t.title,state:t.state}));
+ const lk=Object.values(DATA.kbqs).filter(k=>(k.contributing||[]).includes(sid));
+ drawerEyebrow.innerHTML=`Signal <span class="sig-state" style="background:${col}">${s.state}</span> <span style="color:#9AA3AC">· ${sid}</span>`;drawerTitle.textContent=s.desc;
+ const th=lt.length?lt.map(t=>`<div class="drawer-item" onclick="openTheme('${t.id}')" style="cursor:pointer">${t.title} <span class="sub">${t.id} · ${t.state}</span></div>`).join(''):'<div class="drawer-item" style="color:#9AA3AC">No themes reference this signal directly.</div>';
+ const kh=lk.length?lk.map(k=>`<div class="drawer-item" onclick="openWhy('${k.id}','${k.cap_name}')" style="cursor:pointer;display:block"><div style="font-size:12.5px;font-style:italic;color:#161D24;line-height:1.45;margin-bottom:5px">${k.text}</div><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="sub">${k.id} · Mode ${k.mode} · ${k.method}</span><span class="sub">confidence ${k.confidence}</span></div></div>`).join(''):'<div class="drawer-item" style="color:#9AA3AC">No KBQs reference this signal.</div>';
+ drawerBody.innerHTML=`<div class="drawer-section"><h4>What this signal tracks</h4><p>${s.desc}</p></div>
+ <div class="drawer-section"><h4>Detection mechanics</h4><div class="kv"><span class="k">Capability</span><span class="v"><span class="pill">${s.cap}</span></span></div><div class="kv"><span class="k">Detection family</span><span class="v"><span class="pill">${s.family}</span></span></div><div class="kv"><span class="k">Mining mode</span><span class="v"><span class="pill">Mode ${s.mode}</span></span></div><div class="kv"><span class="k">Sources</span><span class="v">${s.sources}</span></div><div class="kv"><span class="k">Last detected</span><span class="v">${s.last_seen}</span></div><div class="kv"><span class="k">State</span><span class="v"><span class="sig-state" style="background:${col}">${s.state}</span></span></div></div>
+ <div class="drawer-section"><h4>Linked themes <span class="meta">${lt.length}</span></h4><div class="drawer-list">${th}</div></div>
+ <div class="drawer-section"><h4>Linked KBQs <span class="meta">${lk.length}</span></h4><div class="drawer-list">${kh}</div></div>`;open();}
+
+function openSeam(which){
+ drawerEyebrow.innerHTML='Architecture seam <span class="state-chip" style="background:#F79138">proposed</span> <span style="color:#9AA3AC">· 9th capability</span>';
+ drawerTitle.textContent='Supply & Delivery Operations';
+ drawerBody.innerHTML=`<div class="drawer-section"><h4>Why this capability is missing</h4><p>CARVYKTI’s binding constraint is its supply chain — apheresis logistics, manufacturing slots, out-of-spec rate, vein-to-vein time, and the certified-treatment-center network. The eight sensing capabilities were built on a small-molecule / biologic mental model in which <b>supply is a solved commodity</b>. For a cell therapy it is the strategic signal, and today it has no native home: it is smeared across RWE-C (utilization), PAY-D (access) and REG-C (REMS).</p></div>
+ <div class="drawer-section"><h4>Proposed detection families</h4>
+  <div class="kv"><span class="k">Apheresis & collection</span><span class="v">site scheduling, collection success, slot booking</span></div>
+  <div class="kv"><span class="k">Manufacturing & release</span><span class="v">success rate, out-of-spec, turnaround, node mix</span></div>
+  <div class="kv"><span class="k">Slot capacity & forecasting</span><span class="v">installed vs demanded slots, geography</span></div>
+  <div class="kv"><span class="k">ATC network & certification</span><span class="v">site count, community vs academic, REMS status</span></div>
+  <div class="kv"><span class="k">Vein-to-vein & attrition</span><span class="v">apheresis→infusion time, pre-infusion drop-off</span></div></div>
+ <div class="drawer-section"><h4>Signals currently homeless</h4><div class="drawer-list">${["MFG-001","RWE-G02","RWE-011"].map(renderSignalItem).join('')}</div></div>
+ <div class="drawer-section"><h4>Recommendation</h4><p>Add a 9th sensing capability — <b>Supply & Delivery Operations</b> — or, lighter-weight, a cross-cutting <b>Operations facet</b> that the utilization / access / burden families inherit. Documented as the headline seam in the pressure-test workbook.</p></div>`;
+ open();
+}
+</script>
+</body>
+</html>

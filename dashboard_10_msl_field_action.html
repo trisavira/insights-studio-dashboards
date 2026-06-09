@@ -1,0 +1,323 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Insights Studio — MSL / Field Action (design reference)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Avira brand */
+  --teal:#1D98B6; --teal-dk:#0C6F8A; --teal-deep:#0A5270;
+  --orange:#F79138; --orange-dk:#D97516;
+
+  /* Status — richer palette */
+  --crit:#DC2626;   --crit-bg:#FEF2F2;
+  --action:#F79138; --action-bg:#FFF3E6;
+  --watch:#1D98B6;  --watch-bg:#E0F5FA;
+  --commit:#6366F1; --commit-bg:#EEF2FF;
+  --success:#16A34A;--success-bg:#DCFCE7;
+  --purple:#9333EA; --purple-bg:#F5F3FF;
+  --amber:#D97706;  --amber-bg:#FFFBEB;
+
+  /* Surfaces */
+  --bg:#F7FAFB; --panel:#FFFFFF; --panel-alt:#F8FAFC;
+  --border:#E2E8F0; --line:#CBD5E1; --hair:#EEF2F6;
+
+  /* Text */
+  --ink:#1A1F24; --ink-muted:#3F4A55; --ink-soft:#62748E; --ink-dim:#9AA3AC;
+
+  /* Signal */
+  --s-strong:#16A34A; --s-contest:#D97706; --s-thin:#9AA3AC;
+  --s-stable:#1D98B6; --s-mixed:#9333EA;
+
+  /* Tokens */
+  --r:12px; --r-sm:6px;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 1px 3px rgba(0,0,0,.06);
+  --shadow-panel:0 1px 3px rgba(0,0,0,.05),0 4px 12px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:'Inter',system-ui,sans-serif;font-size:13.5px;line-height:1.6;
+  -webkit-font-smoothing:antialiased}
+.serif{font-family:'Inter',sans-serif;font-weight:700}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-feature-settings:'tnum' on}
+
+/* === BRAND BAR === */
+.brand{background:#fff;color:var(--ink);padding:12px 28px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:20px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.brand-logo{height:32px;width:auto;display:block;flex-shrink:0}
+.brand-divider{width:1px;height:28px;background:var(--border);flex-shrink:0}
+.brand-left{display:flex;flex-direction:column;gap:3px}
+.brand-studio{
+  font-family:'Inter';font-size:11px;letter-spacing:0.01em;
+  color:#F79138;font-style:italic;font-weight:700;
+  display:inline-flex;align-items:center;
+  background:#FFF3E6;border:1px solid rgba(247,148,29,.2);
+  border-radius:4px;padding:3px 8px;width:fit-content;line-height:1.4;
+}
+.brand-asset{font-family:'Inter';font-weight:700;font-size:17px;letter-spacing:-0.02em;color:var(--ink);line-height:1.2}
+.brand-codes{font-family:'JetBrains Mono';font-size:10px;color:var(--ink-dim);padding:2px 8px;background:var(--hair);border-radius:100px;border:1px solid var(--border);flex-shrink:0}
+.brand-meta{margin-left:auto;display:flex;gap:10px;align-items:center;font-size:11px;color:var(--ink-soft);flex-wrap:wrap;flex-shrink:0}
+.brand-meta b{color:var(--ink);font-weight:600}
+.brand-stage{font-family:'Inter';font-size:10px;padding:3px 10px;background:var(--watch-bg);border:1px solid rgba(29,152,182,.2);border-radius:100px;font-weight:700;letter-spacing:0.06em;color:var(--teal)}
+.brand-posture{font-family:'Inter';font-size:10px;padding:3px 10px;background:var(--action-bg);font-weight:700;letter-spacing:0.04em;color:var(--orange-dk);border-radius:100px;border:1px solid rgba(247,145,56,.25)}
+.brand-link{color:var(--ink-soft);font-size:11px;text-decoration:none;font-weight:500;font-family:'Inter'}
+.brand-link:hover{color:var(--teal)}
+
+/* === KPI STRIP === */
+.kpi{display:grid;grid-template-columns:repeat(5,1fr);background:var(--panel);border-bottom:1px solid var(--border);box-shadow:var(--shadow)}
+.kpi-cell{padding:20px 28px;border-left:1px solid var(--hair)}
+.kpi-cell:first-child{border-left:none}
+.kpi-cell .l{font-family:'Inter';font-size:9.5px;letter-spacing:0.08em;text-transform:uppercase;color:#9DACC1;font-weight:700;margin-bottom:10px}
+.kpi-cell .v{font-family:'Inter';font-size:28px;font-weight:800;color:var(--ink);line-height:1;letter-spacing:-0.02em}
+.kpi-cell .v.crit{color:var(--crit)}
+.kpi-cell .v.action{color:var(--orange-dk)}
+.kpi-cell .v.watch{color:var(--teal)}
+.kpi-cell .n{font-size:11.5px;color:var(--ink-soft);margin-top:8px;line-height:1.5;font-weight:500}
+
+/* === DASHBOARD GRID === */
+main{padding:24px;max-width:1480px;margin:0 auto}
+.dash{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:20px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);display:flex;flex-direction:column;box-shadow:var(--shadow-panel)}
+.panel-h{padding:16px 20px;border-bottom:1px solid var(--hair);display:flex;align-items:center;justify-content:space-between;gap:8px;border-radius:var(--r) var(--r) 0 0}
+.panel-h .t{font-family:'Inter';font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+.panel-h .c{font-family:'Inter';font-size:10px;color:var(--ink-dim);letter-spacing:0.04em}
+.panel-body{padding:20px;flex:1;overflow:auto}
+
+/* spans */
+.span-1{grid-column:span 1}
+.span-2{grid-column:span 2}
+.span-3{grid-column:span 3}
+
+/* === THEME BOARD === */
+.theme-board{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.theme-col{display:flex;flex-direction:column;gap:6px}
+.theme-col-h{font-family:'Inter';font-size:9.5px;letter-spacing:0.06em;text-transform:uppercase;font-weight:700;padding:5px 10px;color:#fff;display:flex;justify-content:space-between;align-items:center;border-radius:var(--r-sm)}
+.theme-chip{background:var(--panel-alt);border:1px solid var(--hair);border-left:3px solid;padding:12px 14px;cursor:pointer;font-size:12px;line-height:1.35;color:var(--ink);transition:background .15s,border-color .15s;position:relative;border-radius:0 var(--r-sm) var(--r-sm) 0}
+.theme-chip:hover{background:#FFFFFF;border-color:var(--teal)}
+.theme-chip .why{position:absolute;top:5px;right:5px}
+
+/* === GAP RADAR === */
+.gap-bars{display:flex;flex-direction:column;gap:14px}
+.gap-row{display:grid;grid-template-columns:80px 1fr 60px 24px;gap:10px;align-items:center;font-size:12px}
+.gap-lbl{font-family:'Inter';font-size:11px;color:var(--ink);font-weight:600;letter-spacing:0.02em}
+.gap-track{height:8px;background:var(--hair);position:relative;cursor:pointer;border-radius:100px;overflow:hidden}
+.gap-track:hover{outline:1px solid var(--teal)}
+.gap-fill{height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:5px;font-family:'Inter';font-size:9px;color:#fff;font-weight:600;letter-spacing:0.04em;border-radius:2px}
+.gap-val{font-family:'JetBrains Mono';font-size:11px;color:var(--ink-soft);font-weight:500;text-align:right}
+
+/* === MOVEMENT === */
+.mv-list{display:flex;flex-direction:column}
+.mv-row{display:grid;grid-template-columns:74px 64px 1fr 24px;gap:8px;padding:12px 0;border-top:1px solid var(--hair);align-items:start;cursor:pointer;position:relative}
+.mv-row:hover{background:var(--panel-alt)}
+.mv-row:first-child{border-top:none;padding-top:2px}
+.mv-date{font-family:'JetBrains Mono';font-size:10.5px;color:var(--ink-soft);font-weight:500}
+.mv-cap{font-family:'Inter';font-size:9px;font-weight:700;padding:2px 8px;color:#fff;text-align:center;letter-spacing:0.04em;height:fit-content;border-radius:100px}
+.mv-title{font-size:12px;color:var(--ink);font-weight:500;line-height:1.35}
+.mv-title .so{font-size:11px;color:var(--ink-soft);margin-top:2px;line-height:1.35;font-weight:400}
+
+/* === DECISIONS REGISTER === */
+.dec-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.dec-card{background:var(--panel-alt);border:1px solid var(--hair);border-left:3px solid;padding:14px 16px;cursor:pointer;font-size:11.5px;line-height:1.35;position:relative;transition:background .15s,border-color .15s;border-radius:0 var(--r-sm) var(--r-sm) 0}
+.dec-card:hover{background:#fff;border-color:var(--teal)}
+.dec-card.urgent{border-left-color:var(--crit)}
+.dec-card.action{border-left-color:var(--orange)}
+.dec-card.watch{border-left-color:var(--watch)}
+.dec-card.commit{border-left-color:var(--commit)}
+.dec-id{font-family:'Inter';font-size:9.5px;color:var(--ink-dim);font-weight:600;letter-spacing:0.04em;margin-bottom:2px}
+.dec-title{color:var(--ink);font-weight:500;font-size:12px;line-height:1.3;padding-right:18px}
+.dec-cat{font-family:'Inter';font-size:9px;font-weight:600;color:var(--ink-soft);margin-top:5px;letter-spacing:0.06em;text-transform:uppercase}
+.dec-card .why{position:absolute;top:6px;right:6px}
+
+/* === ? icon === */
+.why{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;border:1px solid var(--border);background:#fff;color:var(--ink-soft);font-family:'JetBrains Mono';font-size:10px;font-weight:700;cursor:pointer;line-height:1;flex-shrink:0;transition:background .15s,color .15s,border-color .15s}
+.why:hover{background:var(--teal-deep);color:#fff;border-color:var(--teal-deep)}
+.why:focus{outline:2px solid var(--teal);outline-offset:1px}
+
+/* === SUPPLEMENTARY (below dashboard) === */
+.supp-h{display:flex;align-items:baseline;justify-content:space-between;padding:6px 4px;margin-top:10px}
+.supp-h .t{font-family:'Inter';font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft);font-weight:700}
+.supp-h .n{font-family:'Inter';font-size:10.5px;color:var(--ink-dim);letter-spacing:0.04em}
+
+/* state-chip helper */
+.state-chip{font-family:'Inter';font-size:9px;font-weight:700;padding:2px 8px;color:#fff;letter-spacing:0.04em;display:inline-block;line-height:1.35;border-radius:100px}
+
+/* mini stacked bars (KOL sentiment small panel) */
+.kbar{display:grid;grid-template-columns:1fr;gap:5px}
+.kbar-row{display:grid;grid-template-columns:130px 1fr;gap:8px;align-items:center;font-size:11px}
+.kbar-lbl{color:var(--ink);line-height:1.3}
+.kbar-track{display:flex;height:13px;background:var(--hair);overflow:hidden}
+.kbar-seg{height:100%}
+.kbar-seg.pos{background:var(--s-strong)}
+.kbar-seg.split{background:var(--s-contest)}
+.kbar-seg.neg{background:var(--crit)}
+.kbar-seg.neu{background:var(--s-thin)}
+
+/* horizontal compact bars (topic freq) */
+.tbar-row{display:grid;grid-template-columns:170px 1fr 30px;gap:8px;padding:4px 0;align-items:center;font-size:11.5px}
+.tbar-lbl{color:var(--ink);line-height:1.3}
+.tbar-track{height:11px;background:var(--hair)}
+.tbar-fill{height:100%}
+.tbar-val{font-family:'JetBrains Mono';font-size:10px;color:var(--ink-soft);text-align:right;font-weight:500}
+
+/* cost bar mini */
+.ce-mini{display:grid;grid-template-columns:1fr;gap:7px}
+.ce-mrow{display:grid;grid-template-columns:120px 1fr;gap:8px;align-items:center;font-size:11px}
+.ce-mlbl{color:var(--ink);line-height:1.3}
+.ce-mtrack{position:relative;height:14px;background:var(--hair)}
+.ce-mfill{height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:5px;color:#fff;font-family:'JetBrains Mono';font-size:10px;font-weight:600}
+
+/* === DRAWER === */
+.drawer-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(12,71,84,0.45);opacity:0;pointer-events:none;transition:opacity .22s ease;z-index:90}
+.drawer-overlay.open{opacity:1;pointer-events:all}
+.drawer{position:fixed;top:0;right:0;width:480px;max-width:92vw;height:100vh;background:var(--panel);border-left:1px solid var(--border);box-shadow:-12px 0 36px rgba(0,0,0,0.10);transform:translateX(100%);transition:transform .26s ease;z-index:95;display:flex;flex-direction:column;overflow:hidden}
+.drawer.open{transform:translateX(0)}
+.drawer-h{padding:24px 28px 20px;border-bottom:1px solid var(--hair);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-shrink:0}
+.drawer-h-l{flex:1}
+.drawer-eyebrow{font-family:'Inter';font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--teal);font-weight:700;margin-bottom:6px;display:flex;gap:8px;align-items:center}
+.drawer-title{font-family:'Inter';font-size:18px;line-height:1.3;font-weight:700;color:var(--ink);letter-spacing:-0.02em}
+.drawer-close{background:none;border:1px solid var(--border);border-radius:8px;color:var(--ink-soft);width:30px;height:30px;cursor:pointer;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit;transition:background .15s}
+.drawer-close:hover{background:var(--hair);color:var(--ink)}
+.drawer-body{flex:1;overflow-y:auto;padding:24px 28px 40px}
+.drawer-section{margin-bottom:28px}
+.drawer-section h4{font-family:'Inter';font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:#9DACC1;font-weight:700;margin:0 0 8px;display:flex;align-items:baseline;gap:8px}
+.drawer-section h4 .meta{color:var(--ink-dim);font-size:10px;letter-spacing:0.04em;text-transform:none;font-family:'JetBrains Mono';font-weight:500}
+.drawer-section p{margin:0 0 8px;font-size:13.5px;color:var(--ink-muted);line-height:1.55}
+.drawer-section p:last-child{margin-bottom:0}
+.drawer-section .quote{background:var(--watch-bg);border-left:3px solid var(--teal);padding:10px 14px;border-radius:0 8px 8px 0;font-family:'Inter';font-size:13.5px;line-height:1.6;color:var(--ink);font-style:italic;margin-bottom:6px;border:1px solid rgba(29,152,182,.15);border-left:3px solid var(--teal)}
+.drawer-list{display:flex;flex-direction:column;gap:10px}
+.drawer-item{background:var(--panel-alt);border:1px solid var(--hair);padding:8px 12px;border-radius:8px;font-size:12px;color:var(--ink);display:flex;justify-content:space-between;align-items:center;gap:8px;transition:background .15s,border-color .15s}
+.drawer-item .sub{font-size:10.5px;color:var(--ink-soft);font-family:'Inter';letter-spacing:0.04em}
+.kv{display:grid;grid-template-columns:130px 1fr;gap:10px;padding:10px 0;border-top:1px solid var(--hair);font-size:12.5px}
+.kv:first-child{border-top:none;padding-top:0}
+.kv .k{font-family:'Inter';font-size:9.5px;color:#9DACC1;letter-spacing:0.08em;text-transform:uppercase;font-weight:700}
+.kv .v{color:var(--ink);line-height:1.5;font-weight:500}
+.kv .v .pill{font-family:'Inter';font-size:10px;background:var(--hair);color:var(--ink-muted);padding:2px 8px;letter-spacing:0.04em;display:inline-block;margin-right:5px;border-radius:100px}
+.confidence-bar{display:inline-flex;gap:3px;align-items:center;margin-left:5px}
+.confidence-bar .dot{width:7px;height:7px;border-radius:50%;background:var(--hair)}
+.confidence-bar .dot.on{background:var(--s-strong)}
+.confidence-bar .dot.med{background:var(--orange)}
+
+@media (max-width:1100px){
+  .dash{grid-template-columns:1fr 1fr}
+  .span-3{grid-column:span 2}
+  .theme-board{grid-template-columns:repeat(2,1fr)}
+  .dec-grid{grid-template-columns:repeat(2,1fr)}
+  .kpi{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:700px){
+  .dash{grid-template-columns:1fr}
+  .span-1,.span-2,.span-3{grid-column:span 1}
+  .theme-board,.dec-grid{grid-template-columns:1fr}
+  .drawer{width:100%}
+}
+
+.drawer-item.rich{display:block;cursor:pointer;line-height:1.4}
+.drawer-item.rich .desc{color:var(--ink);display:block;margin-bottom:5px;font-weight:600}
+.drawer-item.rich .meta{display:flex;gap:6px;align-items:center;font-family:'Inter';font-size:9.5px;color:var(--ink-soft);letter-spacing:0.04em;flex-wrap:wrap}
+.drawer-item.rich .meta .sep{color:var(--ink-dim)}
+.drawer-item.rich .meta .arrow{margin-left:auto;color:var(--orange);font-weight:600;font-size:13px}
+.drawer-item.rich:hover{background:#fff;border-color:var(--teal)}
+.drawer-item.rich:hover .arrow{color:var(--orange-dk)}
+.sig-state{font-family:'Inter';font-size:9px;padding:2px 8px;color:#fff;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;border-radius:100px}
+
+/* Panel left-accent color variants */
+.panel.teal{border-top:3px solid var(--teal)}
+.panel.orange{border-top:3px solid var(--orange)}
+.panel.purple{border-top:3px solid var(--purple)}
+.panel.green{border-top:3px solid var(--success)}
+.panel.red{border-top:3px solid var(--crit)}
+.panel.indigo{border-top:3px solid var(--commit)}
+.panel.amber{border-top:3px solid var(--amber)}
+
+/* KPI cell color accents */
+.kpi-cell.hi-teal .v{color:var(--teal)}
+.kpi-cell.hi-orange .v{color:var(--orange-dk)}
+.kpi-cell.hi-green .v{color:var(--success)}
+.kpi-cell.hi-red .v{color:var(--crit)}
+.kpi-cell.hi-purple .v{color:var(--purple)}
+</style>
+<style>
+.subnav{position:sticky;top:0;z-index:30;display:flex;gap:0;flex-wrap:wrap;background:#fff;padding:0 20px;border-bottom:1px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.subnav a{font-size:12px;font-family:'Inter';color:var(--ink-soft);text-decoration:none;padding:12px 16px;font-weight:500;letter-spacing:.01em;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s,border-color .15s}
+.subnav a:hover{color:var(--ink);border-bottom-color:var(--border)}
+.subnav a.active,.subnav a:first-child{color:var(--teal);border-bottom-color:var(--teal)}
+.filterbar{display:flex;flex-wrap:wrap;gap:8px;padding:12px 24px;background:var(--panel);border-bottom:1px solid var(--border);align-items:center}
+.fchip{font-size:12px;font-family:'Inter';color:var(--ink-soft);background:var(--panel-alt);border:1px solid var(--border);border-radius:100px;padding:4px 12px;display:flex;gap:6px;align-items:center;font-weight:500;transition:background .15s,border-color .15s}
+.fchip:hover{background:#fff;border-color:var(--teal);color:var(--teal)}
+.fchip b{color:var(--ink);font-weight:600}.fchip .cx{color:var(--ink-dim)}
+.fchip.active{background:var(--watch-bg);border-color:rgba(29,152,182,.3);color:var(--teal);font-weight:600}
+.alertstrip{display:flex;flex-wrap:wrap;gap:8px;padding:11px 22px;background:var(--panel-alt);border-bottom:1px solid var(--border)}
+.alert{font-size:11.5px;padding:6px 11px;border-radius:3px;border:1px solid var(--border);border-left-width:3px;display:flex;gap:7px;align-items:center;background:#fff}
+.alert b{font-weight:600}.alert.crit{border-left-color:var(--crit);background:var(--crit-bg)}.alert.action{border-left-color:var(--orange);background:var(--action-bg)}
+.alert.watch{border-left-color:var(--watch);background:var(--watch-bg)}.alert.new{border-left-color:#6B5BA0;background:#F1EEF8}
+.cv{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:11px;margin-top:8px}.lg{font-size:10px;color:var(--ink-soft);display:flex;align-items:center;gap:5px}
+.dot{width:9px;height:9px;border-radius:2px;display:inline-block}
+.hbars{display:flex;flex-direction:column;gap:8px;margin-top:2px}
+.hb{display:grid;grid-template-columns:1fr 78px 54px;gap:8px;align-items:center;font-size:11.5px}
+.hb-l{color:var(--ink-muted)}.hb-t{height:9px;background:var(--hair);border-radius:2px;overflow:hidden}
+.hb-f{display:block;height:100%}.hb-v{font-family:'JetBrains Mono';font-size:10.5px;color:var(--ink-soft);text-align:right;font-weight:600}
+.h2h{display:flex;flex-direction:column;gap:9px;margin-top:2px}
+.h2h-row{font-size:11.5px}.h2h-c{color:var(--ink-muted);display:block;margin-bottom:3px}
+.h2h-bars{display:flex;flex-direction:column;gap:3px}.h2h-b{height:7px;border-radius:2px}
+.statrow{display:flex;gap:18px;flex-wrap:wrap;padding:6px 0}.stat{display:flex;flex-direction:column}.stat .sv{font-size:22px;font-weight:700;line-height:1}.stat .sl{font-size:10px;color:var(--ink-soft);margin-top:3px}
+.flow{display:flex;align-items:center;gap:2px;margin-top:4px}
+.flow-box{flex:1;text-align:center;background:var(--panel-alt);border:1px solid var(--border);border-radius:4px;padding:10px 3px}
+.flow-n{font-size:20px;font-weight:700;color:var(--ink)}.flow-l{font-size:9px;color:var(--ink-soft);margin-top:2px}
+.flow-arrow{color:var(--ink-dim);font-size:15px;flex:0 0 auto}
+.hm{width:100%;border-collapse:collapse;font-size:10px;margin-top:2px}
+.hm th{font-size:9px;color:var(--ink-soft);font-weight:600;padding:4px 3px;text-align:center}
+.hm-rl{font-size:10.5px;color:var(--ink-muted);text-align:right;padding:4px 8px 4px 0;white-space:nowrap}
+.hm-cell{text-align:center;font-family:'Inter';font-size:10px;font-weight:700;padding:8px 2px;border:2px solid #fff;border-radius:2px}
+.tbl{width:100%;border-collapse:collapse;font-size:11px}
+.tbl th{text-align:left;color:var(--ink-soft);font-weight:600;font-size:9.5px;text-transform:uppercase;letter-spacing:.04em;padding:4px 6px;border-bottom:1px solid var(--border)}
+.tbl td{padding:6px;border-bottom:1px dotted var(--hair);color:var(--ink-muted);vertical-align:top}.tbl td b{color:var(--ink)}
+.pill{font-size:9px;font-family:'JetBrains Mono';padding:2px 7px;border-radius:10px;color:#fff;font-weight:600;white-space:nowrap}
+.srctag{font-size:8.5px;font-family:'JetBrains Mono';padding:2px 6px;border-radius:3px;color:#fff;font-weight:600;white-space:nowrap}
+.list{display:flex;flex-direction:column}
+.list-row{padding:7px 0;border-top:1px dotted var(--hair);font-size:11.5px;color:var(--ink-muted);display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.list-row:first-child{border-top:none}.list-n{font-family:'Inter';font-weight:700;font-size:10px}
+.band{display:flex;align-items:baseline;gap:12px;padding:16px 22px 4px;scroll-margin-top:42px}
+.band-l{font-size:13px;font-weight:700;color:var(--teal-dk);text-transform:uppercase;letter-spacing:.05em}.band-s{font-size:11px;color:var(--ink-soft)}
+.mockflag{background:#FFF4E6;border:1px solid #F4C98A;border-left:3px solid var(--orange);padding:8px 14px;font-size:11.5px;color:#7A4A12;display:flex;gap:9px;align-items:center}
+.mockflag .ic{font-family:'Inter';font-size:8.5px;font-weight:700;letter-spacing:.06em;background:var(--orange);color:#fff;padding:2px 7px}
+.brand-stage.act{background:#2F8F6B;border-color:#4FA888}
+.bn-wrap{margin:18px 22px 34px}.bn-title{font-family:'Inter';font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal-deep);font-weight:700;margin:14px 0 8px}
+table.bn{width:100%;border-collapse:collapse;font-size:10.5px}
+table.bn th{background:var(--teal);color:#fff;text-align:left;padding:6px 8px;font-weight:600;border:1px solid #fff}
+table.bn td{padding:6px 8px;border:1px solid var(--border);vertical-align:top;color:var(--ink-muted)}
+table.bn tr:nth-child(even) td{background:var(--panel-alt)}table.bn td b{color:var(--ink)}
+.panel-foot{font-size:10px;color:var(--ink-soft);padding:0 14px 10px;font-family:'JetBrains Mono'}
+</style>
+<header class="brand">
+ <a href="index.html"><img src="../Avira Logo.svg" class="brand-logo" alt="Avira Digital"></a>
+ <span class="brand-divider"></span>
+ <div class="brand-left">
+  <span class="brand-studio">Insights Studio</span>
+  <span class="brand-asset">MSL Field Action</span>
+ </div>
+ <span class="brand-codes">MSLops · territory · plans · activity · outcomes</span>
+</header>
+<div class="panel span-1"><div class="panel-h"><span class="t">Actions by source</span><span class="c">where the work originates</span></div><div class="panel-body"><svg viewBox="0 0 180 170" class="cv"><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#1D98B6" stroke-width="22" stroke-dasharray="90.01 261.85" stroke-dashoffset="0.00" transform="rotate(-90 90.0 81.0)"/><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#5B6BA8" stroke-width="22" stroke-dasharray="73.64 278.21" stroke-dashoffset="-90.01" transform="rotate(-90 90.0 81.0)"/><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#0F687D" stroke-width="22" stroke-dasharray="57.28 294.58" stroke-dashoffset="-163.66" transform="rotate(-90 90.0 81.0)"/><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#B5762A" stroke-width="22" stroke-dasharray="49.10 302.76" stroke-dashoffset="-220.93" transform="rotate(-90 90.0 81.0)"/><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#5AAB60" stroke-width="22" stroke-dasharray="45.01 306.85" stroke-dashoffset="-270.03" transform="rotate(-90 90.0 81.0)"/><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#2F8F6B" stroke-width="22" stroke-dasharray="36.82 315.04" stroke-dashoffset="-315.04" transform="rotate(-90 90.0 81.0)"/><text x="90.0" y="80.0" font-size="20" font-weight="700" fill="#161D24" text-anchor="middle">86</text><text x="90.0" y="96.0" font-size="9" fill="#6B7280" text-anchor="middle">open</text></svg><div class="legend"><span class="lg"><span class="dot" style="background:#1D98B6"></span>#3 KOL gaps</span><span class="lg"><span class="dot" style="background:#5B6BA8"></span>#4 FME / coaching</span><span class="lg"><span class="dot" style="background:#0F687D"></span>#5 Evidence delivery</span><span class="lg"><span class="dot" style="background:#B5762A"></span>#6 Study / site</span><span class="lg"><span class="dot" style="background:#5AAB60"></span>#7 Launch readiness</span><span class="lg"><span class="dot" style="background:#2F8F6B"></span>#9 Decision revisits</span></div></div></div></div><div class="dash"><div class="panel span-1"><div class="panel-h"><span class="t">By priority</span><span class="c">urgency mix</span></div><div class="panel-body"><svg viewBox="0 0 180 170" class="cv"><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#D74F2A" stroke-width="22" stroke-dasharray="114.56 237.30" stroke-dashoffset="0.00" transform="rotate(-90 90.0 81.0)"/><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#E89327" stroke-width="22" stroke-dasharray="155.47 196.39" stroke-dashoffset="-114.56" transform="rotate(-90 90.0 81.0)"/><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#9AA3AC" stroke-width="22" stroke-dasharray="81.83 270.03" stroke-dashoffset="-270.03" transform="rotate(-90 90.0 81.0)"/><text x="90.0" y="80.0" font-size="20" font-weight="700" fill="#161D24" text-anchor="middle">28</text><text x="90.0" y="96.0" font-size="9" fill="#6B7280" text-anchor="middle">high</text></svg><div class="legend"><span class="lg"><span class="dot" style="background:#D74F2A"></span>High</span><span class="lg"><span class="dot" style="background:#E89327"></span>Medium</span><span class="lg"><span class="dot" style="background:#9AA3AC"></span>Low</span></div></div></div><div class="panel span-1"><div class="panel-h"><span class="t">Action aging</span><span class="c">time open</span></div><div class="panel-body"><div class="hbars"><div class="hb"><span class="hb-l">0–7 days</span><span class="hb-t"><span class="hb-f" style="width:100.0%;background:#5B92D1"></span></span><span class="hb-v">40</span></div><div class="hb"><span class="hb-l">8–14 days</span><span class="hb-t"><span class="hb-f" style="width:65.0%;background:#5B92D1"></span></span><span class="hb-v">26</span></div><div class="hb"><span class="hb-l">15–30 days</span><span class="hb-t"><span class="hb-f" style="width:30.0%;background:#5B92D1"></span></span><span class="hb-v">12</span></div><div class="hb"><span class="hb-l">30+ days (overdue)</span><span class="hb-t"><span class="hb-f" style="width:20.0%;background:#5B92D1"></span></span><span class="hb-v">8</span></div></div></div><div class="panel-foot">8 actions are 30+ days old — overdue, need escalation</div></div><div class="panel span-1"><div class="panel-h"><span class="t">Queue summary</span><span class="c">headline</span></div><div class="panel-body"><div style='padding-top:4px'><div class="statrow"><div class="stat"><span class="sv" style="color:#1D98B6">86</span><span class="sl">Open actions</span></div><div class="stat"><span class="sv" style="color:#D74F2A">11</span><span class="sl">Past-due</span></div><div class="stat"><span class="sv" style="color:#5AAB60">64</span><span class="sl">Completed · MTD</span></div><div class="stat"><span class="sv" style="color:#5B92D1">34</span><span class="sl">MSLs active</span></div></div></div></div></div></div><div class="band" id="coverage"><span class="band-l">2 · Territory &amp; coverage</span><span class="band-s">are we reaching the right HCPs, everywhere</span></div><div class="dash"><div class="panel span-1"><div class="panel-h"><span class="t">Coverage by region</span><span class="c">% of target HCPs engaged</span></div><div class="panel-body"><div class="hbars"><div class="hb"><span class="hb-l">Northeast</span><span class="hb-t"><span class="hb-f" style="width:88%;background:#5AAB60"></span></span><span class="hb-v">88%</span></div><div class="hb"><span class="hb-l">EU</span><span class="hb-t"><span class="hb-f" style="width:82%;background:#5AAB60"></span></span><span class="hb-v">82%</span></div><div class="hb"><span class="hb-l">Southeast</span><span class="hb-t"><span class="hb-f" style="width:78%;background:#E89327"></span></span><span class="hb-v">78%</span></div><div class="hb"><span class="hb-l">Midwest</span><span class="hb-t"><span class="hb-f" style="width:71%;background:#E89327"></span></span><span class="hb-v">71%</span></div><div class="hb"><span class="hb-l">West</span><span class="hb-t"><span class="hb-f" style="width:64%;background:#D74F2A"></span></span><span class="hb-v">64%</span></div></div></div><div class="panel-foot">West lagging at 64% — the priority coverage gap</div></div><div class="panel span-2"><div class="panel-h"><span class="t">Coverage heatmap</span><span class="c">region × tier · % covered</span></div><div class="panel-body"><table class="hm"><tr><th></th><th class="hm-ch">Tier 1</th><th class="hm-ch">Tier 2</th><th class="hm-ch">Tier 3</th></tr><tr><td class="hm-rl">Northeast</td><td class="hm-cell" style="background:rgba(47,143,107,0.92);color:#fff">92</td><td class="hm-cell" style="background:rgba(47,143,107,0.84);color:#fff">84</td><td class="hm-cell" style="background:rgba(47,143,107,0.70);color:#fff">70</td></tr><tr><td class="hm-rl">West</td><td class="hm-cell" style="background:rgba(47,143,107,0.78);color:#fff">78</td><td class="hm-cell" style="background:rgba(47,143,107,0.60);color:#fff">60</td><td class="hm-cell" style="background:rgba(47,143,107,0.42);color:#3F4A55">42</td></tr><tr><td class="hm-rl">Southeast</td><td class="hm-cell" style="background:rgba(47,143,107,0.85);color:#fff">85</td><td class="hm-cell" style="background:rgba(47,143,107,0.76);color:#fff">76</td><td class="hm-cell" style="background:rgba(47,143,107,0.55);color:#3F4A55">55</td></tr><tr><td class="hm-rl">Midwest</td><td class="hm-cell" style="background:rgba(47,143,107,0.80);color:#fff">80</td><td class="hm-cell" style="background:rgba(47,143,107,0.68);color:#fff">68</td><td class="hm-cell" style="background:rgba(47,143,107,0.50);color:#3F4A55">50</td></tr><tr><td class="hm-rl">EU</td><td class="hm-cell" style="background:rgba(47,143,107,0.88);color:#fff">88</td><td class="hm-cell" style="background:rgba(47,143,107,0.80);color:#fff">80</td><td class="hm-cell" style="background:rgba(47,143,107,0.60);color:#fff">60</td></tr></table></div><div class="panel-foot">Tier-1 well covered everywhere; West &amp; Midwest thin at Tier-2/3</div></div></div><div class="dash"><div class="panel span-1"><div class="panel-h"><span class="t">Coverage gaps</span><span class="c">under-covered segments</span></div><div class="panel-body"><div class="list"><div class="list-row"><span><b>West · Tier-2</b></span><span style="font-size:10px;color:#E89327;font-weight:600">60% covered</span></div><div class="list-row"><span><b>West · Tier-3</b></span><span style="font-size:10px;color:#D74F2A;font-weight:600">42% — priority gap</span></div><div class="list-row"><span><b>Midwest · Tier-3</b></span><span style="font-size:10px;color:#E89327;font-weight:600">50% covered</span></div></div></div></div><div class="panel span-1"><div class="panel-h"><span class="t">White-space accounts</span><span class="c">uncovered · assign</span></div><div class="panel-body"><div class="list"><div class="list-row"><span><b>3 high-influence accounts · West</b></span><span style="font-size:10px;color:var(--ink-soft)">uncovered — assign MSL</span></div><div class="list-row"><span><b>2 academic centres · Midwest</b></span><span style="font-size:10px;color:var(--ink-soft)">partial coverage</span></div><div class="list-row"><span><b>ADP-relevant geriatric psych</b></span><span style="font-size:10px;color:var(--ink-soft)">new segment for ADP</span></div></div></div></div><div class="panel span-1"><div class="panel-h"><span class="t">Coverage trend</span><span class="c">% target over time</span></div><div class="panel-body"><svg viewBox="0 0 560 150" class="cv"><polyline points="24.0,126.0 126.4,92.0 228.8,69.3 331.2,58.0 433.6,35.3 536.0,24.0" fill="none" stroke="#5AAB60" stroke-width="2.2"/><circle cx="24.0" cy="126.0" r="2.4" fill="#5AAB60"/><circle cx="126.4" cy="92.0" r="2.4" fill="#5AAB60"/><circle cx="228.8" cy="69.3" r="2.4" fill="#5AAB60"/><circle cx="331.2" cy="58.0" r="2.4" fill="#5AAB60"/><circle cx="433.6" cy="35.3" r="2.4" fill="#5AAB60"/><circle cx="536.0" cy="24.0" r="2.4" fill="#5AAB60"/><text x="24.0" y="144" font-size="8" fill="#9AA3AC" text-anchor="middle">Dec</text><text x="126.4" y="144" font-size="8" fill="#9AA3AC" text-anchor="middle">Jan</text><text x="228.8" y="144" font-size="8" fill="#9AA3AC" text-anchor="middle">Feb</text><text x="331.2" y="144" font-size="8" fill="#9AA3AC" text-anchor="middle">Mar</text><text x="433.6" y="144" font-size="8" fill="#9AA3AC" text-anchor="middle">Apr</text><text x="536.0" y="144" font-size="8" fill="#9AA3AC" text-anchor="middle">May</text></svg></div></div></div><div class="band" id="activity"><span class="band-l">3 · MSL activity &amp; productivity</span><span class="band-s">the field engine</span></div><div class="dash"><div class="panel span-1"><div class="panel-h"><span class="t">Interaction volume</span><span class="c">by team</span></div><div class="panel-body"><div class="hbars"><div class="hb"><span class="hb-l">Northeast</span><span class="hb-t"><span class="hb-f" style="width:100.0%;background:#1D98B6"></span></span><span class="hb-v">720</span></div><div class="hb"><span class="hb-l">West</span><span class="hb-t"><span class="hb-f" style="width:83.3%;background:#1D98B6"></span></span><span class="hb-v">600</span></div><div class="hb"><span class="hb-l">Southeast</span><span class="hb-t"><span class="hb-f" style="width:75.0%;background:#1D98B6"></span></span><span class="hb-v">540</span></div><div class="hb"><span class="hb-l">Midwest</span><span class="hb-t"><span class="hb-f" style="width:66.7%;background:#1D98B6"></span></span><span class="hb-v">480</span></div><div class="hb"><span class="hb-l">EU</span><span class="hb-t"><span class="hb-f" style="width:41.7%;background:#9AA3AC"></span></span><span class="hb-v">300</span></div></div></div></div><div class="panel span-1"><div class="panel-h"><span class="t">Activity type</span><span class="c">engagement mix</span></div><div class="panel-body"><svg viewBox="0 0 180 170" class="cv"><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#0C4754" stroke-width="22" stroke-dasharray="204.08 147.78" stroke-dashoffset="0.00" transform="rotate(-90 90.0 81.0)"/><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#1D98B6" stroke-width="22" stroke-dasharray="63.33 288.52" stroke-dashoffset="-204.08" transform="rotate(-90 90.0 81.0)"/><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#5B92D1" stroke-width="22" stroke-dasharray="49.26 302.60" stroke-dashoffset="-267.41" transform="rotate(-90 90.0 81.0)"/><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#9AA3AC" stroke-width="22" stroke-dasharray="35.19 316.67" stroke-dashoffset="-316.67" transform="rotate(-90 90.0 81.0)"/><text x="90.0" y="80.0" font-size="20" font-weight="700" fill="#161D24" text-anchor="middle">58%</text><text x="90.0" y="96.0" font-size="9" fill="#6B7280" text-anchor="middle">1:1</text></svg><div class="legend"><span class="lg"><span class="dot" style="background:#0C4754"></span>1:1 scientific exchange</span><span class="lg"><span class="dot" style="background:#1D98B6"></span>Group / advisory</span><span class="lg"><span class="dot" style="background:#5B92D1"></span>Virtual</span><span class="lg"><span class="dot" style="background:#9AA3AC"></span>Congress</span></div></div></div><div class="panel span-1"><div class="panel-h"><span class="t">Plan attainment</span><span class="c">on-plan execution</span></div><div class="panel-body"><svg viewBox="0 0 180 170" class="cv"><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#5AAB60" stroke-width="22" stroke-dasharray="274.45 77.41" stroke-dashoffset="0.00" transform="rotate(-90 90.0 81.0)"/><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#9AA3AC" stroke-width="22" stroke-dasharray="77.41 274.45" stroke-dashoffset="-274.45" transform="rotate(-90 90.0 81.0)"/><text x="90.0" y="80.0" font-size="20" font-weight="700" fill="#161D24" text-anchor="middle">78%</text><text x="90.0" y="96.0" font-size="9" fill="#6B7280" text-anchor="middle">on-plan</text></svg></div></div></div><div class="dash"><div class="panel span-1"><div class="panel-h"><span class="t">Productivity</span><span class="c">interactions per MSL</span></div><div class="panel-body"><div class="hbars"><div class="hb"><span class="hb-l">Northeast</span><span class="hb-t"><span class="hb-f" style="width:100.0%;background:#1D98B6"></span></span><span class="hb-v">62</span></div><div class="hb"><span class="hb-l">EU</span><span class="hb-t"><span class="hb-f" style="width:93.5%;background:#5B92D1"></span></span><span class="hb-v">58</span></div><div class="hb"><span class="hb-l">Southeast</span><span class="hb-t"><span class="hb-f" style="width:87.1%;background:#5B92D1"></span></span><span class="hb-v">54</span></div><div class="hb"><span class="hb-l">Midwest</span><span class="hb-t"><span class="hb-f" style="width:77.4%;background:#9AA3AC"></span></span><span class="hb-v">48</span></div><div class="hb"><span class="hb-l">West</span><span class="hb-t"><span class="hb-f" style="width:71.0%;background:#E89327"></span></span><span class="hb-v">44</span></div></div></div></div><div class="panel span-1"><div class="panel-h"><span class="t">Capacity / workload</span><span class="c">MSL load</span></div><div class="panel-body"><div class="list"><div class="list-row"><span><b>MSL-NE-01</b></span><span style="font-size:10px;color:#D74F2A;font-weight:600">overloaded · 118%</span></div><div class="list-row"><span><b>MSL-W-02</b></span><span style="font-size:10px;color:#E89327;font-weight:600">at capacity · 102%</span></div><div class="list-row"><span><b>MSL-MW-03</b></span><span style="font-size:10px;color:#5AAB60;font-weight:600">headroom · 84%</span></div></div></div></div><div class="panel span-1"><div class="panel-h"><span class="t">Top performers</span><span class="c">recognise &amp; learn from</span></div><div class="panel-body"><div class="list"><div class="list-row"><span><b>MSL-NE-01</b></span><span style="font-size:10px;color:var(--ink-soft)">NPSE 8.8 · 142 interactions</span></div><div class="list-row"><span><b>MSL-EU-02</b></span><span style="font-size:10px;color:var(--ink-soft)">NPSE 8.6 · advisory lead</span></div><div class="list-row"><span><b>MSL-SE-01</b></span><span style="font-size:10px;color:var(--ink-soft)">NPSE 8.4 · insight capture</span></div></div></div></div></div><div class="band" id="engagement"><span class="band-l">4 · Engagement execution</span><span class="band-s">executing the engagement plan (from #3)</span></div><div class="dash"><div class="panel span-2"><div class="panel-h"><span class="t">KOL engagement vs plan</span><span class="c">planned vs actual · by tier</span></div><div class="panel-body"><div class="h2h"><div class="h2h-row"><span class="h2h-c">Tier 1</span><span class="h2h-bars"><span class="h2h-b" style="width:90%;background:#9AA3AC"></span><span class="h2h-b" style="width:84%;background:#1D98B6"></span></span></div><div class="h2h-row"><span class="h2h-c">Tier 2</span><span class="h2h-bars"><span class="h2h-b" style="width:70%;background:#9AA3AC"></span><span class="h2h-b" style="width:58%;background:#1D98B6"></span></span></div><div class="h2h-row"><span class="h2h-c">Tier 3</span><span class="h2h-bars"><span class="h2h-b" style="width:40%;background:#9AA3AC"></span><span class="h2h-b" style="width:31%;background:#1D98B6"></span></span></div></div><div class="legend" style="margin-top:6px"><span class="lg"><span class="dot" style="background:#9AA3AC"></span>Planned</span><span class="lg"><span class="dot" style="background:#1D98B6"></span>Actual</span></div></div><div class="panel-foot">execution gap widens at lower tiers — Tier-3 actual 31% vs 40% planned</div></div><div class="panel span-1"><div class="panel-h"><span class="t">Engagement gaps closing</span><span class="c">#3 gaps worked</span></div><div class="panel-body"><svg viewBox="0 0 180 170" class="cv"><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#5AAB60" stroke-width="22" stroke-dasharray="223.91 127.95" stroke-dashoffset="0.00" transform="rotate(-90 90.0 81.0)"/><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#E89327" stroke-width="22" stroke-dasharray="127.95 223.91" stroke-dashoffset="-223.91" transform="rotate(-90 90.0 81.0)"/><text x="90.0" y="80.0" font-size="20" font-weight="700" fill="#161D24" text-anchor="middle">14/22</text><text x="90.0" y="96.0" font-size="9" fill="#6B7280" text-anchor="middle">closed</text></svg><div class="legend"><span class="lg"><span class="dot" style="background:#5AAB60"></span>Closed</span><span class="lg"><span class="dot" style="background:#E89327"></span>Open</span></div></div></div></div><div class="dash"><div class="panel span-1"><div class="panel-h"><span class="t">NPSE by team</span><span class="c">engagement quality · /10</span></div><div class="panel-body"><div class="hbars"><div class="hb"><span class="hb-l">Northeast</span><span class="hb-t"><span class="hb-f" style="width:84.0%;background:#5AAB60"></span></span><span class="hb-v">8.4</span></div><div class="hb"><span class="hb-l">EU</span><span class="hb-t"><span class="hb-f" style="width:82.0%;background:#5AAB60"></span></span><span class="hb-v">8.2</span></div><div class="hb"><span class="hb-l">Southeast</span><span class="hb-t"><span class="hb-f" style="width:78.0%;background:#5AAB60"></span></span><span class="hb-v">7.8</span></div><div class="hb"><span class="hb-l">Midwest</span><span class="hb-t"><span class="hb-f" style="width:75.0%;background:#5AAB60"></span></span><span class="hb-v">7.5</span></div><div class="hb"><span class="hb-l">West</span><span class="hb-t"><span class="hb-f" style="width:74.0%;background:#5AAB60"></span></span><span class="hb-v">7.4</span></div></div></div></div><div class="panel span-1"><div class="panel-h"><span class="t">Next-best-action</span><span class="c">recommended engagements</span></div><div class="panel-body"><div class="list"><div class="list-row"><span><b>Dr. Chen — Tier-1, unengaged</b></span><span style="font-size:10px;color:var(--ink-soft)">scientific exchange · maintenance</span></div><div class="list-row"><span><b>@CNS_trials — high digital reach</b></span><span style="font-size:10px;color:var(--ink-soft)">digital-appropriate engagement</span></div><div class="list-row"><span><b>Dr. Okafor — GI concern</b></span><span style="font-size:10px;color:var(--ink-soft)">tolerability evidence delivery</span></div></div></div></div><div class="panel span-1"><div class="panel-h"><span class="t">Cadence vs target</span><span class="c">% of HCPs on cadence</span></div><div class="panel-body"><div class="hbars"><div class="hb"><span class="hb-l">Tier 1 — q4wk</span><span class="hb-t"><span class="hb-f" style="width:92%;background:#5AAB60"></span></span><span class="hb-v">92%</span></div><div class="hb"><span class="hb-l">Tier 2 — q8wk</span><span class="hb-t"><span class="hb-f" style="width:71%;background:#E89327"></span></span><span class="hb-v">71%</span></div><div class="hb"><span class="hb-l">Tier 3 — q12wk</span><span class="hb-t"><span class="hb-f" style="width:54%;background:#D74F2A"></span></span><span class="hb-v">54%</span></div></div></div></div></div><div class="band" id="insight"><span class="band-l">5 · Insight capture</span><span class="band-s">field intelligence flowing back up the loop → #4</span></div><div class="dash"><div class="panel span-2"><div class="panel-h"><span class="t">Insights captured</span><span class="c">monthly · → FME (#4)</span></div><div class="panel-body"><svg viewBox="0 0 560 150" class="cv"><polyline points="24.0,126.0 126.4,99.6 228.8,69.3 331.2,54.2 433.6,39.1 536.0,24.0" fill="none" stroke="#2F8F6B" stroke-width="2.2"/><circle cx="24.0" cy="126.0" r="2.4" fill="#2F8F6B"/><circle cx="126.4" cy="99.6" r="2.4" fill="#2F8F6B"/><circle cx="228.8" cy="69.3" r="2.4" fill="#2F8F6B"/><circle cx="331.2" cy="54.2" r="2.4" fill="#2F8F6B"/><circle cx="433.6" cy="39.1" r="2.4" fill="#2F8F6B"/><circle cx="536.0" cy="24.0" r="2.4" fill="#2F8F6B"/><text x="24.0" y="144" font-size="8" fill="#9AA3AC" text-anchor="middle">Dec</text><text x="126.4" y="144" font-size="8" fill="#9AA3AC" text-anchor="middle">Jan</text><text x="228.8" y="144" font-size="8" fill="#9AA3AC" text-anchor="middle">Feb</text><text x="331.2" y="144" font-size="8" fill="#9AA3AC" text-anchor="middle">Mar</text><text x="433.6" y="144" font-size="8" fill="#9AA3AC" text-anchor="middle">Apr</text><text x="536.0" y="144" font-size="8" fill="#9AA3AC" text-anchor="middle">May</text></svg></div><div class="panel-foot">142 captured MTD, up 18% — the field is the largest insight source</div></div><div class="panel span-1"><div class="panel-h"><span class="t">Capture by team</span><span class="c">insight volume</span></div><div class="panel-body"><div class="hbars"><div class="hb"><span class="hb-l">Northeast</span><span class="hb-t"><span class="hb-f" style="width:100.0%;background:#1D98B6"></span></span><span class="hb-v">38</span></div><div class="hb"><span class="hb-l">West</span><span class="hb-t"><span class="hb-f" style="width:81.6%;background:#5B92D1"></span></span><span class="hb-v">31</span></div><div class="hb"><span class="hb-l">Southeast</span><span class="hb-t"><span class="hb-f" style="width:73.7%;background:#5B92D1"></span></span><span class="hb-v">28</span></div><div class="hb"><span class="hb-l">Midwest</span><span class="hb-t"><span class="hb-f" style="width:68.4%;background:#9AA3AC"></span></span><span class="hb-v">26</span></div><div class="hb"><span class="hb-l">EU</span><span class="hb-t"><span class="hb-f" style="width:50.0%;background:#9AA3AC"></span></span><span class="hb-v">19</span></div></div></div></div></div><div class="dash"><div class="panel span-2"><div class="panel-h"><span class="t">Insight → action conversion</span><span class="c">captured → triaged → actioned → closed</span></div><div class="panel-body"><div class="flow"><div class="flow-box" style="border-top:3px solid #1D98B6"><div class="flow-n">142</div><div class="flow-l">Captured</div></div><span class="flow-arrow">›</span><div class="flow-box" style="border-top:3px solid #5B92D1"><div class="flow-n">118</div><div class="flow-l">Triaged</div></div><span class="flow-arrow">›</span><div class="flow-box" style="border-top:3px solid #6B5BA8"><div class="flow-n">76</div><div class="flow-l">Actioned</div></div><span class="flow-arrow">›</span><div class="flow-box" style="border-top:3px solid #5AAB60"><div class="flow-n">52</div><div class="flow-l">Closed</div></div></div></div><div class="panel-foot">52 of 142 fully closed; the loop from field insight to resolved action</div></div><div class="panel span-1"><div class="panel-h"><span class="t">Top insight themes</span><span class="c">what the field is hearing</span></div><div class="panel-body"><div class="list"><div class="list-row"><span>GI tolerability in practice</span></div><div class="list-row"><span>Maintenance / relapse questions</span></div><div class="list-row"><span>Access / prior-auth friction</span></div><div class="list-row"><span>Switching from clozapine</span></div></div></div></div></div><div class="band" id="content"><span class="band-l">6 · Content &amp; evidence delivery</span><span class="band-s">getting the science into the field</span></div><div class="dash"><div class="panel span-1"><div class="panel-h"><span class="t">Content delivered</span><span class="c">by type</span></div><div class="panel-body"><div class="hbars"><div class="hb"><span class="hb-l">Core slide decks</span><span class="hb-t"><span class="hb-f" style="width:100.0%;background:#1D98B6"></span></span><span class="hb-v">420</span></div><div class="hb"><span class="hb-l">Reprints / publications</span><span class="hb-t"><span class="hb-f" style="width:73.8%;background:#5B92D1"></span></span><span class="hb-v">310</span></div><div class="hb"><span class="hb-l">Disease-state education</span><span class="hb-t"><span class="hb-f" style="width:57.1%;background:#6B5BA8"></span></span><span class="hb-v">240</span></div><div class="hb"><span class="hb-l">FAQ / objection handlers</span><span class="hb-t"><span class="hb-f" style="width:42.9%;background:#9AA3AC"></span></span><span class="hb-v">180</span></div></div></div></div><div class="panel span-1"><div class="panel-h"><span class="t">Evidence requests</span><span class="c">fulfilled vs queued (from #5)</span></div><div class="panel-body"><svg viewBox="0 0 180 170" class="cv"><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#5AAB60" stroke-width="22" stroke-dasharray="274.45 77.41" stroke-dashoffset="0.00" transform="rotate(-90 90.0 81.0)"/><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#E89327" stroke-width="22" stroke-dasharray="56.30 295.56" stroke-dashoffset="-274.45" transform="rotate(-90 90.0 81.0)"/><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#9AA3AC" stroke-width="22" stroke-dasharray="21.11 330.75" stroke-dashoffset="-330.75" transform="rotate(-90 90.0 81.0)"/><text x="90.0" y="80.0" font-size="20" font-weight="700" fill="#161D24" text-anchor="middle">78%</text><text x="90.0" y="96.0" font-size="9" fill="#6B7280" text-anchor="middle">fulfilled</text></svg><div class="legend"><span class="lg"><span class="dot" style="background:#5AAB60"></span>Fulfilled</span><span class="lg"><span class="dot" style="background:#E89327"></span>In progress</span><span class="lg"><span class="dot" style="background:#9AA3AC"></span>Queued</span></div></div></div><div class="panel span-1"><div class="panel-h"><span class="t">Content effectiveness</span><span class="c">% rated useful in field</span></div><div class="panel-body"><div class="hbars"><div class="hb"><span class="hb-l">Maintenance data deck</span><span class="hb-t"><span class="hb-f" style="width:84%;background:#5AAB60"></span></span><span class="hb-v">84%</span></div><div class="hb"><span class="hb-l">Tolerability talk-track</span><span class="hb-t"><span class="hb-f" style="width:72%;background:#E89327"></span></span><span class="hb-v">72%</span></div><div class="hb"><span class="hb-l">MoA explainer</span><span class="hb-t"><span class="hb-f" style="width:68%;background:#D74F2A"></span></span><span class="hb-v">68%</span></div><div class="hb"><span class="hb-l">Access guide</span><span class="hb-t"><span class="hb-f" style="width:58%;background:#D74F2A"></span></span><span class="hb-v">58%</span></div></div></div></div></div><div class="band" id="coaching"><span class="band-l">7 · Coaching &amp; enablement</span><span class="band-s">building field capability (from #4)</span></div><div class="dash"><div class="panel span-2"><div class="panel-h"><span class="t">Coaching actions</span><span class="c">low-NPSE MSLs → enablement</span></div><div class="panel-body"><table class="tbl"><tr><th>MSL</th><th>NPSE</th><th>Area</th><th>Coaching</th><th>Status</th></tr><tr><td><b>MSL-SE-04</b></td><td><b style="color:var(--crit)">6.2</b></td><td>depth of dialogue</td><td style="font-size:10.5px">scientific-exchange coaching</td><td><span class="pill" style="background:#5AAB60">Active</span></td></tr><tr><td><b>MSL-MW-02</b></td><td><b style="color:var(--crit)">6.5</b></td><td>responsiveness</td><td style="font-size:10.5px">follow-up cadence</td><td><span class="pill" style="background:#5B92D1">Open</span></td></tr><tr><td><b>MSL-W-07</b></td><td><b style="color:var(--crit)">6.7</b></td><td>objection handling</td><td style="font-size:10.5px">GI tolerability talk-track</td><td><span class="pill" style="background:#5AAB60">Active</span></td></tr></table></div><div class="panel-foot">routed from Field Medical Insight Synthesis (#4)</div></div><div class="panel span-1"><div class="panel-h"><span class="t">Training / certification</span><span class="c">field readiness</span></div><div class="panel-body"><svg viewBox="0 0 180 170" class="cv"><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#5AAB60" stroke-width="22" stroke-dasharray="274.45 77.41" stroke-dashoffset="0.00" transform="rotate(-90 90.0 81.0)"/><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#E89327" stroke-width="22" stroke-dasharray="56.30 295.56" stroke-dashoffset="-274.45" transform="rotate(-90 90.0 81.0)"/><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#9AA3AC" stroke-width="22" stroke-dasharray="21.11 330.75" stroke-dashoffset="-330.75" transform="rotate(-90 90.0 81.0)"/><text x="90.0" y="80.0" font-size="20" font-weight="700" fill="#161D24" text-anchor="middle">78%</text><text x="90.0" y="96.0" font-size="9" fill="#6B7280" text-anchor="middle">certified</text></svg><div class="legend"><span class="lg"><span class="dot" style="background:#5AAB60"></span>Certified</span><span class="lg"><span class="dot" style="background:#E89327"></span>In training</span><span class="lg"><span class="dot" style="background:#9AA3AC"></span>Not started</span></div></div></div></div><div class="dash"><div class="panel span-1"><div class="panel-h"><span class="t">Skill gaps</span><span class="c">prioritised for enablement</span></div><div class="panel-body"><div class="hbars"><div class="hb"><span class="hb-l">Objection handling (GI)</span><span class="hb-t"><span class="hb-f" style="width:100.0%;background:#6B5BA8"></span></span><span class="hb-v">12</span></div><div class="hb"><span class="hb-l">Maintenance-data fluency</span><span class="hb-t"><span class="hb-f" style="width:75.0%;background:#6B5BA8"></span></span><span class="hb-v">9</span></div><div class="hb"><span class="hb-l">Digital engagement</span><span class="hb-t"><span class="hb-f" style="width:58.3%;background:#6B5BA8"></span></span><span class="hb-v">7</span></div><div class="hb"><span class="hb-l">Access conversations</span><span class="hb-t"><span class="hb-f" style="width:50.0%;background:#6B5BA8"></span></span><span class="hb-v">6</span></div></div></div></div><div class="panel span-2"><div class="panel-h"><span class="t">Best-practice sharing</span><span class="c">spread what works</span></div><div class="panel-body"><div class="list"><div class="list-row"><span>NE team — advisory-board playbook</span></div><div class="list-row"><span>EU — digital KOL engagement model</span></div><div class="list-row"><span>SE — insight-capture workflow</span></div></div></div></div></div><div class="band" id="action"><span class="band-l">8 · Action &amp; linkage</span><span class="band-s">assignment &amp; closing the loop</span></div><div class="dash"><div class="panel span-1"><div class="panel-h"><span class="t">Action load by MSL</span><span class="c">open actions per MSL</span></div><div class="panel-body"><div class="hbars"><div class="hb"><span class="hb-l">MSL-NE-01</span><span class="hb-t"><span class="hb-f" style="width:100.0%;background:#D74F2A"></span></span><span class="hb-v">9</span></div><div class="hb"><span class="hb-l">MSL-W-02</span><span class="hb-t"><span class="hb-f" style="width:88.9%;background:#E89327"></span></span><span class="hb-v">8</span></div><div class="hb"><span class="hb-l">MSL-SE-04</span><span class="hb-t"><span class="hb-f" style="width:66.7%;background:#5B92D1"></span></span><span class="hb-v">6</span></div><div class="hb"><span class="hb-l">MSL-MW-03</span><span class="hb-t"><span class="hb-f" style="width:66.7%;background:#5B92D1"></span></span><span class="hb-v">6</span></div><div class="hb"><span class="hb-l">MSL-EU-02</span><span class="hb-t"><span class="hb-f" style="width:55.6%;background:#9AA3AC"></span></span><span class="hb-v">5</span></div></div></div><div class="panel-foot">NE-01 &amp; W-02 carrying the most — rebalance</div></div><div class="panel span-1"><div class="panel-h"><span class="t">Actions in</span><span class="c">from the Studio surfaces</span></div><div class="panel-body"><div class="list"><div class="list-row"><span><b>KOL Map (#3)</b></span><span style="font-size:10px;color:var(--ink-soft)">engagement gaps &amp; deconfliction → field actions</span></div><div class="list-row"><span><b>FME (#4)</b></span><span style="font-size:10px;color:var(--ink-soft)">coaching flags &amp; insight-capture asks</span></div><div class="list-row"><span><b>Evidence Map (#5)</b></span><span style="font-size:10px;color:var(--ink-soft)">evidence-delivery actions</span></div><div class="list-row"><span><b>Book-of-Work (#6)</b></span><span style="font-size:10px;color:var(--ink-soft)">study site-support actions</span></div><div class="list-row"><span><b>Launch (#7)</b></span><span style="font-size:10px;color:var(--ink-soft)">pre-launch field readiness</span></div><div class="list-row"><span><b>Decision (#9)</b></span><span style="font-size:10px;color:var(--ink-soft)">revisit decisions routed to field</span></div></div></div></div><div class="panel span-1"><div class="panel-h"><span class="t">Signals out</span><span class="c">field → back up the loop</span></div><div class="panel-body"><div class="list"><div class="list-row"><span><b>Insights → FME (#4)</b></span><span style="font-size:10px;color:var(--ink-soft)">142 field insights captured MTD</span></div><div class="list-row"><span><b>Engagement → KOL (#3)</b></span><span style="font-size:10px;color:var(--ink-soft)">stance &amp; coverage updates</span></div><div class="list-row"><span><b>Outcomes → Decision (#9)</b></span><span style="font-size:10px;color:var(--ink-soft)">action results inform revisits</span></div></div></div></div></div><div class="dash"><div class="panel span-2"><div class="panel-h"><span class="t">Linkage to strategic questions</span><span class="c">how field action feeds the KBQs</span></div><div class="panel-body"><table class="tbl"><tr><th>Field signal</th><th>Strategic question it feeds</th></tr><tr><td>Engagement-gap closure</td><td><b>KBQ-KOL-B — field coverage</b></td></tr><tr><td>Insight capture volume</td><td><b>KBQ-FME-A — field intelligence</b></td></tr><tr><td>Coverage by tier</td><td><b>KBQ-OPS-C — field capacity</b></td></tr><tr><td>Evidence delivered in field</td><td><b>KBQ-LIT-O — evidence coverage</b></td></tr><tr><td>Coaching / NPSE</td><td><b>KBQ-FME-B — engagement quality</b></td></tr></table></div></div><div class="panel span-1"><div class="panel-h"><span class="t">Loop-closure summary</span><span class="c">intelligence → action → outcome</span></div><div class="panel-body"><div class='list'><div class='list-row'><span>Open field actions</span><span class='list-n'>86</span></div><div class='list-row'><span>From upstream surfaces</span><span class='list-n' style='color:#1D98B6'>6 sources</span></div><div class='list-row'><span>Completed · MTD</span><span class='list-n' style='color:#5AAB60'>64</span></div><div class='list-row'><span>Insights captured → #4</span><span class='list-n' style='color:#2F8F6B'>142</span></div><div class='list-row'><span>Engagement gaps closed</span><span class='list-n' style='color:#5AAB60'>14/22</span></div><div class='list-row'><span>Coverage</span><span class='list-n' style='color:#5B92D1'>77%</span></div></div></div></div></div>
+</main>
+<div class="bn-wrap">
+<div class="bn-title">Tableau build notes — worksheet spec by panel</div>
+<table class="bn">
+<tr><th>Panel</th><th>Mark / sheet</th><th>Dimensions</th><th>Measures</th><th>Filters / logic</th><th>Source</th></tr>
+<tr><td><b>Action queue ★</b></td><td>Table</td><td>action_id · source_surface · owner(MSL) · priority · due · status</td><td>days vs due</td><td>status; priority; source; MSL</td><td>action register (fed from #3/#4/#5/#6/#7/#9)</td></tr>
+<tr><td><b>By source / priority / aging / summary</b></td><td>Donut · bar · BANs</td><td>source_surface; priority; age_bucket</td><td>COUNT(action)</td><td><b>past_due=due&lt;today</b></td><td>action register</td></tr>
+<tr><td><b>Coverage by region / heatmap / gaps / white-space</b></td><td>Bar (RAG) · highlight table · list</td><td>region; region × tier</td><td>covered/target %</td><td><b>&lt;target = gap</b></td><td>Veeva CRM + target list (alignment)</td></tr>
+<tr><td><b>Coverage trend</b></td><td>Line</td><td>MONTH(date)</td><td>coverage %</td><td>period</td><td>Veeva CRM</td></tr>
+<tr><td><b>Interaction volume / type / plan / productivity / capacity</b></td><td>Bar · donut</td><td>msl_team; activity_type; MSL</td><td>COUNT(interaction); per-MSL; % on-plan; load vs capacity</td><td>period; team</td><td>Veeva CRM + plan + capacity model</td></tr>
+<tr><td><b>KOL engagement vs plan / gaps closing</b></td><td>Grouped bar · donut</td><td>tier</td><td>planned vs actual engagements; gaps closed/open</td><td>engagement plan</td><td>plan (from #3) × Veeva actuals</td></tr>
+<tr><td><b>NPSE / next-best-action / cadence</b></td><td>Bar · list</td><td>team; HCP; tier</td><td>AVG(NPSE); on-cadence %</td><td>engaged HCPs</td><td>NPSE survey + NBA engine (#3 priorities)</td></tr>
+<tr><td><b>Insight capture / by-team / I2A / themes</b></td><td>Line · bar · process flow · list</td><td>MONTH(date); team; insight_stage; theme</td><td>COUNT(insight)</td><td>conversion stages</td><td>Veeva insights → <b>feeds #4</b></td></tr>
+<tr><td><b>Content delivered / evidence requests / effectiveness</b></td><td>Bar · donut</td><td>content_type; request</td><td>COUNT; fulfilled %; usefulness %</td><td>—</td><td>content tracker + evidence-request fulfilment (from #5)</td></tr>
+<tr><td><b>Coaching / training / skill gaps / best-practice</b></td><td>Table · donut · bar · list</td><td>MSL; skill; certification</td><td>NPSE; % certified; gap count</td><td>NPSE&lt;7 → coaching (from #4)</td><td>NPSE + LMS + coaching tracker</td></tr>
+<tr><td><b>Action load / linkage / KBQ / loop</b></td><td>Bar · list · table</td><td>MSL; source; KBQ_id</td><td>open per MSL</td><td>open</td><td>action register; routing ↔ #3/#4/#5/#6/#7/#9</td></tr>
+</table>
+<div style="font-size:11px;color:var(--ink-soft);margin-top:10px;line-height:1.55"><b>Data model.</b> Two grains. The <b>field action</b> (action_id · <b>source_surface</b> · owner(MSL) · account/HCP · priority · due · status · outcome) and the <b>interaction</b> (interaction_id · MSL · HCP · date · type · NPSE · insight · plan_flag) from Veeva CRM, joined to a <b>target/alignment</b> list (HCP · tier · region · MSL) for coverage. The defining feature is <b>source-tagged actions</b>: this is the convergence surface where engagement gaps (#3), coaching &amp; insight-asks (#4), evidence delivery (#5), site support (#6), launch readiness (#7) and routed decisions (#9) all become concrete MSL tasks — and where field <b>insights flow back up to #4</b>, closing the loop. Coverage = covered/target by region×tier; NBA priorities come from #3's engagement-gap logic. ~32 worksheets across 8 sections.</div>
+</div>
+
+</body></html>

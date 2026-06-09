@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Insights Studio — Cobenfy ADP · operator view</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Avira brand */
+  --teal:#1D98B6; --teal-dk:#0C6F8A; --teal-deep:#0A5270;
+  --orange:#F79138; --orange-dk:#D97516;
+
+  /* Status — richer palette */
+  --crit:#DC2626;   --crit-bg:#FEF2F2;
+  --action:#F79138; --action-bg:#FFF3E6;
+  --watch:#1D98B6;  --watch-bg:#E0F5FA;
+  --commit:#6366F1; --commit-bg:#EEF2FF;
+  --success:#16A34A;--success-bg:#DCFCE7;
+  --purple:#9333EA; --purple-bg:#F5F3FF;
+  --amber:#D97706;  --amber-bg:#FFFBEB;
+
+  /* Surfaces */
+  --bg:#F7FAFB; --panel:#FFFFFF; --panel-alt:#F8FAFC;
+  --border:#E2E8F0; --line:#CBD5E1; --hair:#EEF2F6;
+
+  /* Text */
+  --ink:#1A1F24; --ink-muted:#3F4A55; --ink-soft:#62748E; --ink-dim:#9AA3AC;
+
+  /* Signal */
+  --s-strong:#16A34A; --s-contest:#D97706; --s-thin:#9AA3AC;
+  --s-stable:#1D98B6; --s-mixed:#9333EA;
+
+  /* Tokens */
+  --r:12px; --r-sm:6px;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 1px 3px rgba(0,0,0,.06);
+  --shadow-panel:0 1px 3px rgba(0,0,0,.05),0 4px 12px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:'Inter',system-ui,sans-serif;font-size:13.5px;line-height:1.6;
+  -webkit-font-smoothing:antialiased}
+.serif{font-family:'Inter',sans-serif;font-weight:700}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-feature-settings:'tnum' on}
+
+/* === BRAND BAR === */
+.brand{background:#fff;color:var(--ink);padding:12px 28px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:20px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.brand-logo{height:32px;width:auto;display:block;flex-shrink:0}
+.brand-divider{width:1px;height:28px;background:var(--border);flex-shrink:0}
+.brand-left{display:flex;flex-direction:column;gap:3px}
+.brand-studio{
+  font-family:'Inter';font-size:11px;letter-spacing:0.01em;
+  color:#F79138;font-style:italic;font-weight:700;
+  display:inline-flex;align-items:center;
+  background:#FFF3E6;border:1px solid rgba(247,148,29,.2);
+  border-radius:4px;padding:3px 8px;width:fit-content;line-height:1.4;
+}
+.brand-asset{font-family:'Inter';font-weight:700;font-size:17px;letter-spacing:-0.02em;color:var(--ink);line-height:1.2}
+.brand-codes{font-family:'JetBrains Mono';font-size:10px;color:var(--ink-dim);padding:2px 8px;background:var(--hair);border-radius:100px;border:1px solid var(--border);flex-shrink:0}
+.brand-meta{margin-left:auto;display:flex;gap:10px;align-items:center;font-size:11px;color:var(--ink-soft);flex-wrap:wrap;flex-shrink:0}
+.brand-meta b{color:var(--ink);font-weight:600}
+.brand-stage{font-family:'Inter';font-size:10px;padding:3px 10px;background:var(--watch-bg);border:1px solid rgba(29,152,182,.2);border-radius:100px;font-weight:700;letter-spacing:0.06em;color:var(--teal)}
+.brand-posture{font-family:'Inter';font-size:10px;padding:3px 10px;background:var(--action-bg);font-weight:700;letter-spacing:0.04em;color:var(--orange-dk);border-radius:100px;border:1px solid rgba(247,145,56,.25)}
+.brand-link{color:var(--ink-soft);font-size:11px;text-decoration:none;font-weight:500;font-family:'Inter'}
+.brand-link:hover{color:var(--teal)}
+
+/* === KPI STRIP === */
+.kpi{display:grid;grid-template-columns:repeat(5,1fr);background:var(--panel);border-bottom:1px solid var(--border);box-shadow:var(--shadow)}
+.kpi-cell{padding:20px 28px;border-left:1px solid var(--hair)}
+.kpi-cell:first-child{border-left:none}
+.kpi-cell .l{font-family:'Inter';font-size:9.5px;letter-spacing:0.08em;text-transform:uppercase;color:#9DACC1;font-weight:700;margin-bottom:10px}
+.kpi-cell .v{font-family:'Inter';font-size:28px;font-weight:800;color:var(--ink);line-height:1;letter-spacing:-0.02em}
+.kpi-cell .v.crit{color:var(--crit)}
+.kpi-cell .v.action{color:var(--orange-dk)}
+.kpi-cell .v.watch{color:var(--teal)}
+.kpi-cell .n{font-size:11.5px;color:var(--ink-soft);margin-top:8px;line-height:1.5;font-weight:500}
+
+/* === DASHBOARD GRID === */
+main{padding:24px;max-width:1480px;margin:0 auto}
+.dash{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:20px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);display:flex;flex-direction:column;box-shadow:var(--shadow-panel)}
+.panel-h{padding:16px 20px;border-bottom:1px solid var(--hair);display:flex;align-items:center;justify-content:space-between;gap:8px;border-radius:var(--r) var(--r) 0 0}
+.panel-h .t{font-family:'Inter';font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+.panel-h .c{font-family:'Inter';font-size:10px;color:var(--ink-dim);letter-spacing:0.04em}
+.panel-body{padding:20px;flex:1;overflow:auto}
+
+/* spans */
+.span-1{grid-column:span 1}
+.span-2{grid-column:span 2}
+.span-3{grid-column:span 3}
+
+/* === THEME BOARD === */
+.theme-board{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.theme-col{display:flex;flex-direction:column;gap:6px}
+.theme-col-h{font-family:'Inter';font-size:9.5px;letter-spacing:0.06em;text-transform:uppercase;font-weight:700;padding:5px 10px;color:#fff;display:flex;justify-content:space-between;align-items:center;border-radius:var(--r-sm)}
+.theme-chip{background:var(--panel-alt);border:1px solid var(--hair);border-left:3px solid;padding:12px 14px;cursor:pointer;font-size:12px;line-height:1.35;color:var(--ink);transition:background .15s,border-color .15s;position:relative;border-radius:0 var(--r-sm) var(--r-sm) 0}
+.theme-chip:hover{background:#FFFFFF;border-color:var(--teal)}
+.theme-chip .why{position:absolute;top:5px;right:5px}
+
+/* === GAP RADAR === */
+.gap-bars{display:flex;flex-direction:column;gap:14px}
+.gap-row{display:grid;grid-template-columns:80px 1fr 60px 24px;gap:10px;align-items:center;font-size:12px}
+.gap-lbl{font-family:'Inter';font-size:11px;color:var(--ink);font-weight:600;letter-spacing:0.02em}
+.gap-track{height:8px;background:var(--hair);position:relative;cursor:pointer;border-radius:100px;overflow:hidden}
+.gap-track:hover{outline:1px solid var(--teal)}
+.gap-fill{height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:5px;font-family:'Inter';font-size:9px;color:#fff;font-weight:600;letter-spacing:0.04em;border-radius:2px}
+.gap-val{font-family:'JetBrains Mono';font-size:11px;color:var(--ink-soft);font-weight:500;text-align:right}
+
+/* === MOVEMENT === */
+.mv-list{display:flex;flex-direction:column}
+.mv-row{display:grid;grid-template-columns:74px 64px 1fr 24px;gap:8px;padding:12px 0;border-top:1px solid var(--hair);align-items:start;cursor:pointer;position:relative}
+.mv-row:hover{background:var(--panel-alt)}
+.mv-row:first-child{border-top:none;padding-top:2px}
+.mv-date{font-family:'JetBrains Mono';font-size:10.5px;color:var(--ink-soft);font-weight:500}
+.mv-cap{font-family:'Inter';font-size:9px;font-weight:700;padding:2px 8px;color:#fff;text-align:center;letter-spacing:0.04em;height:fit-content;border-radius:100px}
+.mv-title{font-size:12px;color:var(--ink);font-weight:500;line-height:1.35}
+.mv-title .so{font-size:11px;color:var(--ink-soft);margin-top:2px;line-height:1.35;font-weight:400}
+
+/* === DECISIONS REGISTER === */
+.dec-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.dec-card{background:var(--panel-alt);border:1px solid var(--hair);border-left:3px solid;padding:14px 16px;cursor:pointer;font-size:11.5px;line-height:1.35;position:relative;transition:background .15s,border-color .15s;border-radius:0 var(--r-sm) var(--r-sm) 0}
+.dec-card:hover{background:#fff;border-color:var(--teal)}
+.dec-card.urgent{border-left-color:var(--crit)}
+.dec-card.action{border-left-color:var(--orange)}
+.dec-card.watch{border-left-color:var(--watch)}
+.dec-card.commit{border-left-color:var(--commit)}
+.dec-id{font-family:'Inter';font-size:9.5px;color:var(--ink-dim);font-weight:600;letter-spacing:0.04em;margin-bottom:2px}
+.dec-title{color:var(--ink);font-weight:500;font-size:12px;line-height:1.3;padding-right:18px}
+.dec-cat{font-family:'Inter';font-size:9px;font-weight:600;color:var(--ink-soft);margin-top:5px;letter-spacing:0.06em;text-transform:uppercase}
+.dec-card .why{position:absolute;top:6px;right:6px}
+.dec-grid{grid-template-columns:repeat(2,1fr)!important}
+.dec-card{cursor:pointer}
+.dec-state{font-family:'Inter';font-size:8px;font-weight:700;letter-spacing:0.05em;padding:1px 6px;border-radius:9px;color:#fff;margin-left:7px;text-transform:uppercase;vertical-align:middle}
+.st-urgent{background:var(--crit)} .st-action{background:var(--orange-dk)} .st-watch{background:var(--watch)}
+.dec-meta{margin-top:8px;padding-top:8px;border-top:1px dotted var(--hair);display:flex;flex-direction:column;gap:3px}
+.dm-row{display:grid;grid-template-columns:78px 1fr;gap:8px;font-size:10.5px;line-height:1.35}
+.dm-k{font-family:'Inter';font-size:8.5px;font-weight:600;color:var(--ink-dim);text-transform:uppercase;letter-spacing:0.03em;padding-top:2px}
+.dm-v{color:var(--ink-muted)} .dm-v b{color:var(--ink)}
+.dm-due{color:var(--ink-soft);font-family:'JetBrains Mono';font-size:9px}
+.dm-trig{color:var(--watch);font-weight:500}
+.dm-driver{font-size:9px;color:var(--ink-soft);margin-top:3px;font-family:'JetBrains Mono';line-height:1.3}
+.dm-driver b{color:var(--orange-dk)}
+
+/* === ? icon === */
+.why{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;border:1px solid var(--border);background:#fff;color:var(--ink-soft);font-family:'JetBrains Mono';font-size:10px;font-weight:700;cursor:pointer;line-height:1;flex-shrink:0;transition:background .15s,color .15s,border-color .15s}
+.why:hover{background:var(--teal-deep);color:#fff;border-color:var(--teal-deep)}
+.why:focus{outline:2px solid var(--teal);outline-offset:1px}
+
+/* === SUPPLEMENTARY (below dashboard) === */
+.supp-h{display:flex;align-items:baseline;justify-content:space-between;padding:6px 4px;margin-top:10px}
+.supp-h .t{font-family:'Inter';font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft);font-weight:700}
+.supp-h .n{font-family:'Inter';font-size:10.5px;color:var(--ink-dim);letter-spacing:0.04em}
+
+/* state-chip helper */
+.state-chip{font-family:'Inter';font-size:9px;font-weight:700;padding:2px 8px;color:#fff;letter-spacing:0.04em;display:inline-block;line-height:1.35;border-radius:100px}
+
+/* mini stacked bars (KOL sentiment small panel) */
+.kbar{display:grid;grid-template-columns:1fr;gap:5px}
+.kbar-row{display:grid;grid-template-columns:130px 1fr;gap:8px;align-items:center;font-size:11px}
+.kbar-lbl{color:var(--ink);line-height:1.3}
+.kbar-track{display:flex;height:13px;background:var(--hair);overflow:hidden}
+.kbar-seg{height:100%}
+.kbar-seg.pos{background:var(--s-strong)}
+.kbar-seg.split{background:var(--s-contest)}
+.kbar-seg.neg{background:var(--crit)}
+.kbar-seg.neu{background:var(--s-thin)}
+
+/* horizontal compact bars (topic freq) */
+.tbar-row{display:grid;grid-template-columns:170px 1fr 30px;gap:8px;padding:4px 0;align-items:center;font-size:11.5px}
+.tbar-lbl{color:var(--ink);line-height:1.3}
+.tbar-track{height:11px;background:var(--hair)}
+.tbar-fill{height:100%}
+.tbar-val{font-family:'JetBrains Mono';font-size:10px;color:var(--ink-soft);text-align:right;font-weight:500}
+
+/* cost bar mini */
+.ce-mini{display:grid;grid-template-columns:1fr;gap:7px}
+.ce-mrow{display:grid;grid-template-columns:120px 1fr;gap:8px;align-items:center;font-size:11px}
+.ce-mlbl{color:var(--ink);line-height:1.3}
+.ce-mtrack{position:relative;height:14px;background:var(--hair)}
+.ce-mfill{height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:5px;color:#fff;font-family:'JetBrains Mono';font-size:10px;font-weight:600}
+
+/* === DRAWER === */
+.drawer-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(12,71,84,0.45);opacity:0;pointer-events:none;transition:opacity .22s ease;z-index:90}
+.drawer-overlay.open{opacity:1;pointer-events:all}
+.drawer{position:fixed;top:0;right:0;width:480px;max-width:92vw;height:100vh;background:var(--panel);border-left:1px solid var(--border);box-shadow:-12px 0 36px rgba(0,0,0,0.10);transform:translateX(100%);transition:transform .26s ease;z-index:95;display:flex;flex-direction:column;overflow:hidden}
+.drawer.open{transform:translateX(0)}
+.drawer-h{padding:24px 28px 20px;border-bottom:1px solid var(--hair);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-shrink:0}
+.drawer-h-l{flex:1}
+.drawer-eyebrow{font-family:'Inter';font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--teal);font-weight:700;margin-bottom:6px;display:flex;gap:8px;align-items:center}
+.drawer-title{font-family:'Inter';font-size:18px;line-height:1.3;font-weight:700;color:var(--ink);letter-spacing:-0.02em}
+.drawer-close{background:none;border:1px solid var(--border);border-radius:8px;color:var(--ink-soft);width:30px;height:30px;cursor:pointer;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit;transition:background .15s}
+.drawer-close:hover{background:var(--hair);color:var(--ink)}
+.drawer-body{flex:1;overflow-y:auto;padding:24px 28px 40px}
+.drawer-section{margin-bottom:28px}
+.drawer-section h4{font-family:'Inter';font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:#9DACC1;font-weight:700;margin:0 0 8px;display:flex;align-items:baseline;gap:8px}
+.drawer-section h4 .meta{color:var(--ink-dim);font-size:10px;letter-spacing:0.04em;text-transform:none;font-family:'JetBrains Mono';font-weight:500}
+.drawer-section p{margin:0 0 8px;font-size:13.5px;color:var(--ink-muted);line-height:1.55}
+.drawer-section p:last-child{margin-bottom:0}
+.drawer-section .quote{background:var(--watch-bg);border-left:3px solid var(--teal);padding:10px 14px;border-radius:0 8px 8px 0;font-family:'Inter';font-size:13.5px;line-height:1.6;color:var(--ink);font-style:italic;margin-bottom:6px;border:1px solid rgba(29,152,182,.15);border-left:3px solid var(--teal)}
+.drawer-list{display:flex;flex-direction:column;gap:10px}
+.drawer-item{background:var(--panel-alt);border:1px solid var(--hair);padding:8px 12px;border-radius:8px;font-size:12px;color:var(--ink);display:flex;justify-content:space-between;align-items:center;gap:8px;transition:background .15s,border-color .15s}
+.drawer-item .sub{font-size:10.5px;color:var(--ink-soft);font-family:'Inter';letter-spacing:0.04em}
+.kv{display:grid;grid-template-columns:130px 1fr;gap:10px;padding:10px 0;border-top:1px solid var(--hair);font-size:12.5px}
+.kv:first-child{border-top:none;padding-top:0}
+.kv .k{font-family:'Inter';font-size:9.5px;color:#9DACC1;letter-spacing:0.08em;text-transform:uppercase;font-weight:700}
+.kv .v{color:var(--ink);line-height:1.5;font-weight:500}
+.kv .v .pill{font-family:'Inter';font-size:10px;background:var(--hair);color:var(--ink-muted);padding:2px 8px;letter-spacing:0.04em;display:inline-block;margin-right:5px;border-radius:100px}
+.confidence-bar{display:inline-flex;gap:3px;align-items:center;margin-left:5px}
+.confidence-bar .dot{width:7px;height:7px;border-radius:50%;background:var(--hair)}
+.confidence-bar .dot.on{background:var(--s-strong)}
+.confidence-bar .dot.med{background:var(--orange)}
+
+@media (max-width:1100px){
+  .dash{grid-template-columns:1fr 1fr}
+  .span-3{grid-column:span 2}
+  .theme-board{grid-template-columns:repeat(2,1fr)}
+  .dec-grid{grid-template-columns:repeat(2,1fr)}
+  .kpi{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:700px){
+  .dash{grid-template-columns:1fr}
+  .span-1,.span-2,.span-3{grid-column:span 1}
+  .theme-board,.dec-grid{grid-template-columns:1fr}
+  .drawer{width:100%}
+}
+
+.drawer-item.rich{display:block;cursor:pointer;line-height:1.4}
+.drawer-item.rich .desc{color:var(--ink);display:block;margin-bottom:5px;font-weight:600}
+.drawer-item.rich .meta{display:flex;gap:6px;align-items:center;font-family:'Inter';font-size:9.5px;color:var(--ink-soft);letter-spacing:0.04em;flex-wrap:wrap}
+.drawer-item.rich .meta .sep{color:var(--ink-dim)}
+.drawer-item.rich .meta .arrow{margin-left:auto;color:var(--orange);font-weight:600;font-size:13px}
+.drawer-item.rich:hover{background:#fff;border-color:var(--teal)}
+.drawer-item.rich:hover .arrow{color:var(--orange-dk)}
+.sig-state{font-family:'Inter';font-size:9px;padding:2px 8px;color:#fff;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;border-radius:100px}
+
+/* Panel left-accent color variants */
+.panel.teal{border-top:3px solid var(--teal)}
+.panel.orange{border-top:3px solid var(--orange)}
+.panel.purple{border-top:3px solid var(--purple)}
+.panel.green{border-top:3px solid var(--success)}
+.panel.red{border-top:3px solid var(--crit)}
+.panel.indigo{border-top:3px solid var(--commit)}
+.panel.amber{border-top:3px solid var(--amber)}
+
+/* KPI cell color accents */
+.kpi-cell.hi-teal .v{color:var(--teal)}
+.kpi-cell.hi-orange .v{color:var(--orange-dk)}
+.kpi-cell.hi-green .v{color:var(--success)}
+.kpi-cell.hi-red .v{color:var(--crit)}
+.kpi-cell.hi-purple .v{color:var(--purple)}
+
+</style>
+
+<style>
+:root{ --s-comp:#8E5BA0; --s-comp-bg:#F3ECF7; }
+.theme-board{grid-template-columns:repeat(6,1fr) !important}
+.gap-row.na .gap-track{background:repeating-linear-gradient(45deg,#EDF0F3,#EDF0F3 5px,#E4E8EC 5px,#E4E8EC 10px);cursor:default}
+.gap-row.na .gap-track:hover{outline:none}
+.gap-row.na .gap-val{color:var(--ink-dim);font-style:italic}
+.na-tag{font-family:'Inter';font-size:8.5px;color:var(--ink-dim);letter-spacing:0.04em;text-transform:uppercase}
+.countdown{display:flex;gap:14px;align-items:baseline}
+.cd-num{font-family:'Inter';font-weight:700;font-size:30px;font-weight:600;color:var(--orange-dk);line-height:1;letter-spacing:-0.02em}
+.cd-unit{font-family:'Inter';font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft);margin-left:3px}
+.reg-hero{display:flex;flex-direction:column;gap:10px}
+.reg-step{display:grid;grid-template-columns:92px 1fr;gap:12px;align-items:start;padding:9px 0;border-top:1px dotted var(--hair)}
+.reg-step:first-child{border-top:none}
+.reg-date{font-family:'Inter';font-size:10.5px;color:var(--ink-soft);font-weight:600;letter-spacing:0.02em;padding-top:2px}
+.reg-step .h{font-weight:600;color:var(--ink);font-size:12.5px;margin-bottom:2px;display:flex;gap:7px;align-items:center}
+.reg-step .d{font-size:11.5px;color:var(--ink-muted);line-height:1.4}
+.reg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;display:inline-block}
+.pip{font-family:'Inter';font-size:8.5px;font-weight:700;letter-spacing:0.04em;padding:1px 6px;color:#fff;text-transform:uppercase}
+.brand-stage.prelaunch{background:#7A4A12;border-color:#A9701F}
+.intgr-banner{background:var(--s-comp-bg);border:1px solid #D9C4E4;border-left:3px solid var(--s-comp);padding:10px 14px;font-size:12px;color:#5A3A6B;line-height:1.45;display:flex;gap:10px;align-items:flex-start}
+.intgr-banner .ic{font-family:'Inter';font-size:9px;font-weight:700;letter-spacing:0.06em;color:#fff;background:var(--s-comp);padding:2px 7px;flex-shrink:0;text-transform:uppercase}
+.sig-state.compromised,.state-chip.compromised{background:var(--s-comp)}
+</style>
+
+</head>
+<body>
+
+<header class="brand">
+ <a href="index.html"><img src="../Avira Logo.svg" class="brand-logo" alt="Avira Digital"></a>
+ <span class="brand-divider"></span>
+ <span class="brand-studio">Insights Studio · Operator view</span>
+ <span class="brand-asset">COBENFY</span>
+ <span class="brand-codes">xanomeline·trospium / KarXT · ADP indication</span>
+ <span class="brand-meta">
+  <span>Psychosis in Alzheimer's disease</span>
+  <span class="brand-stage prelaunch">PRE-LAUNCH · PH3</span>
+  <span class="brand-posture">FIRST-IN-CLASS ATTEMPT</span>
+  <a class="brand-link" href="insights_studio_cobenfy.html">← Schizophrenia view</a>
+ </span>
+</header>
+
+<div class="kpi">
+ <div class="kpi-cell">
+  <div class="l">Readout window</div>
+  <div class="countdown"><span class="cd-num">H2</span><span class="cd-unit">2026</span></div>
+  <div class="n">ADEPT-1 / -2 / -4 pivotal reads</div>
+ </div>
+ <div class="kpi-cell">
+  <div class="l">Themes live</div>
+  <div class="v">14</div>
+  <div class="n">across 3 strategic tests</div>
+ </div>
+ <div class="kpi-cell">
+  <div class="l">Decisions</div>
+  <div class="v crit">2<span style="font-size:15px;color:var(--ink-dim)"> urgent</span></div>
+  <div class="n">of 11 · 6 action · 3 watch</div>
+ </div>
+ <div class="kpi-cell">
+  <div class="l">Evidence integrity</div>
+  <div class="v" style="color:var(--s-comp)">1</div>
+  <div class="n">ADEPT-2 under review (Dec 2025)</div>
+ </div>
+ <div class="kpi-cell">
+  <div class="l">Competitor path</div>
+  <div class="v watch">2×</div>
+  <div class="n">pimavanserin CRL'd · field clear</div>
+ </div>
+</div>
+
+<main>
+
+<div class="intgr-banner">
+ <span class="ic">Integrity</span>
+ <div>The pivotal program carries an <b>evidence-integrity overhang</b>: in Dec 2025 the sponsor disclosed trial-execution irregularities at a limited number of ADEPT-2 sites, enrolled additional patients and delayed the readout. This is neither an efficacy nor a safety event — the architecture had no existing state for it, so this view introduces a <b>Compromised / under-review</b> state (purple). <span class="why" onclick="openTheme('t-integrity')" title="Details" style="display:inline-flex;vertical-align:middle">?</span></div>
+</div>
+
+<div class="dash" style="margin-top:12px">
+<div class="panel span-3">
+  <div class="panel-h"><span class="t">Themes board</span><span class="c">14 themes · 6 states · click any for chain of evidence</span></div>
+  <div class="panel-body"><div class="theme-board">
+<div class="theme-col"><div class="theme-col-h" style="background:#5AAB60"><span>Strengthening</span><span>1</span></div><div class="theme-chip" style="border-left-color:#5AAB60" onclick="openTheme('t-firstinclass')">First-in-class window is open<button class="why" onclick="event.stopPropagation();openTheme('t-firstinclass')" title="Details">?</button></div></div>
+<div class="theme-col"><div class="theme-col-h" style="background:#B49563"><span>Strengthening-Thin</span><span>2</span></div><div class="theme-chip" style="border-left-color:#B49563" onclick="openTheme('t-blackbox')">Off-the-black-box differentiation<button class="why" onclick="event.stopPropagation();openTheme('t-blackbox')" title="Details">?</button></div><div class="theme-chip" style="border-left-color:#B49563" onclick="openTheme('t-biomarker')">Biomarker enrichment as regulatory de-risking<button class="why" onclick="event.stopPropagation();openTheme('t-biomarker')" title="Details">?</button></div></div>
+<div class="theme-col"><div class="theme-col-h" style="background:#E89327"><span>Contested</span><span>3</span></div><div class="theme-chip" style="border-left-color:#E89327" onclick="openTheme('t-fdabar')">The FDA bar is steep and precedent-defined<button class="why" onclick="event.stopPropagation();openTheme('t-fdabar')" title="Details">?</button></div><div class="theme-chip" style="border-left-color:#E89327" onclick="openTheme('t-anchor')">Translational anchor vs AD-biology risk<button class="why" onclick="event.stopPropagation();openTheme('t-anchor')" title="Details">?</button></div><div class="theme-chip" style="border-left-color:#E89327" onclick="openTheme('t-geri')">Geriatric safety / GI stance is conditional<button class="why" onclick="event.stopPropagation();openTheme('t-geri')" title="Details">?</button></div></div>
+<div class="theme-col"><div class="theme-col-h" style="background:#5B92D1"><span>Stable</span><span>4</span></div><div class="theme-chip" style="border-left-color:#5B92D1" onclick="openTheme('t-gi')">GI tolerability in an elderly population<button class="why" onclick="event.stopPropagation();openTheme('t-gi')" title="Details">?</button></div><div class="theme-chip" style="border-left-color:#5B92D1" onclick="openTheme('t-compalive')">Competitor is not dead<button class="why" onclick="event.stopPropagation();openTheme('t-compalive')" title="Details">?</button></div><div class="theme-chip" style="border-left-color:#5B92D1" onclick="openTheme('t-timing')">Readout timing intact despite the event<button class="why" onclick="event.stopPropagation();openTheme('t-timing')" title="Details">?</button></div><div class="theme-chip" style="border-left-color:#5B92D1" onclick="openTheme('t-window')">Competitive window unchanged by the delay<button class="why" onclick="event.stopPropagation();openTheme('t-window')" title="Details">?</button></div></div>
+<div class="theme-col"><div class="theme-col-h" style="background:#9AA3AC"><span>Thin</span><span>3</span></div><div class="theme-chip" style="border-left-color:#9AA3AC" onclick="openTheme('t-mmse')">Cognitive-safety bar must be cleared<button class="why" onclick="event.stopPropagation();openTheme('t-mmse')" title="Details">?</button></div><div class="theme-chip" style="border-left-color:#9AA3AC" onclick="openTheme('t-ltsafety')">Long-term elderly safety gap<button class="why" onclick="event.stopPropagation();openTheme('t-ltsafety')" title="Details">?</button></div><div class="theme-chip" style="border-left-color:#9AA3AC" onclick="openTheme('t-ripple')">Reputational / sentiment ripple<button class="why" onclick="event.stopPropagation();openTheme('t-ripple')" title="Details">?</button></div></div>
+<div class="theme-col"><div class="theme-col-h" style="background:#8E5BA0"><span>Compromised</span><span>1</span></div><div class="theme-chip" style="border-left-color:#8E5BA0" onclick="openTheme('t-integrity')">Evidence-integrity overhang on the pivotal readout<button class="why" onclick="event.stopPropagation();openTheme('t-integrity')" title="Details">?</button></div></div>
+  </div></div>
+</div>
+</div>
+
+<div class="dash">
+<div class="panel span-1">
+  <div class="panel-h"><span class="t">Gap radar · stage-aware</span><span class="c">8 capabilities · % probed</span></div>
+  <div class="panel-body"><div class="gap-bars">
+<div class="gap-row"><span class="gap-lbl">REG</span><div class="gap-track" onclick="openGap('REG')"><div class="gap-fill" style="width:80%;background:#5AAB60">80%</div></div><span class="gap-val">4/5</span><span></span></div>
+<div class="gap-row"><span class="gap-lbl">LIT</span><div class="gap-track" onclick="openGap('LIT')"><div class="gap-fill" style="width:53%;background:#E89327">53%</div></div><span class="gap-val">8/15</span><span></span></div>
+<div class="gap-row"><span class="gap-lbl">TL</span><div class="gap-track" onclick="openGap('TL')"><div class="gap-fill" style="width:67%;background:#E89327">67%</div></div><span class="gap-val">4/6</span><span></span></div>
+<div class="gap-row"><span class="gap-lbl">KOL</span><div class="gap-track" onclick="openGap('KOL')"><div class="gap-fill" style="width:60%;background:#E89327">60%</div></div><span class="gap-val">3/5</span><span></span></div>
+<div class="gap-row"><span class="gap-lbl">CON</span><div class="gap-track" onclick="openGap('CON')"><div class="gap-fill" style="width:50%;background:#E89327">50%</div></div><span class="gap-val">2/4</span><span></span></div>
+<div class="gap-row"><span class="gap-lbl">DIG</span><div class="gap-track" onclick="openGap('DIG')"><div class="gap-fill" style="width:40%;background:#D74F2A">40%</div></div><span class="gap-val">2/5</span><span></span></div>
+<div class="gap-row na"><span class="gap-lbl">RWE</span><div class="gap-track" title="Stage-inapplicable (pre-launch)"><div class="gap-fill" style="width:0%"></div></div><span class="gap-val">n/a</span><span class="na-tag">stage</span></div>
+<div class="gap-row na"><span class="gap-lbl">PAY</span><div class="gap-track" title="Stage-inapplicable (pre-launch)"><div class="gap-fill" style="width:0%"></div></div><span class="gap-val">n/a</span><span class="na-tag">stage</span></div>
+  </div>
+  <div style="margin-top:10px;font-size:10.5px;color:var(--ink-soft);line-height:1.4;font-family:'JetBrains Mono'; FDA cites HARMONY effectiveness concerns.</div></div></div>
+    <div class="reg-step"><span class="reg-date">Aug–Sep 2025</span><div><div class="h"><span class="reg-dot" style="background:#E89327"></span>Competitor 2nd CRL — AD psychosis <span class="why" onclick="openSignal('REG-021')" title="Details">?</span></div><div class="d">FDA: HARMONY benefit driven by the <b>Parkinson's-dementia subgroup</b>; insufficient AD-specific evidence; an additional AD trial required. The bar is now explicit.</div></div></div>
+    <div class="reg-step"><span class="reg-date">our path</span><div><div class="h"><span class="reg-dot" style="background:#5AAB60"></span>ADEPT-4 biomarker-confirmed AD <span class="why" onclick="openSignal('REG-022')" title="Details">?</span></div><div class="d">Biomarker-confirmed-AD enrichment reads as a direct design response to the subgroup objection — first-in-class window is open if the readout clears that exact bar.</div></div></div>
+    <div class="reg-step"><span class="reg-date">Apr 2026</span><div><div class="h"><span class="reg-dot" style="background:#5B92D1"></span>Competitor resubmits <span class="why" onclick="openSignal('LIT-069')" title="Details">?</span></div><div class="d">Pimavanserin sNDA resubmitted — the 5-HT2A path is not dead; watch quarterly.</div></div></div>
+  </div></div>
+</div>
+</div>
+
+<div class="dash">
+<div class="panel span-2">
+  <div class="panel-h"><span class="t">Movement · the ADP timeline</span><span class="c">11 events · the integrity event highlighted</span></div>
+  <div class="panel-body" style="padding-top:6px"><div class="mv-list">
+<div class="mv-row" onclick="openMovement(0)"><span class="mv-date">Apr 2021</span><span class="state-chip " style="background:#5B92D1">Stable</span><span class="mv-txt">Competitor 1st CRL — dementia psychosis</span><button class="why" onclick="event.stopPropagation();openMovement(0)" title="Details">?</button></div>
+<div class="mv-row" onclick="openMovement(1)"><span class="mv-date">Sep 2024</span><span class="state-chip " style="background:#5AAB60">Strengthening</span><span class="mv-txt">Cobenfy approved in schizophrenia</span><button class="why" onclick="event.stopPropagation();openMovement(1)" title="Details">?</button></div>
+<div class="mv-row" onclick="openMovement(2)"><span class="mv-date">Sep 2024</span><span class="state-chip " style="background:#B49563">Strengthening-Thin</span><span class="mv-txt">ADEPT-4 initiated (biomarker-confirmed AD)</span><button class="why" onclick="event.stopPropagation();openMovement(2)" title="Details">?</button></div>
+<div class="mv-row" onclick="openMovement(3)"><span class="mv-date">Jun 2025</span><span class="state-chip " style="background:#B49563">Strengthening-Thin</span><span class="mv-txt">KarX-EC Ph1 begins (GI mitigation)</span><button class="why" onclick="event.stopPropagation();openMovement(3)" title="Details">?</button></div>
+<div class="mv-row" onclick="openMovement(4)"><span class="mv-date">Jul 2025</span><span class="state-chip " style="background:#5B92D1">Stable</span><span class="mv-txt">ADEPT-2 completes primary enrolment</span><button class="why" onclick="event.stopPropagation();openMovement(4)" title="Details">?</button></div>
+<div class="mv-row" onclick="openMovement(5)"><span class="mv-date">Aug–Sep 2025</span><span class="state-chip " style="background:#5AAB60">Strengthening</span><span class="mv-txt">Competitor 2nd CRL — AD psychosis</span><button class="why" onclick="event.stopPropagation();openMovement(5)" title="Details">?</button></div>
+<div class="mv-row" onclick="openMovement(6)"><span class="mv-date">Dec 2025</span><span class="state-chip compromised" style="background:#8E5BA0">Compromised</span><span class="mv-txt">ADEPT-2 irregularities disclosed — readout delayed</span><button class="why" onclick="event.stopPropagation();openMovement(6)" title="Details">?</button></div>
+<div class="mv-row" onclick="openMovement(7)"><span class="mv-date">Apr 2026</span><span class="state-chip " style="background:#5B92D1">Stable</span><span class="mv-txt">Competitor resubmits sNDA</span><button class="why" onclick="event.stopPropagation();openMovement(7)" title="Details">?</button></div>
+<div class="mv-row" onclick="openMovement(8)"><span class="mv-date">H2 2026</span><span class="state-chip " style="background:#E89327">Contested</span><span class="mv-txt">ADEPT-1 / -2 / -4 pivotal readouts (expected)</span><button class="why" onclick="event.stopPropagation();openMovement(8)" title="Details">?</button></div>
+  </div></div>
+</div>
+<div class="panel span-1">
+  <div class="panel-h"><span class="t">KOL / caregiver pulse</span><span class="c">where sentiment sits</span></div>
+  <div class="panel-body"><div class="kbar">
+    <div class="kbar-row"><span class="kbar-lbl">Off-the-black-box story</span><div class="kbar-track"><div class="kbar-seg pos" style="width:62%"></div><div class="kbar-seg split" style="width:28%"></div><div class="kbar-seg neu" style="width:10%"></div></div></div>
+    <div class="kbar-row"><span class="kbar-lbl">Muscarinic-in-AD credibility</span><div class="kbar-track"><div class="kbar-seg pos" style="width:45%"></div><div class="kbar-seg split" style="width:40%"></div><div class="kbar-seg neu" style="width:15%"></div></div></div>
+    <div class="kbar-row"><span class="kbar-lbl">Elderly GI tolerability</span><div class="kbar-track"><div class="kbar-seg pos" style="width:30%"></div><div class="kbar-seg split" style="width:42%"></div><div class="kbar-seg neg" style="width:28%"></div></div></div>
+    <div class="kbar-row"><span class="kbar-lbl">ADEPT-2 readout confidence</span><div class="kbar-track"><div class="kbar-seg pos" style="width:35%"></div><div class="kbar-seg split" style="width:40%"></div><div class="kbar-seg neg" style="width:25%"></div></div></div>
+    <div class="kbar-row"><span class="kbar-lbl">First-in-class enthusiasm</span><div class="kbar-track"><div class="kbar-seg pos" style="width:68%"></div><div class="kbar-seg split" style="width:22%"></div><div class="kbar-seg neu" style="width:10%"></div></div></div>
+  </div></div>
+</div>
+</div>
+
+<div class="dash">
+<div class="panel span-3">
+  <div class="panel-h"><span class="t">Decisions register</span><span class="c">11 decisions · sorted by urgency · click any for revisit conditions + linked themes</span></div>
+  <div class="panel-body"><div class="dec-grid">
+<div class="dec-card urgent" onclick="openDecision('d-regstrat')"><div class="dec-cat">Regulatory strategy<span class="dec-state st-urgent">Urgent</span></div><div class="dec-title">Align ADEPT readout messaging to the FDA's AD-specific bar</div><button class="why" onclick="event.stopPropagation();openDecision('d-regstrat')" title="Details">?</button><div class="dec-meta"><div class="dm-row"><span class="dm-k">Owner</span><span class="dm-v">Reg Affairs + Medical</span></div><div class="dm-row"><span class="dm-k">Next</span><span class="dm-v">Finalise AD-specific evidence framing for the readout <span class="dm-due">· pre-readout</span></span></div><div class="dm-row"><span class="dm-k">Revisit&nbsp;when</span><span class="dm-v dm-trig">ADEPT topline reads out, or FDA issues new AD guidance</span></div><div class="dm-driver">↳ driven by <b>LIT 53% — AD-specific comparative evidence</b></div></div></div>
+<div class="dec-card urgent" onclick="openDecision('d-integrity')"><div class="dec-cat">Scenario / risk<span class="dec-state st-urgent">Urgent</span></div><div class="dec-title">Independent-QA narrative + scenario-plan the delayed readout</div><button class="why" onclick="event.stopPropagation();openDecision('d-integrity')" title="Details">?</button><div class="dec-meta"><div class="dm-row"><span class="dm-k">Owner</span><span class="dm-v">Compliance + Medical leadership</span></div><div class="dm-row"><span class="dm-k">Next</span><span class="dm-v">Stand up independent-QA review; brief readout scenarios <span class="dm-due">· now</span></span></div><div class="dm-row"><span class="dm-k">Revisit&nbsp;when</span><span class="dm-v dm-trig">integrity QA completes, or readout date is confirmed</span></div><div class="dm-driver">↳ driven by <b>Evidence integrity — ADEPT-2 under review (◆)</b></div></div></div>
+<div class="dec-card action" onclick="openDecision('d-firstmover')"><div class="dec-cat">Positioning<span class="dec-state st-action">Action</span></div><div class="dec-title">Prepare first-in-class launch positioning (conditional)</div><button class="why" onclick="event.stopPropagation();openDecision('d-firstmover')" title="Details">?</button><div class="dec-meta"><div class="dm-row"><span class="dm-k">Owner</span><span class="dm-v">Launch + Medical strategy</span></div><div class="dm-row"><span class="dm-k">Next</span><span class="dm-v">Draft conditional first-in-class narrative; gate on readout <span class="dm-due">· T-6 pre-launch</span></span></div><div class="dm-row"><span class="dm-k">Revisit&nbsp;when</span><span class="dm-v dm-trig">readout credibility resolves, or pimavanserin status changes</span></div><div class="dm-driver">↳ driven by <b>CON 58% + first-in-class window theme</b></div></div></div>
+<div class="dec-card action" onclick="openDecision('d-safetypos')"><div class="dec-cat">Positioning<span class="dec-state st-action">Action</span></div><div class="dec-title">Build the mortality-differentiation narrative now</div><button class="why" onclick="event.stopPropagation();openDecision('d-safetypos')" title="Details">?</button><div class="dec-meta"><div class="dm-row"><span class="dm-k">Owner</span><span class="dm-v">Medical strategy</span></div><div class="dm-row"><span class="dm-k">Next</span><span class="dm-v">Assemble elderly mortality / safety differentiation pack <span class="dm-due">· pre-readout</span></span></div><div class="dm-row"><span class="dm-k">Revisit&nbsp;when</span><span class="dm-v dm-trig">class-wide safety label change, or new mortality data</span></div><div class="dm-driver">↳ driven by <b>CON 58% — cognitive/elderly safety bar</b></div></div></div>
+<div class="dec-card action" onclick="openDecision('d-mmse')"><div class="dec-cat">Evidence generation<span class="dec-state st-action">Action</span></div><div class="dec-title">Power & pre-position cognitive-safety (MMSE) endpoints</div><button class="why" onclick="event.stopPropagation();openDecision('d-mmse')" title="Details">?</button><div class="dec-meta"><div class="dm-row"><span class="dm-k">Owner</span><span class="dm-v">Biostatistics + Medical</span></div><div class="dm-row"><span class="dm-k">Next</span><span class="dm-v">Confirm MMSE powering in the ADEPT analysis plan <span class="dm-due">· pre-readout</span></span></div><div class="dm-row"><span class="dm-k">Revisit&nbsp;when</span><span class="dm-v dm-trig">FDA feedback on cognitive-safety bar</span></div><div class="dm-driver">↳ driven by <b>CON 58% — cognitive-safety endpoints</b></div></div></div>
+<div class="dec-card action" onclick="openDecision('d-biomarker')"><div class="dec-cat">Evidence generation<span class="dec-state st-action">Action</span></div><div class="dec-title">Validate biomarker-enrichment as label differentiation</div><button class="why" onclick="event.stopPropagation();openDecision('d-biomarker')" title="Details">?</button><div class="dec-meta"><div class="dm-row"><span class="dm-k">Owner</span><span class="dm-v">Translational + Reg</span></div><div class="dm-row"><span class="dm-k">Next</span><span class="dm-v">Confirm biomarker-enrichment supports the label claim <span class="dm-due">· pre-readout</span></span></div><div class="dm-row"><span class="dm-k">Revisit&nbsp;when</span><span class="dm-v dm-trig">ADEPT-4 biomarker-confirmed AD reads out</span></div><div class="dm-driver">↳ driven by <b>TL 67% — translational anchor</b></div></div></div>
+<div class="dec-card action" onclick="openDecision('d-ltsafety')"><div class="dec-cat">Evidence generation<span class="dec-state st-action">Action</span></div><div class="dec-title">Commit a long-term elderly safety evidence plan</div><button class="why" onclick="event.stopPropagation();openDecision('d-ltsafety')" title="Details">?</button><div class="dec-meta"><div class="dm-row"><span class="dm-k">Owner</span><span class="dm-v">Medical + Clin ops</span></div><div class="dm-row"><span class="dm-k">Next</span><span class="dm-v">Scope a long-term elderly safety study (→ #6) <span class="dm-due">· this quarter</span></span></div><div class="dm-row"><span class="dm-k">Revisit&nbsp;when</span><span class="dm-v dm-trig">a safety signal emerges, or payer/HTA requires it (→ #11)</span></div><div class="dm-driver">↳ driven by <b>CON 58% — long-term elderly safety gap</b></div></div></div>
+<div class="dec-card action" onclick="openDecision('d-comms')"><div class="dec-cat">Communications<span class="dec-state st-action">Action</span></div><div class="dec-title">Proactive KOL / investor narrative on remediation</div><button class="why" onclick="event.stopPropagation();openDecision('d-comms')" title="Details">?</button><div class="dec-meta"><div class="dm-row"><span class="dm-k">Owner</span><span class="dm-v">Medical comms + IR</span></div><div class="dm-row"><span class="dm-k">Next</span><span class="dm-v">Brief KOLs &amp; investors on integrity remediation <span class="dm-due">· now</span></span></div><div class="dm-row"><span class="dm-k">Revisit&nbsp;when</span><span class="dm-v dm-trig">integrity QA outcome, or KOL/caregiver sentiment shifts</span></div><div class="dm-driver">↳ driven by <b>DIG 40% + reputational-ripple theme</b></div></div></div>
+<div class="dec-card watch" onclick="openDecision('d-karxec')"><div class="dec-cat">Formulation<span class="dec-state st-watch">Watch</span></div><div class="dec-title">Sequence KarX-EC tolerability data</div><button class="why" onclick="event.stopPropagation();openDecision('d-karxec')" title="Details">?</button><div class="dec-meta"><div class="dm-row"><span class="dm-k">Owner</span><span class="dm-v">Clinical development</span></div><div class="dm-row"><span class="dm-k">Next</span><span class="dm-v">Align KarX-EC GI-tolerability readout sequence <span class="dm-due">· monitor</span></span></div><div class="dm-row"><span class="dm-k">Revisit&nbsp;when</span><span class="dm-v dm-trig">KarX-EC Ph1 GI-tolerability data reads out</span></div><div class="dm-driver">↳ driven by <b>GI-tolerability theme</b></div></div></div>
+<div class="dec-card watch" onclick="openDecision('d-compwatch')"><div class="dec-cat">Competitive response<span class="dec-state st-watch">Watch</span></div><div class="dec-title">Quarterly pimavanserin regulatory watch</div><button class="why" onclick="event.stopPropagation();openDecision('d-compwatch')" title="Details">?</button><div class="dec-meta"><div class="dm-row"><span class="dm-k">Owner</span><span class="dm-v">CI + Medical</span></div><div class="dm-row"><span class="dm-k">Next</span><span class="dm-v">Maintain the standing quarterly 5-HT2A / pimavanserin monitor <span class="dm-due">· quarterly</span></span></div><div class="dm-row"><span class="dm-k">Revisit&nbsp;when</span><span class="dm-v dm-trig">pimavanserin sNDA decision, or a new competitor filing</span></div><div class="dm-driver">↳ driven by <b>Competitor path 2× — pimavanserin resubmit</b></div></div></div>
+<div class="dec-card watch" onclick="openDecision('d-scenario')"><div class="dec-cat">Planning<span class="dec-state st-watch">Watch</span></div><div class="dec-title">Branch the launch plan on readout-credibility outcomes</div><button class="why" onclick="event.stopPropagation();openDecision('d-scenario')" title="Details">?</button><div class="dec-meta"><div class="dm-row"><span class="dm-k">Owner</span><span class="dm-v">Launch + Medical leadership</span></div><div class="dm-row"><span class="dm-k">Next</span><span class="dm-v">Keep the branched launch plan live (credible / delayed / negative) <span class="dm-due">· pre-readout</span></span></div><div class="dm-row"><span class="dm-k">Revisit&nbsp;when</span><span class="dm-v dm-trig">readout credibility resolves — the master trigger</span></div><div class="dm-driver">↳ driven by <b>Integrity overhang + H2-2026 readout window</b></div></div></div>
+  </div></div>
+</div>
+</div>
+
+<div class="dash" style="grid-template-columns:1fr">
+ <div class="panel">
+  <div class="panel-body" style="padding:14px 18px;font-size:12.5px;color:#3F4A55;line-height:1.55">
+   <b>Reading this view.</b> This is the same architecture as the schizophrenia operator view, pointed at a <b>pre-launch, first-in-class</b> asset-state. Two things look different on purpose: the <b>gap radar nets out stage-inapplicable capabilities</b> (RWE & Payer can't fire before launch — that's not a gap), and a new <b>Compromised</b> state carries the ADEPT-2 evidence-integrity overhang that no existing state could hold. Both are documented as architecture seams in the pressure-test workbook. Every theme, signal, decision and movement is click-through: theme → signals → KBQ source, and back again.
+  </div>
+ </div>
+</div>
+
+</main>
+
+
+<style>
+.linked-wrap{--ls:#5B92D1;--ly:#6B5BA0;--ld:#9C6A1F;--la:#5AAB60;--lx:#1F7A92}
+.linked-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.linked-col{display:flex;flex-direction:column;gap:6px}
+.linked-h{font-family:'Inter';font-size:9px;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;color:#fff;padding:3px 7px}
+.linked-item{display:block;background:var(--panel-alt);border:1px dashed var(--line);border-left:3px solid var(--ink-dim);padding:6px 9px;font-size:11.5px;color:var(--ink);text-decoration:none;line-height:1.3;transition:background .1s,border-color .1s;position:relative}
+.linked-item:hover{background:#fff;border-left-color:var(--teal);border-color:var(--teal)}
+.linked-item .meta{display:block;font-family:'Inter';font-size:8.5px;color:var(--ink-soft);letter-spacing:0.03em;margin-top:3px}
+.linked-item .pl{position:absolute;top:5px;right:6px;font-family:'Inter';font-size:7.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:0.06em}
+.linked-note{font-size:11px;color:var(--ink-soft);margin-top:10px;line-height:1.4}
+</style>
+<div class="dash" style="grid-template-columns:1fr">
+ <div class="panel">
+  <div class="panel-h"><span class="t">Linked dashboards · planned drill-downs</span><span class="c">referenced from this surface · deep-dive build later</span></div>
+  <div class="panel-body"><div class="linked-grid">
+   <div class="linked-col"><div class="linked-h" style="background:var(--ls)">Sense</div>
+     <a class="linked-item" href="#planned-social" style="border-left-color:var(--ls)"><span class="pl">planned</span>Social &amp; Digital Listening<span class="meta">absorbs MEDsights · social</span></a>
+     <a class="linked-item" href="#planned-congress" style="border-left-color:var(--ls)"><span class="pl">planned</span>Congress Intelligence<span class="meta">congress · share-of-voice</span></a>
+     <a class="linked-item" href="#planned-kol" style="border-left-color:var(--ls)"><span class="pl">planned</span>KOL / DOL Influence Map<span class="meta">DOL · referral · 3D</span></a>
+   </div>
+   <div class="linked-col"><div class="linked-h" style="background:var(--ly)">Synthesize</div>
+     <a class="linked-item" href="#planned-fm" style="border-left-color:var(--ly)"><span class="pl">planned</span>Field Medical Insight Synthesis<span class="meta">interactions · K&amp;B · NPSE</span></a>
+     <a class="linked-item" href="#planned-evidence" style="border-left-color:var(--ly)"><span class="pl">planned</span>Evidence &amp; Surrogate Map<span class="meta">surrogate ↔ outcome</span></a>
+   </div>
+   <div class="linked-col"><div class="linked-h" style="background:var(--ld)">Decide</div>
+     <a class="linked-item" href="#planned-risk" style="border-left-color:var(--ld)"><span class="pl">planned</span>Study-at-Risk &amp; Book-of-Work<span class="meta">iSTAR · LDBOW · MDG · MSRMA</span></a>
+     <a class="linked-item" href="#planned-let" style="border-left-color:var(--ld)"><span class="pl">planned</span>Launch Excellence Tracker<span class="meta">5-phase · at-risk · NPSE</span></a>
+     <a class="linked-item" href="#planned-comp" style="border-left-color:var(--ld)"><span class="pl">planned</span>Competitive &amp; Pipeline Landscape<span class="meta">precedent · self-succession</span></a>
+   </div>
+   <div class="linked-col"><div class="linked-h" style="background:var(--la)">Act</div>
+     <a class="linked-item" href="#planned-orch" style="border-left-color:var(--la)"><span class="pl">planned</span>Decision &amp; Revisit Orchestration<span class="meta">triggers · reminders · forum decks</span></a>
+     <a class="linked-item" href="#planned-msl" style="border-left-color:var(--la)"><span class="pl">planned</span>MSL / Field Action<span class="meta">site recs · coverage · referral</span></a>
+   </div>
+   <div class="linked-col"><div class="linked-h" style="background:var(--lx)">Cross-cutting</div>
+     <a class="linked-item" href="#planned-value" style="border-left-color:var(--lx)"><span class="pl">planned</span>Value &amp; Access / HTA<span class="meta">ICER · payer · pricing</span></a>
+     <a class="linked-item" href="#planned-portfolio" style="border-left-color:var(--lx)"><span class="pl">planned</span>Portfolio Book-of-Work<span class="meta">multi-asset · by TA</span></a>
+     <a class="linked-item" href="#planned-lineage" style="border-left-color:var(--lx)"><span class="pl">planned</span>Data Lineage &amp; Source Health<span class="meta">freshness · coverage</span></a>
+   </div>
+  </div>
+  <div class="linked-note">These are placeholders — each modernizes an existing MA BI&amp;A tool and is a future drill-down from this surface. See the BI&amp;A notes &amp; dashboard map for scope and the seam each one closes.</div>
+  </div>
+ </div>
+</div>
+
+<div class="drawer-overlay" id="drawer-overlay"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-h">
+    <div class="drawer-h-l">
+      <div class="drawer-eyebrow" id="drawer-eyebrow">—</div>
+      <div class="drawer-title serif" id="drawer-title">—</div>
+    </div>
+    <button class="drawer-close" id="drawer-close" aria-label="Close">×</button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+</aside>
+
+
+<script>
+const DATA = {
+ themes: {"t-firstinclass": {"state": "Strengthening", "title": "First-in-class window is open", "summary": "The only mechanistic predecessor (pimavanserin) has been CRL'd twice in dementia/AD psychosis, leaving no approved comparator. If ADEPT clears the FDA's AD-specific bar, Cobenfy would be the first FDA-approved therapy for ADP.", "signals": ["REG-021", "LIT-069"], "decisions": ["d-firstmover"], "kbq": "KBQ-REG-A"}, "t-blackbox": {"state": "Strengthening-Thin", "title": "Off-the-black-box differentiation", "summary": "The comparator class \u2014 off-label atypical antipsychotics \u2014 carries an FDA black-box mortality warning in elderly dementia. A non-dopaminergic muscarinic mechanism is a differentiation lever, but the elderly-safety claim is unproven until ADEPT safety matures.", "signals": ["TL-009", "REG-014", "LIT-027"], "decisions": ["d-safetypos"], "kbq": "KBQ-TL-C"}, "t-biomarker": {"state": "Strengthening-Thin", "title": "Biomarker enrichment as regulatory de-risking", "summary": "ADEPT-4's biomarker-confirmed-AD enrichment reads as a direct design response to the FDA's subgroup objection against the competitor. Plausibly converts a trial-design choice into a label-differentiation asset \u2014 pending the data.", "signals": ["REG-022", "LIT-073"], "decisions": ["d-biomarker"], "kbq": "KBQ-REG-A"}, "t-fdabar": {"state": "Contested", "title": "The FDA bar is steep and precedent-defined", "summary": "The competitor's 2nd CRL made the evidentiary standard explicit: AD-specific efficacy, not a dementia-subgroup-driven effect. Clearing the field and clearing the bar are different things \u2014 the same precedent that helps Cobenfy also raises its hurdle.", "signals": ["REG-014", "LIT-073"], "decisions": ["d-regstrat"], "kbq": "KBQ-LIT-B"}, "t-anchor": {"state": "Contested", "title": "Translational anchor vs AD-biology risk", "summary": "Schizophrenia approval (EMERGENT-2/-3) is real proof-of-concept for the muscarinic mechanism, but AD patients differ in biology, age and tolerability. KOLs split between mechanism enthusiasm and unproven-in-AD skepticism.", "signals": ["KOL-016"], "decisions": ["d-regstrat"], "kbq": "KBQ-KOL-B"}, "t-geri": {"state": "Contested", "title": "Geriatric safety / GI stance is conditional", "summary": "Geriatric-psychiatry advisors are cautiously optimistic on a non-dopaminergic mechanism but want long-term elderly safety before broad use. The GI/cholinergic profile is the live concern.", "signals": ["KOL-013", "LIT-027"], "decisions": ["d-safetypos"], "kbq": "KBQ-KOL-C"}, "t-gi": {"state": "Stable", "title": "GI tolerability in an elderly population", "summary": "Nausea / vomiting / constipation / dizziness extrapolated from schizophrenia data; trospium blunts peripheral effects but elderly tolerance is unproven. KarX-EC (enteric-coated xanomeline) is the mitigation play.", "signals": ["LIT-027", "TL-017", "KOL-013"], "decisions": ["d-karxec"], "kbq": "KBQ-LIT-C"}, "t-compalive": {"state": "Stable", "title": "Competitor is not dead", "summary": "Despite two CRLs, the competitor resubmitted its sNDA in Apr 2026 \u2014 a credible 5-HT2A alternative remains in the timeline and could re-open if the FDA's stance softens.", "signals": ["LIT-069", "TL-024"], "decisions": ["d-compwatch"], "kbq": "KBQ-TL-D"}, "t-timing": {"state": "Stable", "title": "Readout timing intact despite the event", "summary": "The ADEPT-2 irregularities delayed that specific study and expanded enrolment, but the pivotal window (ADEPT-1/-2/-4) is still guided to H2 2026.", "signals": ["LIT-081"], "decisions": ["d-scenario"], "kbq": "KBQ-LIT-I"}, "t-window": {"state": "Stable", "title": "Competitive window unchanged by the delay", "summary": "No competitor is positioned to exploit the specific ADEPT-2 delay; the first-in-class timing window persists.", "signals": ["CON-R-006", "TL-026"], "decisions": ["d-scenario"], "kbq": "KBQ-CON-R"}, "t-mmse": {"state": "Thin", "title": "Cognitive-safety bar must be cleared", "summary": "In a dementia population, MMSE neutrality (no cognitive decline) is a pass/fail bar, not a nice-to-have \u2014 the predecessor cleared it and Cobenfy must match. Little ADP-specific data yet.", "signals": ["LIT-052"], "decisions": ["d-mmse"], "kbq": "KBQ-LIT-D"}, "t-ltsafety": {"state": "Thin", "title": "Long-term elderly safety gap", "summary": "No long-term elderly tolerability dataset yet exists; ADEPT-1 (38-week relapse-prevention) is the closest forthcoming. A true coverage gap (absence of data) \u2014 distinct from the integrity overhang.", "signals": ["LIT-G11"], "decisions": ["d-ltsafety"], "kbq": "KBQ-LIT-O"}, "t-ripple": {"state": "Thin", "title": "Reputational / sentiment ripple", "summary": "Investor and KOL sentiment registered the ADEPT-2 disclosure; concern centres on readout reliability, not on the molecule. Thin but worth watching.", "signals": ["DIG-014", "KOL-019"], "decisions": ["d-comms"], "kbq": "KBQ-DIG-A"}, "t-integrity": {"state": "Compromised", "title": "Evidence-integrity overhang on the pivotal readout", "summary": "In Dec 2025 the sponsor disclosed clinical-trial-execution irregularities at a limited number of ADEPT-2 sites, enrolling additional patients and delaying the readout. This is neither efficacy, safety, nor absence-of-data \u2014 it is PRESENT evidence whose credibility is impaired. The existing COVER(NEG)=absence detection and the five-state machine had no home for it, so this view introduces a Compromised / under-review state. This is the single most informative input of the whole pressure test and the strongest new architecture seam.", "signals": ["REG-031", "LIT-G14"], "decisions": ["d-integrity"], "kbq": "KBQ-REG-A"}}, signals: {"REG-021": {"desc": "Competitor pimavanserin received a 2nd CRL in AD psychosis; FDA recommended an additional AD-specific trial.", "cap": "Regulatory & Guideline", "family": "STANCE", "mode": "C", "sources": "FDA tracker \u00b7 advisory-committee records \u00b7 competitor CRL letters", "last_seen": "Sep 2025", "state": "active"}, "LIT-073": {"desc": "FDA judged HARMONY's benefit to be driven by the Parkinson's-dementia subgroup, with insufficient AD-specific evidence.", "cap": "Literature", "family": "ASSERT", "mode": "B", "sources": "HARMONY publications \u00b7 FDA review docs", "last_seen": "Sep 2025", "state": "active"}, "REG-022": {"desc": "ADEPT-4 biomarker-confirmed-AD enrichment reads as a direct design response to the subgroup objection.", "cap": "Regulatory & Guideline", "family": "DET", "mode": "C", "sources": "ClinicalTrials.gov \u00b7 ADEPT-4 protocol", "last_seen": "2026", "state": "emerging"}, "LIT-069": {"desc": "Competitor pimavanserin status \u2014 twice CRL'd, resubmitted Apr 2026; not dead.", "cap": "Literature", "family": "IR-CLS", "mode": "B", "sources": "Industry press \u00b7 analyst notes \u00b7 SEC filings", "last_seen": "Apr 2026", "state": "active"}, "TL-024": {"desc": "Pimavanserin Apr-2026 resubmission keeps a credible 5-HT2A alternative in the timeline.", "cap": "Treatment Landscape", "family": "DET", "mode": "C", "sources": "ClinicalTrials.gov \u00b7 competitor releases", "last_seen": "Apr 2026", "state": "active"}, "KOL-016": {"desc": "KOL community split: muscarinic mechanism enthusiasm vs unproven-in-AD-biology skepticism.", "cap": "KOL & Stakeholder", "family": "STANCE", "mode": "B", "sources": "Author networks \u00b7 congress commentary \u00b7 advisory boards", "last_seen": "2026", "state": "active"}, "REG-014": {"desc": "FDA's AD-specific-evidence bar \u2014 subgroup-purity expectation that conditions a first-in-class ADP filing.", "cap": "Regulatory & Guideline", "family": "STANCE", "mode": "C", "sources": "FDA precedent \u00b7 advisory-committee guidance", "last_seen": "Sep 2025", "state": "active"}, "TL-009": {"desc": "Off-label atypical antipsychotics carry an FDA black-box mortality warning in elderly dementia \u2014 the comparator class's defining liability.", "cap": "Treatment Landscape", "family": "DET", "mode": "C", "sources": "FDA class labelling \u00b7 atypical-AP safety literature", "last_seen": "standing", "state": "active"}, "LIT-027": {"desc": "GI / cholinergic AE profile (nausea, vomiting, dyspepsia, constipation, dizziness, BP effects), extrapolated from schizophrenia to an elderly population.", "cap": "Literature", "family": "ASSERT", "mode": "B", "sources": "EMERGENT-2/-3 & ADEPT safety data \u00b7 FDA label", "last_seen": "2026", "state": "active"}, "REG-014b": {"desc": "(see REG-014)", "cap": "Regulatory & Guideline", "family": "STANCE", "mode": "C", "sources": "\u2014", "last_seen": "\u2014", "state": "active"}, "LIT-052": {"desc": "Cognitive-safety bar: must demonstrate MMSE neutrality (no decline) in a dementia population.", "cap": "Literature", "family": "ASSERT", "mode": "B", "sources": "ADEPT cognitive endpoints \u00b7 MMSE \u00b7 mechanism reviews", "last_seen": "pending", "state": "emerging"}, "TL-017": {"desc": "KarX-EC enteric-coated xanomeline (Ph1) \u2014 designed to cut GI-driven discontinuation; a tolerability hedge.", "cap": "Treatment Landscape", "family": "DET", "mode": "C", "sources": "Pipeline DBs \u00b7 ClinicalTrials.gov \u00b7 sponsor releases", "last_seen": "2025", "state": "emerging"}, "KOL-013": {"desc": "Geriatric-psychiatry advisors: cautious optimism on a non-dopaminergic mechanism; want long-term elderly safety first.", "cap": "KOL & Stakeholder", "family": "STANCE", "mode": "A", "sources": "Advisory boards \u00b7 investigator commentary", "last_seen": "2026", "state": "active"}, "LIT-G11": {"desc": "No long-term elderly tolerability dataset yet exists; ADEPT-1 (38-wk) is the closest forthcoming. Coverage gap (absence of data).", "cap": "Literature", "family": "COVER", "mode": "B", "sources": "Corpus scan for long-term elderly safety", "last_seen": "absent", "state": "gap"}, "REG-031": {"desc": "Sponsor disclosed clinical-trial-execution irregularities at a limited number of ADEPT-2 sites; additional enrolment; readout delayed. An evidence-integrity event.", "cap": "Regulatory & Guideline", "family": "STANCE", "mode": "C", "sources": "Sponsor disclosure \u00b7 ClinicalTrials.gov status \u00b7 FDA inspection signals", "last_seen": "Dec 2025", "state": "compromised"}, "LIT-081": {"desc": "ADEPT-2 readout delayed / scope expanded; pivotal window still guided to H2 2026.", "cap": "Literature", "family": "IR-CLS", "mode": "B", "sources": "Sponsor press \u00b7 analyst notes \u00b7 trade press", "last_seen": "Dec 2025", "state": "active"}, "CON-R-006": {"desc": "No competitor positioned to exploit the specific ADEPT-2 delay; first-in-class window persists.", "cap": "Congress", "family": "NET", "mode": "B", "sources": "Congress programs \u00b7 competitive intel", "last_seen": "2026", "state": "active"}, "KOL-019": {"desc": "Investigator community watchful; remediation seen as appropriate but ADEPT-2 credibility is now scrutinised.", "cap": "KOL & Stakeholder", "family": "STANCE", "mode": "B", "sources": "Investigator networks \u00b7 congress commentary", "last_seen": "2026", "state": "emerging"}, "DIG-014": {"desc": "Sentiment ripple on the disclosure; concern centred on readout reliability, not the molecule.", "cap": "Digital & Social", "family": "AGG", "mode": "C", "sources": "Analyst notes \u00b7 financial press \u00b7 social", "last_seen": "Dec 2025", "state": "emerging"}, "TL-026": {"desc": "Competitive timing unchanged by the ADEPT-2 delay.", "cap": "Treatment Landscape", "family": "DET", "mode": "C", "sources": "Pipeline DBs \u00b7 competitor releases", "last_seen": "2026", "state": "active"}, "LIT-G14": {"desc": "The risk is impaired CREDIBILITY of present evidence \u2014 COVER(NEG)=absence cannot represent it. The catalog has no state for 'present-but-compromised'.", "cap": "Literature", "family": "COVER:IMP (proposed)", "mode": "B", "sources": "Protocol amendments \u00b7 corpus scan", "last_seen": "Dec 2025", "state": "compromised"}}, kbqs: {"KBQ-REG-A": {"id": "KBQ-REG-A", "capability": "REG", "cap_name": "Regulatory & Guideline", "method": "STANCE", "method_name": "Regulatory-stance detection", "mode": "C", "mode_name": "monitor-feed", "sources": "FDA tracker \u00b7 advisory-committee records \u00b7 sponsor & competitor disclosures", "refreshed": "Apr 2026", "confidence": "High", "confidence_basis": "Multiple primary regulatory sources", "text": "How is the regulatory trajectory moving \u2014 our ADEPT path AND the competitor precedent that conditions our bar?", "contributing": ["REG-021", "REG-022", "REG-014", "REG-031"]}, "KBQ-LIT-B": {"id": "KBQ-LIT-B", "capability": "LIT", "cap_name": "Literature", "method": "ASSERT", "method_name": "Claim/assertion extraction", "mode": "B", "mode_name": "scan-corpus", "sources": "HARMONY publications \u00b7 ADP trial literature \u00b7 FDA review docs", "refreshed": "2026", "confidence": "High", "confidence_basis": "Peer-reviewed + regulatory record", "text": "Where does the clinical evidence succeed or fail \u2014 including the competitor's HARMONY subgroup issue?", "contributing": ["LIT-073", "REG-014"]}, "KBQ-LIT-C": {"id": "KBQ-LIT-C", "capability": "LIT", "cap_name": "Literature", "method": "ASSERT", "method_name": "Claim/assertion extraction", "mode": "B", "mode_name": "scan-corpus", "sources": "EMERGENT-2/-3 & ADEPT safety data \u00b7 FDA label \u00b7 Ph3 protocols", "refreshed": "2026", "confidence": "Medium", "confidence_basis": "Extrapolated from schizophrenia population", "text": "What are the adverse events \u2014 clinical-trial AE profile, severity, discontinuations?", "contributing": ["LIT-027", "LIT-052"]}, "KBQ-LIT-D": {"id": "KBQ-LIT-D", "capability": "LIT", "cap_name": "Literature", "method": "ASSERT", "method_name": "Claim/assertion extraction", "mode": "B", "mode_name": "scan-corpus", "sources": "ADEPT cognitive endpoints \u00b7 MMSE \u00b7 mechanism reviews", "refreshed": "pending", "confidence": "Low", "confidence_basis": "ADP-specific cognition data not yet read out", "text": "Is there a cognitive-safety signal \u2014 does the drug help or harm cognition in a dementia population?", "contributing": ["LIT-052"]}, "KBQ-LIT-I": {"id": "KBQ-LIT-I", "capability": "LIT", "cap_name": "Literature", "method": "IR-CLS", "method_name": "Information-retrieval classification", "mode": "B", "mode_name": "scan-corpus", "sources": "Sponsor press \u00b7 analyst notes \u00b7 trade press", "refreshed": "Dec 2025", "confidence": "Medium", "confidence_basis": "Corporate disclosure + secondary analysis", "text": "How is the corporate / lifecycle disclosure picture shifting around the program?", "contributing": ["LIT-069", "LIT-081"]}, "KBQ-LIT-O": {"id": "KBQ-LIT-O", "capability": "LIT", "cap_name": "Literature", "method": "COVER", "method_name": "Coverage / absence detection", "mode": "B", "mode_name": "scan-corpus", "sources": "Corpus scan for long-term elderly safety data", "refreshed": "2026", "confidence": "High", "confidence_basis": "Systematic absence is itself the signal", "text": "Where is the evidence missing \u2014 long-term elderly tolerability?", "contributing": ["LIT-G11", "LIT-G14"]}, "KBQ-TL-C": {"id": "KBQ-TL-C", "capability": "TL", "cap_name": "Treatment Landscape", "method": "DET", "method_name": "Entity / event detection", "mode": "C", "mode_name": "monitor-feed", "sources": "FDA black-box class labelling \u00b7 atypical-AP safety lit \u00b7 guidelines", "refreshed": "standing", "confidence": "High", "confidence_basis": "Established regulatory labelling", "text": "What is the standard-of-care safety baseline we are measured against?", "contributing": ["TL-009", "REG-014"]}, "KBQ-TL-D": {"id": "KBQ-TL-D", "capability": "TL", "cap_name": "Treatment Landscape", "method": "DET", "method_name": "Entity / event detection", "mode": "C", "mode_name": "monitor-feed", "sources": "ClinicalTrials.gov \u00b7 pipeline DBs \u00b7 competitor releases", "refreshed": "Apr 2026", "confidence": "High", "confidence_basis": "Primary trial registry + releases", "text": "How is the competitive pipeline reshaping \u2014 is the comparator still alive?", "contributing": ["TL-024", "LIT-069", "TL-026"]}, "KBQ-KOL-B": {"id": "KBQ-KOL-B", "capability": "KOL", "cap_name": "KOL & Stakeholder", "method": "STANCE", "method_name": "Stance detection", "mode": "B", "mode_name": "scan-corpus", "sources": "Author networks \u00b7 congress commentary \u00b7 advisory boards", "refreshed": "2026", "confidence": "Medium", "confidence_basis": "Qualitative KOL signal", "text": "Where do experts stand on muscarinic vs 5-HT2A for ADP?", "contributing": ["KOL-016"]}, "KBQ-KOL-C": {"id": "KBQ-KOL-C", "capability": "KOL", "cap_name": "KOL & Stakeholder", "method": "STANCE", "method_name": "Stance detection", "mode": "A", "mode_name": "probe-source", "sources": "Advisory boards \u00b7 investigator commentary \u00b7 KOL networks", "refreshed": "2026", "confidence": "Medium", "confidence_basis": "Advisory-board sampling", "text": "What do advisors and investigators say about elderly safety and the GI profile?", "contributing": ["KOL-013", "LIT-027"]}, "KBQ-DIG-A": {"id": "KBQ-DIG-A", "capability": "DIG", "cap_name": "Digital & Social", "method": "AGG", "method_name": "Aggregate-sentiment", "mode": "C", "mode_name": "monitor-feed", "sources": "Analyst notes \u00b7 financial press \u00b7 social", "refreshed": "Dec 2025", "confidence": "Low", "confidence_basis": "Noisy sentiment channel", "text": "What is investor / analyst / caregiver sentiment doing on the disclosure?", "contributing": ["DIG-014", "KOL-019"]}, "KBQ-CON-R": {"id": "KBQ-CON-R", "capability": "CON", "cap_name": "Congress", "method": "NET", "method_name": "Network / share-of-voice", "mode": "B", "mode_name": "scan-corpus", "sources": "Congress programs \u00b7 competitive intel", "refreshed": "2026", "confidence": "Medium", "confidence_basis": "Congress-program coverage", "text": "Who is gaining or losing ground given the delay?", "contributing": ["CON-R-006"]}}, decisions: {"d-regstrat": {"title": "Align ADEPT readout messaging to the FDA's AD-specific bar", "urgency": "urgent", "category": "Regulatory strategy", "status": "Open \u00b7 pre-readout", "summary": "Pre-empt the subgroup objection that sank the competitor: frame the readout around biomarker-confirmed, AD-pure efficacy on NPI-C H+D and CGI-S, not a dementia-mixed effect.", "themes": ["t-fdabar", "t-biomarker", "t-anchor"], "revisit": "REVISIT WHEN ADEPT topline reads; IMMEDIATELY on any FDA pre-submission feedback.", "kbq": "KBQ-REG-A"}, "d-integrity": {"title": "Independent-QA narrative + scenario-plan the delayed readout", "urgency": "urgent", "category": "Scenario / risk", "status": "Open \u00b7 active", "summary": "Commission an independent quality narrative on the ADEPT-2 remediation and branch the readout on a credibility-impaired vs clean-data outcome before it lands.", "themes": ["t-integrity", "t-timing"], "revisit": "REVISIT WHEN remediation completes; IMMEDIATELY on any FDA inspection finding.", "kbq": "KBQ-REG-A"}, "d-firstmover": {"title": "Prepare first-in-class launch positioning (conditional)", "urgency": "action", "category": "Positioning", "status": "Open \u00b7 conditional", "summary": "Stage the 'first FDA-approved therapy for ADP' positioning, conditional on a positive readout \u2014 but do not commit spend until the primary endpoint is known.", "themes": ["t-firstinclass"], "revisit": "REVISIT WHEN ADEPT primary endpoint result is known.", "kbq": "KBQ-REG-A"}, "d-safetypos": {"title": "Build the mortality-differentiation narrative now", "urgency": "action", "category": "Positioning", "status": "Open", "summary": "Position the muscarinic, non-dopaminergic mechanism explicitly off the atypical-class black-box mortality warning \u2014 evidence-conditional, pre-readout.", "themes": ["t-blackbox", "t-geri"], "revisit": "REVISIT WHEN ADEPT safety database matures, OR if any mortality imbalance emerges.", "kbq": "KBQ-TL-C"}, "d-mmse": {"title": "Power & pre-position cognitive-safety (MMSE) endpoints", "urgency": "action", "category": "Evidence generation", "status": "Open", "summary": "Ensure MMSE neutrality is powered and pre-positioned in the readout narrative \u2014 it is a pass/fail bar in a dementia population.", "themes": ["t-mmse"], "revisit": "REVISIT AT ADEPT readout; IMMEDIATELY if an interim cognition signal appears.", "kbq": "KBQ-LIT-D"}, "d-biomarker": {"title": "Validate biomarker-enrichment as label differentiation", "urgency": "action", "category": "Evidence generation", "status": "Open", "summary": "Treat the biomarker-confirmed-AD population as a differentiation asset, not just a trial-design choice \u2014 the AD-pure population the competitor could not show.", "themes": ["t-biomarker"], "revisit": "REVISIT WHEN ADEPT-4 biomarker-subgroup data are available.", "kbq": "KBQ-REG-A"}, "d-ltsafety": {"title": "Commit a long-term elderly safety evidence plan", "urgency": "action", "category": "Evidence generation", "status": "Open", "summary": "Close the long-term elderly tolerability gap pre-emptively via ADEPT-1 + a planned OLE / registry.", "themes": ["t-ltsafety"], "revisit": "REVISIT WHEN ADEPT-1 38-week data are available.", "kbq": "KBQ-LIT-O"}, "d-comms": {"title": "Proactive KOL / investor narrative on remediation", "urgency": "action", "category": "Communications", "status": "Open", "summary": "Separate the molecule's evidence from the conduct issue with a factual, proactive narrative to KOLs and investors.", "themes": ["t-ripple"], "revisit": "REVISIT WHEN sentiment data refresh.", "kbq": "KBQ-DIG-A"}, "d-karxec": {"title": "Sequence KarX-EC tolerability data", "urgency": "watch", "category": "Formulation", "status": "Watch", "summary": "Use KarX-EC (enteric-coated xanomeline) data to de-risk GI-driven discontinuation in the elderly before broad uptake.", "themes": ["t-gi"], "revisit": "REVISIT WHEN KarX-EC Ph data read out.", "kbq": "KBQ-LIT-C"}, "d-compwatch": {"title": "Quarterly pimavanserin regulatory watch", "urgency": "watch", "category": "Competitive response", "status": "Watch", "summary": "The Apr-2026 resubmission could re-open a 5-HT2A path; monitor FDA actions quarterly.", "themes": ["t-compalive"], "revisit": "REVISIT QUARTERLY; IMMEDIATELY on any competitor FDA action.", "kbq": "KBQ-TL-D"}, "d-scenario": {"title": "Branch the launch plan on readout-credibility outcomes", "urgency": "watch", "category": "Planning", "status": "Watch", "summary": "Hold competitive-window assumptions steady; branch filing/launch planning on the credibility of the ADEPT-2 readout.", "themes": ["t-timing", "t-window"], "revisit": "REVISIT AT ADEPT-2 read; QUARTERLY otherwise.", "kbq": "KBQ-CON-R"}},
+ gaps: {"REG": {"name": "Regulatory & Guideline", "fired": 4, "total": 5, "pct": 80, "na": false}, "LIT": {"name": "Literature", "fired": 8, "total": 15, "pct": 53, "na": false}, "TL": {"name": "Treatment Landscape", "fired": 4, "total": 6, "pct": 67, "na": false}, "KOL": {"name": "KOL & Stakeholder", "fired": 3, "total": 5, "pct": 60, "na": false}, "CON": {"name": "Congress", "fired": 2, "total": 4, "pct": 50, "na": false}, "DIG": {"name": "Digital & Social", "fired": 2, "total": 5, "pct": 40, "na": false}, "RWE": {"name": "Real-World Evidence", "fired": 1, "total": 6, "pct": 17, "na": true}, "PAY": {"name": "Payer & Access", "fired": 1, "total": 5, "pct": 20, "na": true}}, movements: [{"date": "Apr 2021", "title": "Competitor 1st CRL \u2014 dementia psychosis", "state": "Stable", "capability": "Regulatory & Guideline", "theme": "t-firstinclass", "so": "First regulatory rejection in the indication; establishes that the FDA bar here is unusually demanding."}, {"date": "Sep 2024", "title": "Cobenfy approved in schizophrenia", "state": "Strengthening", "capability": "Regulatory & Guideline", "theme": "t-anchor", "so": "Regulatory proof-of-concept for the muscarinic mechanism \u2014 de-risks the ADEPT program."}, {"date": "Sep 2024", "title": "ADEPT-4 initiated (biomarker-confirmed AD)", "state": "Strengthening-Thin", "capability": "Treatment Landscape", "theme": "t-biomarker", "so": "Biomarker enrichment positions the program to answer the FDA's subgroup objection directly."}, {"date": "Jun 2025", "title": "KarX-EC Ph1 begins (GI mitigation)", "state": "Strengthening-Thin", "capability": "Treatment Landscape", "theme": "t-gi", "so": "A tolerability hedge for the elderly population entering the clinic."}, {"date": "Jul 2025", "title": "ADEPT-2 completes primary enrolment", "state": "Stable", "capability": "Treatment Landscape", "theme": "t-timing", "so": "Pivotal study reaches a milestone \u2014 sets up the H2-2026 read."}, {"date": "Aug\u2013Sep 2025", "title": "Competitor 2nd CRL \u2014 AD psychosis", "state": "Strengthening", "capability": "Regulatory & Guideline", "theme": "t-firstinclass", "so": "FDA cites the Parkinson's-dementia-subgroup confound; clears the field but makes the AD-specific bar explicit."}, {"date": "Dec 2025", "title": "ADEPT-2 irregularities disclosed \u2014 readout delayed", "state": "Compromised", "capability": "Regulatory & Guideline", "theme": "t-integrity", "so": "An evidence-integrity event: present data whose credibility is impaired. No existing state held it \u2014 this is the architecture's strongest new seam."}, {"date": "Apr 2026", "title": "Competitor resubmits sNDA", "state": "Stable", "capability": "Treatment Landscape", "theme": "t-compalive", "so": "The 5-HT2A path is not dead; the competitive window is open but not guaranteed."}, {"date": "H2 2026", "title": "ADEPT-1 / -2 / -4 pivotal readouts (expected)", "state": "Contested", "capability": "Literature", "theme": "t-fdabar", "so": "The catalyst window \u2014 efficacy on AD-specific endpoints against a precedent-defined bar."}],
+ theme_titles: {"t-firstinclass": "First-in-class window is open", "t-blackbox": "Off-the-black-box differentiation", "t-biomarker": "Biomarker enrichment as regulatory de-risking", "t-fdabar": "The FDA bar is steep and precedent-defined", "t-anchor": "Translational anchor vs AD-biology risk", "t-geri": "Geriatric safety / GI stance is conditional", "t-gi": "GI tolerability in an elderly population", "t-compalive": "Competitor is not dead", "t-timing": "Readout timing intact despite the event", "t-window": "Competitive window unchanged by the delay", "t-mmse": "Cognitive-safety bar must be cleared", "t-ltsafety": "Long-term elderly safety gap", "t-ripple": "Reputational / sentiment ripple", "t-integrity": "Evidence-integrity overhang on the pivotal readout"}, decision_titles: {"d-regstrat": "Align ADEPT readout messaging to the FDA's AD-specific bar", "d-integrity": "Independent-QA narrative + scenario-plan the delayed readout", "d-firstmover": "Prepare first-in-class launch positioning (conditional)", "d-safetypos": "Build the mortality-differentiation narrative now", "d-mmse": "Power & pre-position cognitive-safety (MMSE) endpoints", "d-biomarker": "Validate biomarker-enrichment as label differentiation", "d-ltsafety": "Commit a long-term elderly safety evidence plan", "d-comms": "Proactive KOL / investor narrative on remediation", "d-karxec": "Sequence KarX-EC tolerability data", "d-compwatch": "Quarterly pimavanserin regulatory watch", "d-scenario": "Branch the launch plan on readout-credibility outcomes"}
+};
+const drawer=document.getElementById('drawer'), overlay=document.getElementById('drawer-overlay');
+const drawerEyebrow=document.getElementById('drawer-eyebrow'), drawerTitle=document.getElementById('drawer-title'), drawerBody=document.getElementById('drawer-body');
+function open(){drawer.classList.add('open');overlay.classList.add('open');}
+function close(){drawer.classList.remove('open');overlay.classList.remove('open');}
+document.getElementById('drawer-close').addEventListener('click',close);
+overlay.addEventListener('click',close);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+function chipState(state){const c={'Strengthening':'#5AAB60','Strengthening-Thin':'#B49563','Contested':'#E89327','Stable':'#5B92D1','Thin':'#9AA3AC','Compromised':'#8E5BA0'};return `<span class="state-chip" style="background:${c[state]||'#9AA3AC'}">${state}</span>`;}
+function renderConfidence(level){const n={High:3,Medium:2,Low:1}[level]||1;let dots='';for(let i=0;i<3;i++){dots+=`<span class="dot ${i<n?'on':''}"></span>`;}return `<span class="confidence-bar">${dots}</span> <b>${level}</b>`;}
+function renderSignalItem(sid){const sig=DATA.signals[sid];if(!sig){return `<div class="drawer-item">${sid} <span class="sub">catalog signal</span></div>`;}
+ const sc={'active':'#5AAB60','emerging':'#B49563','gap':'#D74F2A','inactive':'#9AA3AC','compromised':'#8E5BA0'};const col=sc[sig.state]||'#9AA3AC';
+ return `<div class="drawer-item rich" onclick="openSignal('${sid}')"><span class="desc">${sig.desc}</span><span class="meta"><span class="sig-state" style="background:${col}">${sig.state}</span><span>${sid}</span><span class="sep">·</span><span>${sig.cap}</span><span class="sep">·</span><span>${sig.family}</span><span class="sep">·</span><span>last ${sig.last_seen}</span><span class="arrow">→</span></span></div>`;}
+function kbqBlock(kid){const k=DATA.kbqs[kid];if(!k)return '';const s=(k.contributing||[]).map(renderSignalItem).join('');
+ return `<div class="drawer-section"><h4>How we know this <span class="meta">${kid}</span></h4><div class="quote">${k.text}</div>
+ <div class="kv"><span class="k">Capability</span><span class="v"><span class="pill">${k.capability}</span> ${k.cap_name}</span></div>
+ <div class="kv"><span class="k">Method</span><span class="v"><span class="pill">${k.method}</span> ${k.method_name}</span></div>
+ <div class="kv"><span class="k">Mining mode</span><span class="v"><span class="pill">Mode ${k.mode}</span> ${k.mode_name}</span></div>
+ <div class="kv"><span class="k">Sources</span><span class="v">${k.sources}</span></div>
+ <div class="kv"><span class="k">Last refreshed</span><span class="v">${k.refreshed}</span></div>
+ <div class="kv"><span class="k">Confidence</span><span class="v">${renderConfidence(k.confidence)} <span style="display:block;margin-top:4px;font-family:'JetBrains Mono';font-size:10px;color:#6B7280">${k.confidence_basis}</span></span></div>
+ <div class="drawer-section" style="margin-top:12px;margin-bottom:0"><h4 style="font-size:10px">Contributing signals <span class="meta">${(k.contributing||[]).length}</span></h4><div class="drawer-list">${s}</div></div></div>`;}
+function openTheme(tid){const t=DATA.themes[tid];if(!t)return;
+ drawerEyebrow.innerHTML=`Theme ${chipState(t.state)} <span style="color:#9AA3AC">· ${tid}</span>`;drawerTitle.textContent=t.title;
+ const decs=(t.decisions||[]).map(d=>`<div class="drawer-item" onclick="openDecision('${d}')" style="cursor:pointer">${DATA.decision_titles[d]||d} <span class="sub">${d}</span></div>`).join('');
+ const sigs=(t.signals||[]).map(renderSignalItem).join('');
+ drawerBody.innerHTML=`<div class="drawer-section"><h4>What it means</h4><p>${t.summary}</p></div>
+ <div class="drawer-section"><h4>Contributing signals <span class="meta">${(t.signals||[]).length}</span></h4><div class="drawer-list">${sigs}</div></div>
+ <div class="drawer-section"><h4>Linked decisions <span class="meta">${(t.decisions||[]).length}</span></h4><div class="drawer-list">${decs}</div></div>${kbqBlock(t.kbq)}`;open();}
+function openDecision(did){const d=DATA.decisions[did];if(!d)return;
+ const uc={urgent:'#D74F2A',action:'#F79138',watch:'#1F7A92',commit:'#5A6470'};const ul={urgent:'Decide now',action:'Action',watch:'Watch',commit:'Committed'};
+ drawerEyebrow.innerHTML=`Decision <span class="state-chip" style="background:${uc[d.urgency]}">${ul[d.urgency]}</span> <span style="color:#9AA3AC">· ${did}</span>`;drawerTitle.textContent=d.title;
+ const th=(d.themes||[]).map(t=>`<div class="drawer-item" onclick="openTheme('${t}')" style="cursor:pointer">${DATA.theme_titles[t]||t} <span class="sub">${t}</span></div>`).join('');
+ const ss=new Set();(d.themes||[]).forEach(t=>{const tt=DATA.themes[t];if(tt)(tt.signals||[]).forEach(s=>ss.add(s));});const sl=Array.from(ss);
+ drawerBody.innerHTML=`<div class="drawer-section"><h4>The ask</h4><p>${d.summary}</p></div>
+ <div class="drawer-section"><h4>Linked themes <span class="meta">${(d.themes||[]).length}</span></h4><div class="drawer-list">${th}</div></div>
+ <div class="drawer-section"><h4>Underlying signals <span class="meta">${sl.length} · via themes</span></h4><div class="drawer-list">${sl.map(renderSignalItem).join('')}</div></div>
+ <div class="drawer-section"><h4>Revisit condition</h4><p>${d.revisit}</p></div>
+ <div class="drawer-section"><h4>Status &amp; category</h4><div class="kv"><span class="k">Category</span><span class="v">${d.category}</span></div><div class="kv"><span class="k">Status</span><span class="v">${d.status}</span></div><div class="kv"><span class="k">Urgency</span><span class="v">${ul[d.urgency]}</span></div></div>${kbqBlock(d.kbq)}`;open();}
+function openGap(code){const g=DATA.gaps[code];if(!g)return;const kbqs=Object.values(DATA.kbqs).filter(k=>k.capability===code);
+ drawerEyebrow.innerHTML=`Capability gap <span style="color:#9AA3AC">· ${code}</span>`;drawerTitle.textContent=g.name;
+ const kh=kbqs.map(k=>`<div class="drawer-item" style="display:block"><div style="font-size:12.5px;font-style:italic;color:#161D24;line-height:1.45;margin-bottom:5px">${k.text}</div><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="sub">${k.id} · Mode ${k.mode} · ${k.method}</span><span class="sub">confidence ${k.confidence}</span></div></div>`).join('');
+ const status=g.pct>=70?'good coverage':(g.pct>=50?'partial coverage':'thin coverage');
+ drawerBody.innerHTML=`<div class="drawer-section"><h4>Probe coverage</h4><p><b>${g.fired} of ${g.total}</b> KBQs in this capability fired during the ADP pressure test — <b>${g.pct}%</b> (${status}).</p></div>
+ <div class="drawer-section"><h4>KBQs in this capability <span class="meta">${kbqs.length} shown</span></h4><div class="drawer-list">${kh||'<div class="drawer-item">No KBQ sample in current build.</div>'}</div></div>`;open();}
+function openMovement(idx){const m=DATA.movements[idx];if(!m)return;
+ drawerEyebrow.innerHTML=`Movement event ${chipState(m.state)} <span style="color:#9AA3AC">· ${m.date}</span>`;drawerTitle.textContent=m.title;
+ drawerBody.innerHTML=`<div class="drawer-section"><h4>So what</h4><p>${m.so}</p></div>
+ <div class="drawer-section"><h4>Linked theme</h4><div class="drawer-list"><div class="drawer-item" onclick="openTheme('${m.theme}')" style="cursor:pointer">${DATA.theme_titles[m.theme]||m.theme} <span class="sub">${m.theme}</span></div></div></div>
+ <div class="drawer-section"><h4>Source capability</h4><div class="kv"><span class="k">Capability</span><span class="v">${m.capability}</span></div><div class="kv"><span class="k">Detected</span><span class="v">${m.date}</span></div><div class="kv"><span class="k">State</span><span class="v">${chipState(m.state)}</span></div></div>`;open();}
+function openWhy(kid,title){drawerEyebrow.innerHTML=`How we know this <span style="color:#9AA3AC">· ${kid}</span>`;drawerTitle.textContent=title||'Source & method';drawerBody.innerHTML=kbqBlock(kid);open();}
+function openSignal(sid){const s=DATA.signals[sid];if(!s)return;
+ const sc={'active':'#5AAB60','emerging':'#B49563','gap':'#D74F2A','inactive':'#9AA3AC','compromised':'#8E5BA0'};const col=sc[s.state]||'#9AA3AC';
+ const lt=Object.entries(DATA.themes).filter(([id,t])=>(t.signals||[]).includes(sid)).map(([id,t])=>({id,title:t.title,state:t.state}));
+ const lk=Object.values(DATA.kbqs).filter(k=>(k.contributing||[]).includes(sid));
+ drawerEyebrow.innerHTML=`Signal <span class="sig-state" style="background:${col}">${s.state}</span> <span style="color:#9AA3AC">· ${sid}</span>`;drawerTitle.textContent=s.desc;
+ const th=lt.length?lt.map(t=>`<div class="drawer-item" onclick="openTheme('${t.id}')" style="cursor:pointer">${t.title} <span class="sub">${t.id} · ${t.state}</span></div>`).join(''):'<div class="drawer-item" style="color:#9AA3AC">No themes reference this signal directly.</div>';
+ const kh=lk.length?lk.map(k=>`<div class="drawer-item" onclick="openWhy('${k.id}','${k.cap_name}')" style="cursor:pointer;display:block"><div style="font-size:12.5px;font-style:italic;color:#161D24;line-height:1.45;margin-bottom:5px">${k.text}</div><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="sub">${k.id} · Mode ${k.mode} · ${k.method}</span><span class="sub">confidence ${k.confidence}</span></div></div>`).join(''):'<div class="drawer-item" style="color:#9AA3AC">No KBQs reference this signal.</div>';
+ drawerBody.innerHTML=`<div class="drawer-section"><h4>What this signal tracks</h4><p>${s.desc}</p></div>
+ <div class="drawer-section"><h4>Detection mechanics</h4><div class="kv"><span class="k">Capability</span><span class="v"><span class="pill">${s.cap}</span></span></div><div class="kv"><span class="k">Detection family</span><span class="v"><span class="pill">${s.family}</span></span></div><div class="kv"><span class="k">Mining mode</span><span class="v"><span class="pill">Mode ${s.mode}</span></span></div><div class="kv"><span class="k">Sources</span><span class="v">${s.sources}</span></div><div class="kv"><span class="k">Last detected</span><span class="v">${s.last_seen}</span></div><div class="kv"><span class="k">State</span><span class="v"><span class="sig-state" style="background:${col}">${s.state}</span></span></div></div>
+ <div class="drawer-section"><h4>Linked themes <span class="meta">${lt.length}</span></h4><div class="drawer-list">${th}</div></div>
+ <div class="drawer-section"><h4>Linked KBQs <span class="meta">${lk.length}</span></h4><div class="drawer-list">${kh}</div></div>`;open();}
+</script>
+
+</body>
+</html>

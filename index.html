@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Insights Studio Dashboards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F7FAFB;
+    --bg-2:#EEF2F5;
+    --panel:#ffffff;
+    --line:#E2E8F0;
+    --line-soft:#E5EDF0;
+    --text:#1A1F24;
+    --muted:#62748E;
+    --faint:#9DA3A8;
+    --primary:#00A3C4;
+    --primary-soft:#E6F7FB;
+    --primary-glow:rgba(0,163,196,.15);
+    --accent:#F7941D;
+    --accent-soft:#FFF3E6;
+    --signal:#009966;
+    --signal-soft:#ECFDF5;
+    --shadow:0 1px 2px rgba(0,0,0,.04),0 1px 3px rgba(0,0,0,.06);
+    --shadow-lift:0 4px 6px -4px rgba(0,163,196,.18),0 10px 15px -3px rgba(0,163,196,.12);
+    --shadow-card:0 1px 2px -1px rgba(0,0,0,.10),0 1px 3px rgba(0,0,0,.10);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;position:relative;overflow-x:hidden;
+  }
+
+  /* atmospheric background */
+  body::before{
+    content:"";position:fixed;inset:0;
+    background:
+      radial-gradient(900px 600px at 85% -8%, rgba(0,163,196,.32), transparent 58%),
+      radial-gradient(700px 700px at -8% 110%, rgba(247,148,29,.22), transparent 52%),
+      radial-gradient(500px 400px at 50% 100%, rgba(0,163,196,.14), transparent 60%);
+    pointer-events:none;z-index:0;
+  }
+  body::after{
+    content:"";position:fixed;inset:0;
+    background-image:
+      linear-gradient(rgba(27,35,48,.018) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(27,35,48,.018) 1px, transparent 1px);
+    background-size:46px 46px;
+    mask-image:radial-gradient(circle at 50% 25%, black, transparent 72%);
+    -webkit-mask-image:radial-gradient(circle at 50% 25%, black, transparent 72%);
+    pointer-events:none;z-index:0;
+  }
+
+  .wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 28px}
+
+  /* ---------- header ---------- */
+  header{padding:64px 0 40px;border-bottom:1px solid var(--line-soft)}
+
+  /* logo badge */
+  .logo-badge{
+    display:flex;align-items:center;gap:12px;margin-bottom:32px;
+    opacity:0;animation:rise .7s .05s forwards cubic-bezier(.2,.7,.2,1);
+  }
+  .logo-icon{
+    width:40px;height:40px;border-radius:12px;
+    background:#fff;
+    box-shadow:0 2px 4px rgba(0,0,0,.08),0 0 0 1px rgba(0,163,196,.15);
+    display:grid;place-items:center;flex-shrink:0;overflow:hidden;padding:4px;
+  }
+  .logo-icon svg{width:32px;height:32px}
+  .avira-wordmark{height:44px;width:auto;display:block}
+  .logo-badge-pill{
+    padding:3px 8px;border-radius:4px;background:var(--accent-soft);
+    font-size:11px;font-style:italic;font-weight:700;color:var(--accent);line-height:1.4;
+    letter-spacing:.01em;border:1px solid rgba(247,148,29,.2);
+  }
+
+  .eyebrow{
+    display:flex;width:fit-content;align-items:center;gap:8px;
+    font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:.04em;
+    text-transform:uppercase;color:var(--primary);
+    border:1px solid rgba(0,163,196,.25);border-radius:100px;
+    padding:6px 14px 6px 10px;background:var(--primary-soft);
+    opacity:0;animation:rise .7s .08s forwards cubic-bezier(.2,.7,.2,1);
+  }
+  .pulse{width:7px;height:7px;border-radius:50%;background:var(--primary)}
+  .pulse{animation:pulse 2.4s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(0,163,196,.4)}70%{box-shadow:0 0 0 9px rgba(0,163,196,0)}100%{box-shadow:0 0 0 0 rgba(0,163,196,0)}}
+
+  h1{
+    font-family:'Inter',sans-serif;font-weight:800;
+    font-size:clamp(38px,6.5vw,72px);line-height:1.05;letter-spacing:-.03em;
+    margin:20px 0 0;max-width:14ch;
+    opacity:0;animation:rise .8s .16s forwards cubic-bezier(.2,.7,.2,1);
+  }
+  h1 em{font-style:normal;color:var(--primary);font-weight:800}
+
+  .lede{margin-top:20px;max-width:54ch;font-size:16px;color:var(--muted);
+    opacity:0;animation:rise .8s .26s forwards cubic-bezier(.2,.7,.2,1)}
+
+  /* stats row — inspired by reference metric display */
+  .stats{display:flex;flex-wrap:wrap;gap:0;margin-top:36px;
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    overflow:hidden;box-shadow:var(--shadow);
+    opacity:0;animation:rise .8s .34s forwards cubic-bezier(.2,.7,.2,1)}
+  .stat{
+    flex:1;min-width:120px;padding:16px 24px;
+    border-right:1px solid var(--line-soft);
+  }
+  .stat:last-child{border-right:none}
+  .stat .n{font-size:26px;font-weight:800;color:var(--text);line-height:1;letter-spacing:.02em}
+  .stat .l{font-size:11px;font-weight:900;letter-spacing:.1em;
+    text-transform:uppercase;color:#9DACC1;margin-top:6px}
+
+  /* ---------- section headings ---------- */
+  .sec{padding:48px 0 8px}
+  .sec-head{
+    display:flex;align-items:center;justify-content:space-between;
+    gap:16px;margin-bottom:20px;flex-wrap:wrap;
+    border-bottom:1px solid var(--line-soft);padding-bottom:0;
+  }
+
+  /* tab-style section titles */
+  .sec-title{
+    font-size:13.5px;font-weight:700;color:var(--primary);
+    display:inline-flex;align-items:center;gap:6px;
+    padding:10px 16px;border-bottom:2px solid var(--primary);
+    margin-bottom:-1px;
+  }
+  .sec-title .count{
+    width:20px;height:20px;border-radius:50%;background:var(--primary-soft);
+    display:inline-flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:700;color:var(--primary);
+  }
+  .sec-rule{flex:1;height:1px;background:transparent;min-width:40px}
+  .sec-note{
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--faint);
+    letter-spacing:.1em;text-transform:uppercase;padding:10px 16px;
+  }
+
+  /* ---------- card grid ---------- */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:880px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.grid{grid-template-columns:1fr}}
+
+  .card{
+    position:relative;display:flex;flex-direction:column;gap:12px;
+    padding:20px 20px 16px;
+    border:1px solid var(--line-soft);border-radius:14px;
+    background:var(--panel);box-shadow:var(--shadow-card);
+    text-decoration:none;color:inherit;overflow:hidden;
+    transition:transform .26s cubic-bezier(.2,.7,.2,1),border-color .26s,box-shadow .26s;
+    opacity:0;transform:translateY(12px);
+  }
+  .card::after{content:"";position:absolute;left:0;top:0;height:100%;width:3px;
+    background:var(--primary);transform:scaleY(0);transform-origin:top;
+    transition:transform .28s cubic-bezier(.2,.7,.2,1)}
+  .card:hover{transform:translateY(-4px);border-color:rgba(21,93,252,.3);
+    box-shadow:var(--shadow-lift)}
+  .card:hover::after{transform:scaleY(1)}
+  .card:hover .ico{color:#fff;background:var(--primary);border-color:var(--primary)}
+  .card:hover .arrow{transform:translate(3px,-3px);color:var(--primary)}
+
+  .card-top{display:flex;align-items:center;justify-content:space-between}
+  .ico{
+    width:40px;height:40px;display:grid;place-items:center;border-radius:11px;
+    border:1px solid var(--line);background:var(--primary-soft);color:var(--primary);transition:.26s;
+  }
+  .ico svg{width:19px;height:19px;stroke-width:1.7}
+  .code{
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;
+    color:var(--faint);
+    padding:2px 7px;background:#F8FAFC;border:1px solid #F1F5F9;border-radius:4px;
+  }
+  .card h3{font-size:15.5px;font-weight:700;letter-spacing:-.01em;line-height:1.25;margin-top:2px}
+  .card p{font-size:13px;color:var(--muted);line-height:1.45}
+  .card-foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid var(--line-soft)}
+  .open{font-size:12px;font-weight:600;color:var(--muted)}
+  .status-badge{
+    padding:2px 8px;border-radius:100px;
+    background:var(--signal-soft);
+    font-size:11px;font-weight:700;text-transform:uppercase;
+    letter-spacing:.04em;color:var(--signal);
+  }
+  .arrow{color:var(--muted);transition:.26s;display:grid;place-items:center}
+  .arrow svg{width:16px;height:16px;stroke-width:2}
+
+  /* brand studio cards */
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:760px){.grid-2{grid-template-columns:1fr}}
+  .studio{
+    position:relative;padding:24px;border-radius:14px;text-decoration:none;color:inherit;
+    border:1px solid var(--line-soft);overflow:hidden;box-shadow:var(--shadow-card);
+    background:
+      radial-gradient(130% 130% at 100% 0%, var(--accent-soft), transparent 55%),
+      var(--panel);
+    transition:transform .26s cubic-bezier(.2,.7,.2,1),border-color .26s,box-shadow .26s;
+    opacity:0;transform:translateY(12px);
+  }
+  .studio:hover{transform:translateY(-4px);border-color:rgba(0,163,196,.3);box-shadow:var(--shadow-lift)}
+  .studio:hover .arrow{transform:translate(3px,-3px);color:var(--primary)}
+  .studio .tag{
+    font-size:11px;font-weight:700;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--accent);
+    padding:2px 8px;border-radius:4px;background:var(--accent-soft);
+    display:inline-block;
+  }
+  .studio h3{font-family:'Inter',sans-serif;font-weight:700;font-size:20px;
+    line-height:1.2;margin:12px 0 8px;letter-spacing:-.02em;color:var(--text)}
+  .studio p{font-size:13px;color:var(--muted);max-width:34ch}
+  .studio .card-foot{margin-top:20px;padding-top:16px;border-top:1px solid rgba(226,232,240,.7)}
+
+  .reveal{animation:rise .55s forwards cubic-bezier(.2,.7,.2,1)}
+  @keyframes rise{to{opacity:1;transform:translateY(0)}}
+
+  footer{margin-top:56px;padding:28px 0 52px;border-top:1px solid var(--line-soft);
+    display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+  footer .mono{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--faint)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="logo-badge">
+      <img src="../Avira Logo.svg" class="avira-wordmark" alt="Avira Digital">
+      <span class="logo-badge-pill">Insights Studio</span>
+    </div>
+    <span class="eyebrow"><span class="pulse"></span>Live · 18 modules</span>
+    <h1>Insights <em>Studio</em> Dashboards</h1>
+    <p class="lede">A unified command surface for medical-affairs and competitive intelligence — from congress signals and KOL networks to launch readiness and portfolio health.</p>
+    <div class="stats">
+      <div class="stat"><div class="n">18</div><div class="l">Workspaces</div></div>
+      <div class="stat"><div class="n">14</div><div class="l">Core Dashboards</div></div>
+      <div class="stat"><div class="n">04</div><div class="l">Brand Studios</div></div>
+    </div>
+  </header>
+
+  <section class="sec">
+    <div class="sec-head">
+      <div class="sec-title">Core Dashboards <span class="count">14</span></div>
+      <div class="sec-rule"></div>
+      <div class="sec-note">14 modules</div>
+    </div>
+    <div class="grid" id="coreGrid"></div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <div class="sec-title">Brand Studios <span class="count">4</span></div>
+      <div class="sec-rule"></div>
+      <div class="sec-note">Asset deep-dives</div>
+    </div>
+    <div class="grid-2" id="studioGrid"></div>
+  </section>
+
+  <footer>
+    <span class="mono">Insights Studio © 2026</span>
+    <span class="mono">aviralabs.ai</span>
+  </footer>
+
+</div>
+
+<script>
+const I = {
+  wave:'<path d="M3 12c2 0 2-4 4-4s2 8 4 8 2-9 4-9 2 5 6 5" />',
+  podium:'<path d="M12 3v6M9 6h6M5 21v-7h4v7M15 21v-9h4v9M9 21v-4h6v4"/>',
+  network:'<circle cx="6" cy="6" r="2"/><circle cx="18" cy="7" r="2"/><circle cx="12" cy="18" r="2"/><path d="M7.5 7.4 11 16M16.6 8.4 13 16M8 6.2 16 6.8"/>',
+  bulb:'<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.8 1 1.5 1 2.5h6c0-1 .3-1.7 1-2.5A6 6 0 0 0 12 3Z"/>',
+  map:'<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z"/><path d="M9 4v14M15 6v14"/>',
+  alert:'<path d="M12 3 2 20h20L12 3Z"/><path d="M12 10v4M12 17.5v.01"/>',
+  rocket:'<path d="M5 15c-1 2-1 4-1 4s2 0 4-1m3-3 7-7a5 5 0 0 0-7-7L7 5a8 8 0 0 0-3 6l1 1 6 6 1 1a8 8 0 0 0 6-3"/><circle cx="15" cy="9" r="1.4"/>',
+  pipe:'<path d="M4 7h7v4h6v6h3M4 7V4M4 7v6h4"/><circle cx="4" cy="18" r="1.5"/><circle cx="20" cy="17" r="1.5"/>',
+  revisit:'<path d="M4 9a8 8 0 1 1-1 4"/><path d="M4 4v5h5M12 8v4l3 2"/>',
+  pin:'<path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/>',
+  scale:'<path d="M12 3v18M6 21h12M5 7l-3 6h6L5 7ZM19 7l-3 6h6l-3-6ZM5 7h14"/>',
+  layers:'<path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5M3 18l9 5 9-5" opacity=".5"/>',
+  lineage:'<circle cx="5" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="12" r="2"/><path d="M7 6h6a4 4 0 0 1 4 4M7 18h6a4 4 0 0 0 4-4"/>',
+  cockpit:'<circle cx="12" cy="12" r="9"/><path d="M12 12 7 7M12 8v.01M16 12h.01M12 16v.01M8 12h.01"/>',
+  arrow:'<path d="M7 17 17 7M9 7h8v8"/>'
+};
+
+const base='';
+const core=[
+  ['01','Social & Digital Listening','Real-time signal capture across social and digital channels.','wave','dashboard_01_social_digital_listening.html'],
+  ['02','Congress Intelligence','Coverage, abstracts and insights from medical congresses.','podium','dashboard_02_congress_intelligence.html'],
+  ['03','KOL / DOL Influence','Map key and digital opinion-leader influence networks.','network','dashboard_03_kol_dol_influence_map.html'],
+  ['04','Field Medical Insight','Synthesis of insights collected across field medical.','bulb','dashboard_04_field_medical_insight_synthesis.htm'],
+  ['05','Evidence Surrogate Map','Trace surrogate endpoints across the evidence base.','map','dashboard_05_evidence_surrogate_map.html'],
+  ['06','Study At Risk','Book of work for at-risk studies and mitigations.','alert','dashboard_06_study_at_risk_book_of_work.html'],
+  ['07','Launch Excellence','Track readiness and performance across launches.','rocket','dashboard_07_launch_excellence_tracker.html'],
+  ['08','Competitive Pipeline','Landscape view of competitor pipelines and assets.','pipe','dashboard_08_competitive_pipeline_landscape.html'],
+  ['09','Decision Revisit','Orchestrate the revisiting of prior decisions.','revisit','dashboard_09_decision_revisit_orchestration.html'],
+  ['10','MSL Field Action','Plan and monitor MSL field activity end to end.','pin','dashboard_10_msl_field_action.html'],
+  ['11','Value & Access HTA','Health-technology assessment and market access.','scale','dashboard_11_value_access_hta.html'],
+  ['12','Portfolio Book of Work','Portfolio-wide program and workstream tracking.','layers','dashboard_12_portfolio_book_of_work.html'],
+  ['13','Data Lineage','Source health and end-to-end data lineage.','lineage','dashboard_13_data_lineage_source_health.html'],
+  ['14','Command Cockpit','Unified executive command-and-control view.','cockpit','dashboard_14_command_cockpit.html'],
+];
+const studios=[
+  ['Cobenfy ADP','Asset deep-dive studio for the Cobenfy program.','insights_studio_cobenfy_adp.html'],
+  ['Cobenfy ADP — New','Refreshed build of the Cobenfy ADP workspace.','insights_studio_cobenfy_adp_new.html'],
+  ['Trikafta','Asset deep-dive studio for the Trikafta program.','insights_studio_trikafta.html'],
+  ['Carvykti','Asset deep-dive studio for the Carvykti program.','insights_studio_carvykti.html'],
+];
+
+const cg=document.getElementById('coreGrid');
+core.forEach((d,i)=>{
+  const a=document.createElement('a');
+  a.href=base+d[4];a.className='card reveal';
+  a.style.animationDelay=(0.04*i+0.1)+'s';
+  a.innerHTML=`
+    <div class="card-top">
+      <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${I[d[3]]}</svg></span>
+      <span class="code">D-${d[0]}</span>
+    </div>
+    <div><h3>${d[1]}</h3><p>${d[2]}</p></div>
+    <div class="card-foot">
+      <span class="status-badge">Active</span>
+      <span class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${I.arrow}</svg></span>
+    </div>`;
+  cg.appendChild(a);
+});
+
+const sg=document.getElementById('studioGrid');
+studios.forEach((s,i)=>{
+  const a=document.createElement('a');
+  a.href=base+s[2];a.className='studio reveal';
+  a.style.animationDelay=(0.08*i+0.7)+'s';
+  a.innerHTML=`
+    <span class="tag">Brand Studio</span>
+    <h3>${s[0]}</h3>
+    <p>${s[1]}</p>
+    <div class="card-foot">
+      <span class="open">Launch studio</span>
+      <span class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${I.arrow}</svg></span>
+    </div>`;
+  sg.appendChild(a);
+});
+</script>
+</body>
+</html>

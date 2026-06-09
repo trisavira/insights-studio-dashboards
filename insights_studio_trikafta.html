@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Insights Studio — Trikafta · operator view</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Avira brand */
+  --teal:#1D98B6; --teal-dk:#0C6F8A; --teal-deep:#0A5270;
+  --orange:#F79138; --orange-dk:#D97516;
+
+  /* Status — richer palette */
+  --crit:#DC2626;   --crit-bg:#FEF2F2;
+  --action:#F79138; --action-bg:#FFF3E6;
+  --watch:#1D98B6;  --watch-bg:#E0F5FA;
+  --commit:#6366F1; --commit-bg:#EEF2FF;
+  --success:#16A34A;--success-bg:#DCFCE7;
+  --purple:#9333EA; --purple-bg:#F5F3FF;
+  --amber:#D97706;  --amber-bg:#FFFBEB;
+
+  /* Surfaces */
+  --bg:#F7FAFB; --panel:#FFFFFF; --panel-alt:#F8FAFC;
+  --border:#E2E8F0; --line:#CBD5E1; --hair:#EEF2F6;
+
+  /* Text */
+  --ink:#1A1F24; --ink-muted:#3F4A55; --ink-soft:#62748E; --ink-dim:#9AA3AC;
+
+  /* Signal */
+  --s-strong:#16A34A; --s-contest:#D97706; --s-thin:#9AA3AC;
+  --s-stable:#1D98B6; --s-mixed:#9333EA;
+
+  /* Tokens */
+  --r:12px; --r-sm:6px;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 1px 3px rgba(0,0,0,.06);
+  --shadow-panel:0 1px 3px rgba(0,0,0,.05),0 4px 12px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:'Inter',system-ui,sans-serif;font-size:13.5px;line-height:1.6;
+  -webkit-font-smoothing:antialiased}
+.serif{font-family:'Inter',sans-serif;font-weight:700}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-feature-settings:'tnum' on}
+
+/* === BRAND BAR === */
+.brand{background:#fff;color:var(--ink);padding:12px 28px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:20px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.brand-logo{height:32px;width:auto;display:block;flex-shrink:0}
+.brand-divider{width:1px;height:28px;background:var(--border);flex-shrink:0}
+.brand-left{display:flex;flex-direction:column;gap:3px}
+.brand-studio{
+  font-family:'Inter';font-size:11px;letter-spacing:0.01em;
+  color:#F79138;font-style:italic;font-weight:700;
+  display:inline-flex;align-items:center;
+  background:#FFF3E6;border:1px solid rgba(247,148,29,.2);
+  border-radius:4px;padding:3px 8px;width:fit-content;line-height:1.4;
+}
+.brand-asset{font-family:'Inter';font-weight:700;font-size:17px;letter-spacing:-0.02em;color:var(--ink);line-height:1.2}
+.brand-codes{font-family:'JetBrains Mono';font-size:10px;color:var(--ink-dim);padding:2px 8px;background:var(--hair);border-radius:100px;border:1px solid var(--border);flex-shrink:0}
+.brand-meta{margin-left:auto;display:flex;gap:10px;align-items:center;font-size:11px;color:var(--ink-soft);flex-wrap:wrap;flex-shrink:0}
+.brand-meta b{color:var(--ink);font-weight:600}
+.brand-stage{font-family:'Inter';font-size:10px;padding:3px 10px;background:var(--watch-bg);border:1px solid rgba(29,152,182,.2);border-radius:100px;font-weight:700;letter-spacing:0.06em;color:var(--teal)}
+.brand-posture{font-family:'Inter';font-size:10px;padding:3px 10px;background:var(--action-bg);font-weight:700;letter-spacing:0.04em;color:var(--orange-dk);border-radius:100px;border:1px solid rgba(247,145,56,.25)}
+.brand-link{color:var(--ink-soft);font-size:11px;text-decoration:none;font-weight:500;font-family:'Inter'}
+.brand-link:hover{color:var(--teal)}
+
+/* === KPI STRIP === */
+.kpi{display:grid;grid-template-columns:repeat(5,1fr);background:var(--panel);border-bottom:1px solid var(--border);box-shadow:var(--shadow)}
+.kpi-cell{padding:20px 28px;border-left:1px solid var(--hair)}
+.kpi-cell:first-child{border-left:none}
+.kpi-cell .l{font-family:'Inter';font-size:9.5px;letter-spacing:0.08em;text-transform:uppercase;color:#9DACC1;font-weight:700;margin-bottom:10px}
+.kpi-cell .v{font-family:'Inter';font-size:28px;font-weight:800;color:var(--ink);line-height:1;letter-spacing:-0.02em}
+.kpi-cell .v.crit{color:var(--crit)}
+.kpi-cell .v.action{color:var(--orange-dk)}
+.kpi-cell .v.watch{color:var(--teal)}
+.kpi-cell .n{font-size:11.5px;color:var(--ink-soft);margin-top:8px;line-height:1.5;font-weight:500}
+
+/* === DASHBOARD GRID === */
+main{padding:24px;max-width:1480px;margin:0 auto}
+.dash{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:20px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);display:flex;flex-direction:column;box-shadow:var(--shadow-panel)}
+.panel-h{padding:16px 20px;border-bottom:1px solid var(--hair);display:flex;align-items:center;justify-content:space-between;gap:8px;border-radius:var(--r) var(--r) 0 0}
+.panel-h .t{font-family:'Inter';font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+.panel-h .c{font-family:'Inter';font-size:10px;color:var(--ink-dim);letter-spacing:0.04em}
+.panel-body{padding:20px;flex:1;overflow:auto}
+
+/* spans */
+.span-1{grid-column:span 1}
+.span-2{grid-column:span 2}
+.span-3{grid-column:span 3}
+
+/* === THEME BOARD === */
+.theme-board{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.theme-col{display:flex;flex-direction:column;gap:6px}
+.theme-col-h{font-family:'Inter';font-size:9.5px;letter-spacing:0.06em;text-transform:uppercase;font-weight:700;padding:5px 10px;color:#fff;display:flex;justify-content:space-between;align-items:center;border-radius:var(--r-sm)}
+.theme-chip{background:var(--panel-alt);border:1px solid var(--hair);border-left:3px solid;padding:12px 14px;cursor:pointer;font-size:12px;line-height:1.35;color:var(--ink);transition:background .15s,border-color .15s;position:relative;border-radius:0 var(--r-sm) var(--r-sm) 0}
+.theme-chip:hover{background:#FFFFFF;border-color:var(--teal)}
+.theme-chip .why{position:absolute;top:5px;right:5px}
+
+/* === GAP RADAR === */
+.gap-bars{display:flex;flex-direction:column;gap:14px}
+.gap-row{display:grid;grid-template-columns:80px 1fr 60px 24px;gap:10px;align-items:center;font-size:12px}
+.gap-lbl{font-family:'Inter';font-size:11px;color:var(--ink);font-weight:600;letter-spacing:0.02em}
+.gap-track{height:8px;background:var(--hair);position:relative;cursor:pointer;border-radius:100px;overflow:hidden}
+.gap-track:hover{outline:1px solid var(--teal)}
+.gap-fill{height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:5px;font-family:'Inter';font-size:9px;color:#fff;font-weight:600;letter-spacing:0.04em;border-radius:2px}
+.gap-val{font-family:'JetBrains Mono';font-size:11px;color:var(--ink-soft);font-weight:500;text-align:right}
+
+/* === MOVEMENT === */
+.mv-list{display:flex;flex-direction:column}
+.mv-row{display:grid;grid-template-columns:74px 64px 1fr 24px;gap:8px;padding:12px 0;border-top:1px solid var(--hair);align-items:start;cursor:pointer;position:relative}
+.mv-row:hover{background:var(--panel-alt)}
+.mv-row:first-child{border-top:none;padding-top:2px}
+.mv-date{font-family:'JetBrains Mono';font-size:10.5px;color:var(--ink-soft);font-weight:500}
+.mv-cap{font-family:'Inter';font-size:9px;font-weight:700;padding:2px 8px;color:#fff;text-align:center;letter-spacing:0.04em;height:fit-content;border-radius:100px}
+.mv-title{font-size:12px;color:var(--ink);font-weight:500;line-height:1.35}
+.mv-title .so{font-size:11px;color:var(--ink-soft);margin-top:2px;line-height:1.35;font-weight:400}
+
+/* === DECISIONS REGISTER === */
+.dec-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.dec-card{background:var(--panel-alt);border:1px solid var(--hair);border-left:3px solid;padding:14px 16px;cursor:pointer;font-size:11.5px;line-height:1.35;position:relative;transition:background .15s,border-color .15s;border-radius:0 var(--r-sm) var(--r-sm) 0}
+.dec-card:hover{background:#fff;border-color:var(--teal)}
+.dec-card.urgent{border-left-color:var(--crit)}
+.dec-card.action{border-left-color:var(--orange)}
+.dec-card.watch{border-left-color:var(--watch)}
+.dec-card.commit{border-left-color:var(--commit)}
+.dec-id{font-family:'Inter';font-size:9.5px;color:var(--ink-dim);font-weight:600;letter-spacing:0.04em;margin-bottom:2px}
+.dec-title{color:var(--ink);font-weight:500;font-size:12px;line-height:1.3;padding-right:18px}
+.dec-cat{font-family:'Inter';font-size:9px;font-weight:600;color:var(--ink-soft);margin-top:5px;letter-spacing:0.06em;text-transform:uppercase}
+.dec-card .why{position:absolute;top:6px;right:6px}
+
+/* === ? icon === */
+.why{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;border:1px solid var(--border);background:#fff;color:var(--ink-soft);font-family:'JetBrains Mono';font-size:10px;font-weight:700;cursor:pointer;line-height:1;flex-shrink:0;transition:background .15s,color .15s,border-color .15s}
+.why:hover{background:var(--teal-deep);color:#fff;border-color:var(--teal-deep)}
+.why:focus{outline:2px solid var(--teal);outline-offset:1px}
+
+/* === SUPPLEMENTARY (below dashboard) === */
+.supp-h{display:flex;align-items:baseline;justify-content:space-between;padding:6px 4px;margin-top:10px}
+.supp-h .t{font-family:'Inter';font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft);font-weight:700}
+.supp-h .n{font-family:'Inter';font-size:10.5px;color:var(--ink-dim);letter-spacing:0.04em}
+
+/* state-chip helper */
+.state-chip{font-family:'Inter';font-size:9px;font-weight:700;padding:2px 8px;color:#fff;letter-spacing:0.04em;display:inline-block;line-height:1.35;border-radius:100px}
+
+/* mini stacked bars (KOL sentiment small panel) */
+.kbar{display:grid;grid-template-columns:1fr;gap:5px}
+.kbar-row{display:grid;grid-template-columns:130px 1fr;gap:8px;align-items:center;font-size:11px}
+.kbar-lbl{color:var(--ink);line-height:1.3}
+.kbar-track{display:flex;height:13px;background:var(--hair);overflow:hidden}
+.kbar-seg{height:100%}
+.kbar-seg.pos{background:var(--s-strong)}
+.kbar-seg.split{background:var(--s-contest)}
+.kbar-seg.neg{background:var(--crit)}
+.kbar-seg.neu{background:var(--s-thin)}
+
+/* horizontal compact bars (topic freq) */
+.tbar-row{display:grid;grid-template-columns:170px 1fr 30px;gap:8px;padding:4px 0;align-items:center;font-size:11.5px}
+.tbar-lbl{color:var(--ink);line-height:1.3}
+.tbar-track{height:11px;background:var(--hair)}
+.tbar-fill{height:100%}
+.tbar-val{font-family:'JetBrains Mono';font-size:10px;color:var(--ink-soft);text-align:right;font-weight:500}
+
+/* cost bar mini */
+.ce-mini{display:grid;grid-template-columns:1fr;gap:7px}
+.ce-mrow{display:grid;grid-template-columns:120px 1fr;gap:8px;align-items:center;font-size:11px}
+.ce-mlbl{color:var(--ink);line-height:1.3}
+.ce-mtrack{position:relative;height:14px;background:var(--hair)}
+.ce-mfill{height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:5px;color:#fff;font-family:'JetBrains Mono';font-size:10px;font-weight:600}
+
+/* === DRAWER === */
+.drawer-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(12,71,84,0.45);opacity:0;pointer-events:none;transition:opacity .22s ease;z-index:90}
+.drawer-overlay.open{opacity:1;pointer-events:all}
+.drawer{position:fixed;top:0;right:0;width:480px;max-width:92vw;height:100vh;background:var(--panel);border-left:1px solid var(--border);box-shadow:-12px 0 36px rgba(0,0,0,0.10);transform:translateX(100%);transition:transform .26s ease;z-index:95;display:flex;flex-direction:column;overflow:hidden}
+.drawer.open{transform:translateX(0)}
+.drawer-h{padding:24px 28px 20px;border-bottom:1px solid var(--hair);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-shrink:0}
+.drawer-h-l{flex:1}
+.drawer-eyebrow{font-family:'Inter';font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--teal);font-weight:700;margin-bottom:6px;display:flex;gap:8px;align-items:center}
+.drawer-title{font-family:'Inter';font-size:18px;line-height:1.3;font-weight:700;color:var(--ink);letter-spacing:-0.02em}
+.drawer-close{background:none;border:1px solid var(--border);border-radius:8px;color:var(--ink-soft);width:30px;height:30px;cursor:pointer;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit;transition:background .15s}
+.drawer-close:hover{background:var(--hair);color:var(--ink)}
+.drawer-body{flex:1;overflow-y:auto;padding:24px 28px 40px}
+.drawer-section{margin-bottom:28px}
+.drawer-section h4{font-family:'Inter';font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:#9DACC1;font-weight:700;margin:0 0 8px;display:flex;align-items:baseline;gap:8px}
+.drawer-section h4 .meta{color:var(--ink-dim);font-size:10px;letter-spacing:0.04em;text-transform:none;font-family:'JetBrains Mono';font-weight:500}
+.drawer-section p{margin:0 0 8px;font-size:13.5px;color:var(--ink-muted);line-height:1.55}
+.drawer-section p:last-child{margin-bottom:0}
+.drawer-section .quote{background:var(--watch-bg);border-left:3px solid var(--teal);padding:10px 14px;border-radius:0 8px 8px 0;font-family:'Inter';font-size:13.5px;line-height:1.6;color:var(--ink);font-style:italic;margin-bottom:6px;border:1px solid rgba(29,152,182,.15);border-left:3px solid var(--teal)}
+.drawer-list{display:flex;flex-direction:column;gap:10px}
+.drawer-item{background:var(--panel-alt);border:1px solid var(--hair);padding:8px 12px;border-radius:8px;font-size:12px;color:var(--ink);display:flex;justify-content:space-between;align-items:center;gap:8px;transition:background .15s,border-color .15s}
+.drawer-item .sub{font-size:10.5px;color:var(--ink-soft);font-family:'Inter';letter-spacing:0.04em}
+.kv{display:grid;grid-template-columns:130px 1fr;gap:10px;padding:10px 0;border-top:1px solid var(--hair);font-size:12.5px}
+.kv:first-child{border-top:none;padding-top:0}
+.kv .k{font-family:'Inter';font-size:9.5px;color:#9DACC1;letter-spacing:0.08em;text-transform:uppercase;font-weight:700}
+.kv .v{color:var(--ink);line-height:1.5;font-weight:500}
+.kv .v .pill{font-family:'Inter';font-size:10px;background:var(--hair);color:var(--ink-muted);padding:2px 8px;letter-spacing:0.04em;display:inline-block;margin-right:5px;border-radius:100px}
+.confidence-bar{display:inline-flex;gap:3px;align-items:center;margin-left:5px}
+.confidence-bar .dot{width:7px;height:7px;border-radius:50%;background:var(--hair)}
+.confidence-bar .dot.on{background:var(--s-strong)}
+.confidence-bar .dot.med{background:var(--orange)}
+
+@media (max-width:1100px){
+  .dash{grid-template-columns:1fr 1fr}
+  .span-3{grid-column:span 2}
+  .theme-board{grid-template-columns:repeat(2,1fr)}
+  .dec-grid{grid-template-columns:repeat(2,1fr)}
+  .kpi{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:700px){
+  .dash{grid-template-columns:1fr}
+  .span-1,.span-2,.span-3{grid-column:span 1}
+  .theme-board,.dec-grid{grid-template-columns:1fr}
+  .drawer{width:100%}
+}
+
+.drawer-item.rich{display:block;cursor:pointer;line-height:1.4}
+.drawer-item.rich .desc{color:var(--ink);display:block;margin-bottom:5px;font-weight:600}
+.drawer-item.rich .meta{display:flex;gap:6px;align-items:center;font-family:'Inter';font-size:9.5px;color:var(--ink-soft);letter-spacing:0.04em;flex-wrap:wrap}
+.drawer-item.rich .meta .sep{color:var(--ink-dim)}
+.drawer-item.rich .meta .arrow{margin-left:auto;color:var(--orange);font-weight:600;font-size:13px}
+.drawer-item.rich:hover{background:#fff;border-color:var(--teal)}
+.drawer-item.rich:hover .arrow{color:var(--orange-dk)}
+.sig-state{font-family:'Inter';font-size:9px;padding:2px 8px;color:#fff;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;border-radius:100px}
+
+/* Panel left-accent color variants */
+.panel.teal{border-top:3px solid var(--teal)}
+.panel.orange{border-top:3px solid var(--orange)}
+.panel.purple{border-top:3px solid var(--purple)}
+.panel.green{border-top:3px solid var(--success)}
+.panel.red{border-top:3px solid var(--crit)}
+.panel.indigo{border-top:3px solid var(--commit)}
+.panel.amber{border-top:3px solid var(--amber)}
+
+/* KPI cell color accents */
+.kpi-cell.hi-teal .v{color:var(--teal)}
+.kpi-cell.hi-orange .v{color:var(--orange-dk)}
+.kpi-cell.hi-green .v{color:var(--success)}
+.kpi-cell.hi-red .v{color:var(--crit)}
+.kpi-cell.hi-purple .v{color:var(--purple)}
+
+</style>
+
+<style>
+:root{ --s-super:#5E6E8C; --s-super-bg:#EDEFF3; --s-struct:#B08968; }
+.theme-board{grid-template-columns:repeat(6,1fr) !important}
+.brand-stage.live{background:#0D5B6F;border-color:#1F7F9A}
+.brand-posture.succ{background:#5E6E8C}
+.succ-banner{background:var(--s-super-bg);border:1px solid #C9D0DC;border-left:3px solid var(--s-super);padding:10px 14px;font-size:12px;color:#3C4658;line-height:1.45;display:flex;gap:10px;align-items:flex-start}
+.succ-banner .ic{font-family:'Inter';font-size:9px;font-weight:700;letter-spacing:0.06em;color:#fff;background:var(--s-super);padding:2px 7px;flex-shrink:0;text-transform:uppercase}
+.sig-state.superseded,.state-chip.superseded{background:var(--s-super)}
+.sig-state.structural,.state-chip.structural{background:var(--s-struct)}
+/* genotype coverage */
+.geno-stack{display:flex;height:30px;border:1px solid var(--border);margin:4px 0 12px;cursor:pointer;font-family:'Inter';font-size:10px;font-weight:700;color:#fff;letter-spacing:0.03em}
+.geno-stack:hover{outline:1px solid var(--teal)}
+.geno-seg{display:flex;align-items:center;justify-content:center;overflow:hidden}
+.geno-rows{display:flex;flex-direction:column;gap:7px}
+.geno-row{display:grid;grid-template-columns:1fr 46px;gap:8px;align-items:center;font-size:12px;cursor:pointer;padding:3px 4px}
+.geno-row:hover{background:var(--panel-alt)}
+.geno-row .gl{color:var(--ink);display:flex;align-items:center;gap:7px}
+.geno-dot{width:9px;height:9px;flex-shrink:0;display:inline-block}
+.geno-row .gv{font-family:'JetBrains Mono';font-size:11px;color:var(--ink-soft);text-align:right;font-weight:600}
+/* succession hero */
+.succ-hero{display:flex;flex-direction:column;gap:0}
+.succ-step{display:grid;grid-template-columns:108px 1fr;gap:12px;align-items:start;padding:9px 0;border-top:1px dotted var(--hair)}
+.succ-step:first-child{border-top:none}
+.succ-stage{font-family:'Inter';font-size:10px;color:#fff;font-weight:600;letter-spacing:0.04em;padding:3px 7px;text-align:center;text-transform:uppercase;align-self:start}
+.succ-step .h{font-weight:600;color:var(--ink);font-size:12.5px;margin-bottom:2px;display:flex;gap:7px;align-items:center}
+.succ-step .d{font-size:11.5px;color:var(--ink-muted);line-height:1.4}
+.val-list{display:flex;flex-direction:column;gap:9px}
+.val-row{font-size:12px;color:var(--ink-muted);line-height:1.4;padding-left:11px;border-left:2px solid var(--hair)}
+.val-row b{color:var(--ink)}
+.val-row.alert{border-left-color:var(--s-contest)}
+</style>
+
+</head><body>
+
+<header class="brand">
+ <a href="index.html"><img src="../Avira Logo.svg" class="brand-logo" alt="Avira Digital"></a>
+ <span class="brand-divider"></span>
+ <span class="brand-studio">Insights Studio · Operator view</span>
+ <span class="brand-asset">TRIKAFTA</span>
+ <span class="brand-codes">elexacaftor·tezacaftor·ivacaftor / ELX·TEZ·IVA</span>
+ <span class="brand-meta">
+  <span>Cystic fibrosis · CFTR triple modulator</span>
+  <span class="brand-stage live">LL · LIVE</span>
+  <span class="brand-posture succ">INCUMBENT · SELF-SUCCESSION</span>
+  <a class="brand-link" href="insights_studio_cobenfy.html">Other assets →</a>
+ </span>
+</header>
+
+<div class="kpi">
+ <div class="kpi-cell"><div class="l">CF franchise</div><div class="v">&gt;$10B<span style="font-size:14px;color:var(--ink-dim)">/yr</span></div><div class="n">Trikafta + successor</div></div>
+ <div class="kpi-cell"><div class="l">Addressable</div><div class="v" style="color:var(--s-strong)">~95%</div><div class="n">US CF · 564/521 variants (Apr 2026)</div></div>
+ <div class="kpi-cell"><div class="l">Structurally untreated</div><div class="v" style="color:var(--s-struct)">~5,000</div><div class="n">non-responsive · VX-522 failed</div></div>
+ <div class="kpi-cell"><div class="l">Succession</div><div class="v" style="color:var(--s-super)">Alyftrek</div><div class="n">switch underway · gradual</div></div>
+ <div class="kpi-cell"><div class="l">Decisions</div><div class="v crit">2<span style="font-size:15px;color:var(--ink-dim)"> urgent</span></div><div class="n">of 13 · 7 action · 4 watch</div></div>
+</div>
+
+<main>
+
+<div class="succ-banner">
+ <span class="ic">Self-succession</span>
+ <div>The defining pattern here is <b>self-cannibalisation</b>: Vertex is deliberately replacing its own &gt;$10B/yr incumbent with its own next-gen <b>Alyftrek</b>. The Actor-axis competitor model assumes an <i>external</i> rival, so the "competitor" being the sponsor itself needed a new <b>Superseded</b> state (steel-indigo) and an intra-portfolio succession relationship. <span class="why" onclick="openTheme('t-succession')" title="Details" style="display:inline-flex;vertical-align:middle">?</span></div>
+</div>
+
+<div class="dash" style="margin-top:12px">
+<div class="panel span-3">
+  <div class="panel-h"><span class="t">Themes board</span><span class="c">13 themes · 6 states · click any for chain of evidence</span></div>
+  <div class="panel-body"><div class="theme-board">
+<div class="theme-col"><div class="theme-col-h" style="background:#5AAB60"><span>Strengthening</span><span>3</span></div><div class="theme-chip" style="border-left-color:#5AAB60" onclick="openTheme('t-durable')">Durable real-world benefit established<button class="why" onclick="event.stopPropagation();openTheme('t-durable')" title="Details">?</button></div><div class="theme-chip" style="border-left-color:#5AAB60" onclick="openTheme('t-iprunway')">Franchise IP-runway extended via the successor<button class="why" onclick="event.stopPropagation();openTheme('t-iprunway')" title="Details">?</button></div><div class="theme-chip" style="border-left-color:#5AAB60" onclick="openTheme('t-addressable')">Modulator-addressable majority secured (~95%)<button class="why" onclick="event.stopPropagation();openTheme('t-addressable')" title="Details">?</button></div></div>
+<div class="theme-col"><div class="theme-col-h" style="background:#B49563"><span>Strengthening-Thin</span><span>1</span></div><div class="theme-chip" style="border-left-color:#B49563" onclick="openTheme('t-swcl')">Sweat chloride as an emerging surrogate<button class="why" onclick="event.stopPropagation();openTheme('t-swcl')" title="Details">?</button></div></div>
+<div class="theme-col"><div class="theme-col-h" style="background:#E89327"><span>Contested</span><span>3</span></div><div class="theme-chip" style="border-left-color:#E89327" onclick="openTheme('t-switch')">Switch economics vs disruption of stable patients<button class="why" onclick="event.stopPropagation();openTheme('t-switch')" title="Details">?</button></div><div class="theme-chip" style="border-left-color:#E89327" onclick="openTheme('t-value')">Value scrutiny carries into the higher-priced successor<button class="why" onclick="event.stopPropagation();openTheme('t-value')" title="Details">?</button></div><div class="theme-chip" style="border-left-color:#E89327" onclick="openTheme('t-vx522')">The sponsor's own genetic-medicine answer failed<button class="why" onclick="event.stopPropagation();openTheme('t-vx522')" title="Details">?</button></div></div>
+<div class="theme-col"><div class="theme-col-h" style="background:#5B92D1"><span>Stable</span><span>1</span></div><div class="theme-chip" style="border-left-color:#5B92D1" onclick="openTheme('t-nbd1')">External NBD1 mechanism on the horizon<button class="why" onclick="event.stopPropagation();openTheme('t-nbd1')" title="Details">?</button></div></div>
+<div class="theme-col"><div class="theme-col-h" style="background:#9AA3AC"><span>Thin</span><span>4</span></div><div class="theme-chip" style="border-left-color:#9AA3AC" onclick="openTheme('t-ltsafety')">Long-term safety vigilance (IH / hepatic / mood)<button class="why" onclick="event.stopPropagation();openTheme('t-ltsafety')" title="Details">?</button></div><div class="theme-chip" style="border-left-color:#9AA3AC" onclick="openTheme('t-decades')">Decades-scale outcome gap<button class="why" onclick="event.stopPropagation();openTheme('t-decades')" title="Details">?</button></div><div class="theme-chip" style="border-left-color:#9AA3AC" onclick="openTheme('t-untreated')">Structural untreated minority remains (~10%)<button class="why" onclick="event.stopPropagation();openTheme('t-untreated')" title="Details">?</button></div><div class="theme-chip" style="border-left-color:#9AA3AC" onclick="openTheme('t-horizon')">Genetic-medicine horizon: opportunity & existential threat<button class="why" onclick="event.stopPropagation();openTheme('t-horizon')" title="Details">?</button></div></div>
+<div class="theme-col"><div class="theme-col-h" style="background:#5E6E8C"><span>Superseded</span><span>1</span></div><div class="theme-chip" style="border-left-color:#5E6E8C" onclick="openTheme('t-succession')">Managed succession: new starts shift to Alyftrek<button class="why" onclick="event.stopPropagation();openTheme('t-succession')" title="Details">?</button></div></div>
+  </div></div>
+</div>
+</div>
+
+<div class="dash">
+<div class="panel span-1">
+  <div class="panel-h"><span class="t">Genotype coverage</span><span class="c">who the modality can reach</span></div>
+  <div class="panel-body">
+   <div class="geno-stack" onclick="openSignal('LIT-052')">
+     <div class="geno-seg" style="width:95%;background:#5AAB60">~95% addressable</div>
+     <div class="geno-seg" style="width:5%;background:#B08968" onclick="event.stopPropagation();openSignal('LIT-G09')">~5%</div>
+   </div>
+   <div class="geno-rows">
+     <div class="geno-row" onclick="openSignal('LIT-052')"><span class="gl"><span class="geno-dot" style="background:#5AAB60"></span>Responsive variants (modulator)</span><span class="gv">~95%</span></div>
+     <div class="geno-row" onclick="openSignal('LIT-G09')"><span class="gl"><span class="geno-dot" style="background:#B08968"></span>Non-responsive (nonsense/PTC)</span><span class="gv">~5%</span></div>
+   </div>
+   <div style="margin-top:10px;font-size:10.5px;color:var(--ink-soft);line-height:1.4;font-family:'JetBrains Mono'; succession · the hero panel</span><span class="c">incumbent → successor → horizon · click ? for source</span></div>
+  <div class="panel-body"><div class="succ-hero">
+    <div class="succ-step"><span class="succ-stage" style="background:#5B92D1">Incumbent</span><div><div class="h">Trikafta — &gt;$10B/yr foundation</div><div class="d">Durable real-world benefit; ~95% of US CF addressable after the Apr-2026 expansion. The standard of care for responsive genotypes.</div></div></div>
+    <div class="succ-step"><span class="succ-stage" style="background:#5E6E8C">Successor</span><div><div class="h">Alyftrek — the self-cannibalisation <span class="why" onclick="openSignal('TL-021')" title="Details">?</span></div><div class="d">Once-daily, +31 mutations, lower sweat chloride, non-inferior FEV1 / superior QoL — priced 7% above Trikafta. New starts shift here; stable patients switch gradually. Extends the IP runway.</div></div></div>
+    <div class="succ-step"><span class="succ-stage" style="background:#B08968">Unreached</span><div><div class="h">The structural ~10% — and the failed answer <span class="why" onclick="openSignal('TL-031')" title="Details">?</span></div><div class="d">Nonsense/PTC genotypes make no full-length CFTR. VX-522 (inhaled mRNA) was discontinued in 2026; the untreated-minority lead answer fails.</div></div></div>
+    <div class="succ-step"><span class="succ-stage" style="background:#9AA3AC">Horizon</span><div><div class="h">Genetic-medicine modality shift <span class="why" onclick="openSignal('TL-034')" title="Details">?</span></div><div class="d">mRNA / gene editing / tRNA could one day reach all genotypes and obsolete modulators — long, uncertain, delivery-limited. Sionna's NBD1 is the nearest external mechanism.</div></div></div>
+  </div></div>
+</div>
+</div>
+
+<div class="dash">
+<div class="panel span-2">
+  <div class="panel-h"><span class="t">Movement · the CF-franchise timeline</span><span class="c">10 events · succession highlighted</span></div>
+  <div class="panel-body" style="padding-top:6px"><div class="mv-list">
+<div class="mv-row" onclick="openMovement(0)"><span class="mv-date">Oct 2019</span><span class="state-chip " style="background:#5AAB60">Strengthening</span><span class="mv-txt">Trikafta FDA approval (ages 12+)</span><button class="why" onclick="event.stopPropagation();openMovement(0)" title="Details">?</button></div>
+<div class="mv-row" onclick="openMovement(1)"><span class="mv-date">Sep 2020</span><span class="state-chip " style="background:#E89327">Contested</span><span class="mv-txt">ICER: 'A' rating + affordability alert</span><button class="why" onclick="event.stopPropagation();openMovement(1)" title="Details">?</button></div>
+<div class="mv-row" onclick="openMovement(2)"><span class="mv-date">2021 · 2023</span><span class="state-chip " style="background:#5AAB60">Strengthening</span><span class="mv-txt">Paediatric label expansions (6–11, then 2–5)</span><button class="why" onclick="event.stopPropagation();openMovement(2)" title="Details">?</button></div>
+<div class="mv-row" onclick="openMovement(3)"><span class="mv-date">Jun 2024</span><span class="state-chip " style="background:#5B92D1">Stable</span><span class="mv-txt">NHS England reimbursement deal</span><button class="why" onclick="event.stopPropagation();openMovement(3)" title="Details">?</button></div>
+<div class="mv-row" onclick="openMovement(4)"><span class="mv-date">Dec 2024</span><span class="state-chip superseded" style="background:#5E6E8C">Superseded</span><span class="mv-txt">Alyftrek FDA approval — the switch begins</span><button class="why" onclick="event.stopPropagation();openMovement(4)" title="Details">?</button></div>
+<div class="mv-row" onclick="openMovement(5)"><span class="mv-date">Feb 2025</span><span class="state-chip " style="background:#5B92D1">Stable</span><span class="mv-txt">Sionna Therapeutics IPO</span><button class="why" onclick="event.stopPropagation();openMovement(5)" title="Details">?</button></div>
+<div class="mv-row" onclick="openMovement(6)"><span class="mv-date">May 2025 → 2026</span><span class="state-chip " style="background:#E89327">Contested</span><span class="mv-txt">VX-522 paused, then discontinued</span><button class="why" onclick="event.stopPropagation();openMovement(6)" title="Details">?</button></div>
+<div class="mv-row" onclick="openMovement(7)"><span class="mv-date">Oct 2025</span><span class="state-chip " style="background:#B49563">Strengthening-Thin</span><span class="mv-txt">NACFC: Alyftrek SwCl advantage</span><button class="why" onclick="event.stopPropagation();openMovement(7)" title="Details">?</button></div>
+<div class="mv-row" onclick="openMovement(8)"><span class="mv-date">Jan 2026</span><span class="state-chip " style="background:#B49563">Strengthening-Thin</span><span class="mv-txt">SKYLINE post-hoc: Alyftrek QoL > Trikafta</span><button class="why" onclick="event.stopPropagation();openMovement(8)" title="Details">?</button></div>
+<div class="mv-row" onclick="openMovement(9)"><span class="mv-date">Apr 1 2026</span><span class="state-chip " style="background:#5AAB60">Strengthening</span><span class="mv-txt">Dual-label expansion to ~95% of US CF</span><button class="why" onclick="event.stopPropagation();openMovement(9)" title="Details">?</button></div>
+  </div></div>
+</div>
+<div class="panel span-1">
+  <div class="panel-h"><span class="t">Value / access</span><span class="c">the standing ICER debate</span></div>
+  <div class="panel-body"><div class="val-list">
+    <div class="val-row alert"><b>ICER (2020):</b> highest 'A' evidence rating, but an Access &amp; Affordability Alert — <b>&gt;$1M per QALY</b> and a 'monopoly pricing' critique.</div>
+    <div class="val-row alert"><b>Benchmark:</b> recommended price ~$67.9–85.5K vs the ~$311K list — a ~73% implied discount.</div>
+    <div class="val-row"><b>NHS England (2024):</b> reimbursement secured after a positive NICE recommendation.</div>
+    <div class="val-row alert"><b>Successor friction:</b> Alyftrek lists ~7% above Trikafta — a same-maker price step-up the value narrative must defend. <span class="why" onclick="openSignal('PAY-006')" title="Details" style="display:inline-flex;vertical-align:middle">?</span></div>
+  </div></div>
+</div>
+</div>
+
+<div class="dash">
+<div class="panel span-3">
+  <div class="panel-h"><span class="t">Decisions register</span><span class="c">13 decisions · sorted by urgency · click any for revisit conditions + linked themes</span></div>
+  <div class="panel-body"><div class="dec-grid">
+<div class="dec-card urgent" onclick="openDecision('d-switch')"><div class="dec-cat">Lifecycle strategy</div><div class="dec-title">Define the Trikafta→Alyftrek switch playbook by genotype/segment</div><button class="why" onclick="event.stopPropagation();openDecision('d-switch')" title="Details">?</button></div>
+<div class="dec-card urgent" onclick="openDecision('d-portfolio')"><div class="dec-cat">Portfolio strategy</div><div class="dec-title">Decide the post-VX-522 path for the untreated minority</div><button class="why" onclick="event.stopPropagation();openDecision('d-portfolio')" title="Details">?</button></div>
+<div class="dec-card action" onclick="openDecision('d-durability')"><div class="dec-cat">Evidence generation</div><div class="dec-title">Sustain a multi-year real-world durability & registry program</div><button class="why" onclick="event.stopPropagation();openDecision('d-durability')" title="Details">?</button></div>
+<div class="dec-card action" onclick="openDecision('d-safety')"><div class="dec-cat">Safety surveillance</div><div class="dec-title">Maintain active long-term safety surveillance</div><button class="why" onclick="event.stopPropagation();openDecision('d-safety')" title="Details">?</button></div>
+<div class="dec-card action" onclick="openDecision('d-surrogate')"><div class="dec-cat">Scientific positioning</div><div class="dec-title">Advance sweat-chloride toward regulatory surrogate acceptance</div><button class="why" onclick="event.stopPropagation();openDecision('d-surrogate')" title="Details">?</button></div>
+<div class="dec-card action" onclick="openDecision('d-value')"><div class="dec-cat">Value / access</div><div class="dec-title">Build the value-defence for the higher-priced successor</div><button class="why" onclick="event.stopPropagation();openDecision('d-value')" title="Details">?</button></div>
+<div class="dec-card action" onclick="openDecision('d-iprunway')"><div class="dec-cat">Lifecycle strategy</div><div class="dec-title">Make franchise IP-runway extension explicit in lifecycle planning</div><button class="why" onclick="event.stopPropagation();openDecision('d-iprunway')" title="Details">?</button></div>
+<div class="dec-card action" onclick="openDecision('d-horizon')"><div class="dec-cat">Horizon scanning</div><div class="dec-title">Stand up a formal genetic-medicine horizon watch</div><button class="why" onclick="event.stopPropagation();openDecision('d-horizon')" title="Details">?</button></div>
+<div class="dec-card action" onclick="openDecision('d-advocacy')"><div class="dec-cat">Stakeholder / advocacy</div><div class="dec-title">Engage advocacy on the 'last 10%'</div><button class="why" onclick="event.stopPropagation();openDecision('d-advocacy')" title="Details">?</button></div>
+<div class="dec-card watch" onclick="openDecision('d-patient')"><div class="dec-cat">Patient experience</div><div class="dec-title">Monitor & address patient-reported mental-health signals</div><button class="why" onclick="event.stopPropagation();openDecision('d-patient')" title="Details">?</button></div>
+<div class="dec-card watch" onclick="openDecision('d-sionna')"><div class="dec-cat">Competitive response</div><div class="dec-title">Assess Sionna's NBD1 mechanism — partner or threat</div><button class="why" onclick="event.stopPropagation();openDecision('d-sionna')" title="Details">?</button></div>
+<div class="dec-card watch" onclick="openDecision('d-field')"><div class="dec-cat">Field engagement</div><div class="dec-title">Equip CF-specialist engagement on switch-vs-stay</div><button class="why" onclick="event.stopPropagation();openDecision('d-field')" title="Details">?</button></div>
+<div class="dec-card watch" onclick="openDecision('d-extmon')"><div class="dec-cat">Competitive response</div><div class="dec-title">Monitor external mRNA / genetic-medicine players across the addressable line</div><button class="why" onclick="event.stopPropagation();openDecision('d-extmon')" title="Details">?</button></div>
+  </div></div>
+</div>
+</div>
+
+<div class="dash" style="grid-template-columns:1fr">
+ <div class="panel"><div class="panel-body" style="padding:14px 18px;font-size:12.5px;color:#3F4A55;line-height:1.55">
+  <b>Reading this view.</b> Same architecture as the schizophrenia and ADP views, pointed at a <b>mature, near-monopoly incumbent that is cannibalising itself</b>. Three things are specific to this asset-state: the gap radar fires <b>fully</b> (a live drug exercises RWE &amp; Payer — the mirror image of pre-launch ADP); a new <b>Superseded</b> state carries the Trikafta→Alyftrek succession that the external-competitor model couldn't hold; and the genotype-coverage panel separates a <b>structural modality boundary</b> (~5% unreachable) from an ordinary coverage gap. All three are documented as architecture seams in the pressure-test workbook. Every theme, signal, decision and movement is click-through.
+ </div></div>
+</div>
+
+</main>
+
+
+<style>
+.linked-wrap{--ls:#5B92D1;--ly:#6B5BA0;--ld:#9C6A1F;--la:#5AAB60;--lx:#1F7A92}
+.linked-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.linked-col{display:flex;flex-direction:column;gap:6px}
+.linked-h{font-family:'Inter';font-size:9px;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;color:#fff;padding:3px 7px}
+.linked-item{display:block;background:var(--panel-alt);border:1px dashed var(--line);border-left:3px solid var(--ink-dim);padding:6px 9px;font-size:11.5px;color:var(--ink);text-decoration:none;line-height:1.3;transition:background .1s,border-color .1s;position:relative}
+.linked-item:hover{background:#fff;border-left-color:var(--teal);border-color:var(--teal)}
+.linked-item .meta{display:block;font-family:'Inter';font-size:8.5px;color:var(--ink-soft);letter-spacing:0.03em;margin-top:3px}
+.linked-item .pl{position:absolute;top:5px;right:6px;font-family:'Inter';font-size:7.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:0.06em}
+.linked-note{font-size:11px;color:var(--ink-soft);margin-top:10px;line-height:1.4}
+</style>
+<div class="dash" style="grid-template-columns:1fr">
+ <div class="panel">
+  <div class="panel-h"><span class="t">Linked dashboards · planned drill-downs</span><span class="c">referenced from this surface · deep-dive build later</span></div>
+  <div class="panel-body"><div class="linked-grid">
+   <div class="linked-col"><div class="linked-h" style="background:var(--ls)">Sense</div>
+     <a class="linked-item" href="#planned-social" style="border-left-color:var(--ls)"><span class="pl">planned</span>Social &amp; Digital Listening<span class="meta">absorbs MEDsights · social</span></a>
+     <a class="linked-item" href="#planned-congress" style="border-left-color:var(--ls)"><span class="pl">planned</span>Congress Intelligence<span class="meta">congress · share-of-voice</span></a>
+     <a class="linked-item" href="#planned-kol" style="border-left-color:var(--ls)"><span class="pl">planned</span>KOL / DOL Influence Map<span class="meta">DOL · referral · 3D</span></a>
+   </div>
+   <div class="linked-col"><div class="linked-h" style="background:var(--ly)">Synthesize</div>
+     <a class="linked-item" href="#planned-fm" style="border-left-color:var(--ly)"><span class="pl">planned</span>Field Medical Insight Synthesis<span class="meta">interactions · K&amp;B · NPSE</span></a>
+     <a class="linked-item" href="#planned-evidence" style="border-left-color:var(--ly)"><span class="pl">planned</span>Evidence &amp; Surrogate Map<span class="meta">surrogate ↔ outcome</span></a>
+   </div>
+   <div class="linked-col"><div class="linked-h" style="background:var(--ld)">Decide</div>
+     <a class="linked-item" href="#planned-risk" style="border-left-color:var(--ld)"><span class="pl">planned</span>Study-at-Risk &amp; Book-of-Work<span class="meta">iSTAR · LDBOW · MDG · MSRMA</span></a>
+     <a class="linked-item" href="#planned-let" style="border-left-color:var(--ld)"><span class="pl">planned</span>Launch Excellence Tracker<span class="meta">5-phase · at-risk · NPSE</span></a>
+     <a class="linked-item" href="#planned-comp" style="border-left-color:var(--ld)"><span class="pl">planned</span>Competitive &amp; Pipeline Landscape<span class="meta">precedent · self-succession</span></a>
+   </div>
+   <div class="linked-col"><div class="linked-h" style="background:var(--la)">Act</div>
+     <a class="linked-item" href="#planned-orch" style="border-left-color:var(--la)"><span class="pl">planned</span>Decision &amp; Revisit Orchestration<span class="meta">triggers · reminders · forum decks</span></a>
+     <a class="linked-item" href="#planned-msl" style="border-left-color:var(--la)"><span class="pl">planned</span>MSL / Field Action<span class="meta">site recs · coverage · referral</span></a>
+   </div>
+   <div class="linked-col"><div class="linked-h" style="background:var(--lx)">Cross-cutting</div>
+     <a class="linked-item" href="#planned-value" style="border-left-color:var(--lx)"><span class="pl">planned</span>Value &amp; Access / HTA<span class="meta">ICER · payer · pricing</span></a>
+     <a class="linked-item" href="#planned-portfolio" style="border-left-color:var(--lx)"><span class="pl">planned</span>Portfolio Book-of-Work<span class="meta">multi-asset · by TA</span></a>
+     <a class="linked-item" href="#planned-lineage" style="border-left-color:var(--lx)"><span class="pl">planned</span>Data Lineage &amp; Source Health<span class="meta">freshness · coverage</span></a>
+   </div>
+  </div>
+  <div class="linked-note">These are placeholders — each modernizes an existing MA BI&amp;A tool and is a future drill-down from this surface. See the BI&amp;A notes &amp; dashboard map for scope and the seam each one closes.</div>
+  </div>
+ </div>
+</div>
+
+<div class="drawer-overlay" id="drawer-overlay"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-h"><div class="drawer-h-l"><div class="drawer-eyebrow" id="drawer-eyebrow">—</div><div class="drawer-title serif" id="drawer-title">—</div></div><button class="drawer-close" id="drawer-close" aria-label="Close">×</button></div>
+  <div class="drawer-body" id="drawer-body"></div>
+</aside>
+
+
+<script>
+const DATA = {
+ themes: {"t-durable": {"state": "Strengthening", "title": "Durable real-world benefit established", "summary": "Registry data show ppFEV1 gains sustained over multiple years, with reduced exacerbations and IV-antibiotic use. Trikafta has redefined the CF trajectory for modulator-responsive patients.", "signals": ["RWE-007", "RWE-009"], "decisions": ["d-durability"], "kbq": "KBQ-RWE-B"}, "t-iprunway": {"state": "Strengthening", "title": "Franchise IP-runway extended via the successor", "summary": "Alyftrek carries fresh exclusivity well beyond Trikafta's eventual loss of exclusivity \u2014 the self-succession is also a lifecycle / IP-runway move, not only a clinical upgrade.", "signals": ["LIT-069", "REG-018"], "decisions": ["d-iprunway"], "kbq": "KBQ-LIT-I"}, "t-addressable": {"state": "Strengthening", "title": "Modulator-addressable majority secured (~95%)", "summary": "The Apr-2026 dual-label expansion takes Trikafta/Alyftrek to ~95% of US CF (564/521 responsive variants) \u2014 the modulator-addressable population is essentially captured.", "signals": ["LIT-052", "REG-018"], "decisions": ["d-advocacy"], "kbq": "KBQ-LIT-E"}, "t-swcl": {"state": "Strengthening-Thin", "title": "Sweat chloride as an emerging surrogate", "summary": "Sweat-chloride reduction is increasingly associated with clinical outcomes (NACFC 2025), strengthening the surrogate case \u2014 but it is not yet a validated regulatory surrogate. It underpins both franchise and successor.", "signals": ["LIT-041", "RWE-012"], "decisions": ["d-surrogate"], "kbq": "KBQ-LIT-D"}, "t-switch": {"state": "Contested", "title": "Switch economics vs disruption of stable patients", "summary": "Once-daily dosing and broader coverage make Alyftrek attractive, but CF specialists are reluctant to disrupt patients doing well on Trikafta. The switch is gradual and segment-dependent.", "signals": ["KOL-014", "RWE-015"], "decisions": ["d-switch", "d-field"], "kbq": "KBQ-KOL-B"}, "t-value": {"state": "Contested", "title": "Value scrutiny carries into the higher-priced successor", "summary": "Payers face a 7%-higher-priced successor from the same maker, against a standing ICER >$1M/QALY 'monopoly pricing' critique. The value debate from Trikafta carries straight into Alyftrek.", "signals": ["PAY-006"], "decisions": ["d-value"], "kbq": "KBQ-PAY-B"}, "t-vx522": {"state": "Contested", "title": "The sponsor's own genetic-medicine answer failed", "summary": "VX-522 (Vertex/Moderna inhaled mRNA for non-responders) was discontinued in 2026 after persistent lung inflammation tied to the lipid-nanoparticle delivery. The lead answer for the untreated minority fails at the sponsor.", "signals": ["TL-031", "LIT-077"], "decisions": ["d-portfolio"], "kbq": "KBQ-LIT-I"}, "t-nbd1": {"state": "Stable", "title": "External NBD1 mechanism on the horizon", "summary": "Sionna's NBD1 stabiliser is in Ph2a specifically in Trikafta-stable patients \u2014 a differentiated external mechanism that could become a future combination partner or a threat.", "signals": ["TL-024"], "decisions": ["d-sionna"], "kbq": "KBQ-TL-E"}, "t-ltsafety": {"state": "Thin", "title": "Long-term safety vigilance (IH / hepatic / mood)", "summary": "Postmarketing signals \u2014 intracranial hypertension, hepatic events (boxed warning for drug-induced liver injury on both labels), and community discussion of mood effects \u2014 require active surveillance in a lifelong, paediatric-inclusive population.", "signals": ["LIT-031", "LIT-034", "DIG-008"], "decisions": ["d-safety", "d-patient"], "kbq": "KBQ-LIT-C"}, "t-decades": {"state": "Thin", "title": "Decades-scale outcome gap", "summary": "No decades-scale outcome dataset exists yet \u2014 the treated cohort is only ~6 years into what is lifelong therapy from age 2. A true coverage gap (absence of data), distinct from the structural untreated boundary.", "signals": ["LIT-G05"], "decisions": ["d-durability"], "kbq": "KBQ-LIT-O"}, "t-untreated": {"state": "Thin", "title": "Structural untreated minority remains (~10%)", "summary": "~10% of CF (\u22485,000 people; nonsense / PTC genotypes such as W1282X) make little or no full-length CFTR and are STRUCTURALLY unreachable by modulators. This is a modality boundary, not thin coverage that more sensing could fill.", "signals": ["LIT-G09"], "decisions": ["d-portfolio", "d-advocacy"], "kbq": "KBQ-LIT-E"}, "t-horizon": {"state": "Thin", "title": "Genetic-medicine horizon: opportunity & existential threat", "summary": "mRNA / gene editing / ASO / tRNA-readthrough could one day address ALL genotypes and eventually obsolete modulators \u2014 long timescale, high uncertainty, and a punishing delivery hurdle (VX-522 and Boehringer's inhaled gene therapy both dropped in 2026).", "signals": ["TL-033", "TL-034", "REG-026"], "decisions": ["d-horizon", "d-sionna", "d-extmon"], "kbq": "KBQ-TL-E"}, "t-succession": {"state": "Superseded", "title": "Managed succession: new starts shift to Alyftrek", "summary": "Vertex is deliberately replacing its own >$10B/yr incumbent with its own next-gen Alyftrek (once-daily, +31 mutations, lower sweat chloride, priced 7% above Trikafta). The 'competitor' is the sponsor itself. The Actor-axis competitor model assumes an external rival, so this needs an intra-portfolio succession relationship and a new Superseded state \u2014 the headline architecture seam of this asset.", "signals": ["TL-021", "LIT-066", "RWE-015"], "decisions": ["d-switch", "d-iprunway"], "kbq": "KBQ-TL-D"}}, signals: {"RWE-007": {"desc": "Real-world ppFEV1 gains durable over multiple years in registry data; exacerbations and IV-antibiotic use reduced.", "cap": "Real-World Evidence", "family": "DET", "mode": "B", "sources": "CF Foundation Patient Registry \u00b7 ECFS registry \u00b7 claims", "last_seen": "2026", "state": "active"}, "RWE-009": {"desc": "High real-world adherence / persistence for a lifelong oral therapy; some discontinuation for tolerability / mental-health.", "cap": "Real-World Evidence", "family": "DET", "mode": "B", "sources": "CF registries \u00b7 pharmacy data", "last_seen": "2026", "state": "active"}, "LIT-069": {"desc": "Alyftrek extends the franchise IP / exclusivity runway well beyond Trikafta's eventual loss of exclusivity.", "cap": "Literature", "family": "IR-CLS", "mode": "B", "sources": "SEC filings \u00b7 patent landscape \u00b7 analyst coverage", "last_seen": "2026", "state": "active"}, "REG-018": {"desc": "Apr-2026 dual-label expansion takes both products to ~95% of US CF patients (564/521 responsive variants).", "cap": "Regulatory & Guideline", "family": "DET", "mode": "C", "sources": "FDA tracker \u00b7 Vertex label", "last_seen": "Apr 2026", "state": "active"}, "LIT-052": {"desc": "Responsive-variant coverage now ~95% of US CF (564/521 variants across Alyftrek/Trikafta) \u2014 the modulator-addressable majority.", "cap": "Literature", "family": "ASSERT", "mode": "B", "sources": "CFTR2 database \u00b7 genotype-response literature", "last_seen": "Apr 2026", "state": "active"}, "LIT-041": {"desc": "Sweat-chloride reduction increasingly associated with improved clinical outcomes (NACFC 2025) \u2014 strengthening the surrogate case, not yet a validated regulatory surrogate.", "cap": "Literature", "family": "ASSERT", "mode": "B", "sources": "NACFC abstracts \u00b7 J Cyst Fibros \u00b7 SKYLINE analyses", "last_seen": "2026", "state": "emerging"}, "RWE-012": {"desc": "Real-world effectiveness broadly mirrors trials in F508del genotypes; thinner evidence in rarer responsive variants.", "cap": "Real-World Evidence", "family": "DET", "mode": "B", "sources": "CF registries \u00b7 real-world ppFEV1 / exacerbation data", "last_seen": "2026", "state": "emerging"}, "KOL-014": {"desc": "CF specialists split: once-daily + broader coverage attractive, but reluctance to disrupt patients stable on Trikafta.", "cap": "KOL & Stakeholder", "family": "STANCE", "mode": "B", "sources": "Care-centre networks \u00b7 congress commentary", "last_seen": "2026", "state": "active"}, "RWE-015": {"desc": "Early switch uptake measured but slower than Trikafta's original launch; most patients still on Trikafta.", "cap": "Real-World Evidence", "family": "DET", "mode": "C", "sources": "CF registries \u00b7 pharmacy switch data", "last_seen": "2026", "state": "active"}, "PAY-006": {"desc": "Payers face a 7%-higher-priced successor from the same maker amid standing ICER >$1M/QALY 'monopoly pricing' criticism \u2014 value scrutiny carries into the switch.", "cap": "Payer & Access", "family": "DET", "mode": "C", "sources": "Formulary trackers \u00b7 ICER history \u00b7 payer P&T", "last_seen": "2026", "state": "active"}, "TL-031": {"desc": "VX-522 (Vertex/Moderna inhaled mRNA for non-responders; BEACON-CF) discontinued in 2026 (paused May 2025) \u2014 persistent lung inflammation from the lipid-nanoparticle delivery; the lead answer fails.", "cap": "Treatment Landscape", "family": "DET", "mode": "C", "sources": "Vertex Q1-2026 results \u00b7 trade press", "last_seen": "2026", "state": "active"}, "LIT-077": {"desc": "BEACON-CF early termination prevents full safety / efficacy analysis; the untreated-minority program is halted at the sponsor.", "cap": "Literature", "family": "IR-CLS", "mode": "B", "sources": "Vertex release \u00b7 trade press", "last_seen": "2026", "state": "active"}, "TL-024": {"desc": "Sionna NBD1 stabiliser in Ph2a specifically in Trikafta-stable patients \u2014 a differentiated external mechanism, potential future combination or threat.", "cap": "Treatment Landscape", "family": "DET", "mode": "C", "sources": "Pipeline DBs \u00b7 Sionna disclosures", "last_seen": "2026", "state": "emerging"}, "TL-021": {"desc": "Alyftrek (Vertex's own next-gen): once-daily, efficacy in 31 additional mutations, lower sweat chloride, priced 7% above Trikafta. The successor by design.", "cap": "Treatment Landscape", "family": "DET", "mode": "C", "sources": "ClinicalTrials.gov \u00b7 Vertex pipeline & releases", "last_seen": "2026", "state": "superseded"}, "LIT-066": {"desc": "Head-to-head: Alyftrek non-inferior to Trikafta on ppFEV1, superior on sweat chloride and quality of life (SKYLINE; NACFC 2025; post-hoc 2026).", "cap": "Literature", "family": "ASSERT", "mode": "B", "sources": "SKYLINE Ph3 \u00b7 NACFC 2025 \u00b7 J Cyst Fibros 2026", "last_seen": "2026", "state": "superseded"}, "LIT-031": {"desc": "Intracranial hypertension reported in the postmarketing setting (class signal); monitoring for headache / visual disturbance advised.", "cap": "Literature", "family": "ASSERT", "mode": "B", "sources": "FDA label & postmarketing \u00b7 pharmacovigilance", "last_seen": "2026", "state": "active"}, "LIT-034": {"desc": "Transaminase elevations and hepatic events \u2014 a boxed warning for drug-induced liver injury / liver failure on both labels (reaffirmed Apr-2026); LFT monitoring required before and during therapy.", "cap": "Literature", "family": "ASSERT", "mode": "B", "sources": "FDA label \u00b7 pharmacovigilance", "last_seen": "Apr 2026", "state": "active"}, "DIG-008": {"desc": "Patient-reported tolerability generally good; persistent community discussion of mood / mental-health effects and a minority discontinuing.", "cap": "Digital & Social", "family": "AGG", "mode": "B", "sources": "CF community forums \u00b7 advocacy channels \u00b7 social", "last_seen": "2026", "state": "emerging"}, "LIT-G05": {"desc": "No decades-scale outcome dataset yet exists \u2014 the treated cohort is only ~6 years into lifelong therapy.", "cap": "Literature", "family": "COVER", "mode": "B", "sources": "Corpus scan for >5-year outcome data", "last_seen": "absent", "state": "gap"}, "LIT-G09": {"desc": "~10% of CF (\u22485,000; nonsense / PTC genotypes such as W1282X) make little or no full-length CFTR \u2014 STRUCTURALLY unaddressable by modulators. A modality boundary, not a coverage gap.", "cap": "Literature", "family": "COVER:BOUND (proposed)", "mode": "B", "sources": "CFTR2 variant database \u00b7 genotype-response literature", "last_seen": "standing", "state": "structural"}, "TL-033": {"desc": "External inhaled efforts (ReCode / 4DMT, SORT-LNP) continue for non-responders, but the delivery hurdle is industry-wide \u2014 Boehringer also dropped its inhaled CF gene therapy in early 2026. Early-stage, uncertain.", "cap": "Treatment Landscape", "family": "DET", "mode": "C", "sources": "Genetic-medicine pipeline \u00b7 trade press", "last_seen": "2026", "state": "emerging"}, "TL-034": {"desc": "Modality-shift horizon (mRNA / gene editing / ASO / tRNA suppression) could one day address ALL genotypes and obsolete modulators \u2014 long timescale, high uncertainty.", "cap": "Treatment Landscape", "family": "DET", "mode": "C", "sources": "Genetic-medicine pipeline \u00b7 scientific literature", "last_seen": "2026", "state": "emerging"}, "REG-026": {"desc": "Regulatory path for CF genetic medicines is nascent; surrogate (CFTR function) and small-n designs likely.", "cap": "Regulatory & Guideline", "family": "STANCE", "mode": "C", "sources": "FDA gene-therapy guidance \u00b7 precedent", "last_seen": "2026", "state": "emerging"}, "KOL-011": {"desc": "CF specialists endorse long-term use with routine monitoring; want decades-scale safety as the cohort ages.", "cap": "KOL & Stakeholder", "family": "STANCE", "mode": "A", "sources": "CF care-centre networks \u00b7 investigator commentary", "last_seen": "2026", "state": "active"}, "KOL-017": {"desc": "High unmet-need salience for the untreated minority; advocacy pressure to solve the 'last 10%'.", "cap": "KOL & Stakeholder", "family": "STANCE", "mode": "B", "sources": "Advocacy (CF Foundation) \u00b7 KOL commentary", "last_seen": "2026", "state": "active"}}, kbqs: {"KBQ-RWE-B": {"id": "KBQ-RWE-B", "capability": "RWE", "cap_name": "Real-World Evidence", "method": "DET", "method_name": "Entity / event detection", "mode": "B", "mode_name": "scan-corpus", "sources": "CF Foundation Patient Registry \u00b7 ECFS registry \u00b7 claims", "refreshed": "2026", "confidence": "High", "confidence_basis": "Large longitudinal registries", "text": "Which real-world safety / utilisation / durability patterns differ from the trials?", "contributing": ["RWE-007", "RWE-009"]}, "KBQ-LIT-C": {"id": "KBQ-LIT-C", "capability": "LIT", "cap_name": "Literature", "method": "ASSERT", "method_name": "Claim/assertion extraction", "mode": "B", "mode_name": "scan-corpus", "sources": "FDA label & postmarketing \u00b7 pharmacovigilance \u00b7 CF registries", "refreshed": "2026", "confidence": "Medium", "confidence_basis": "Postmarketing + registry signal", "text": "What are the adverse events \u2014 long-term safety signals in a chronic, paediatric-inclusive population?", "contributing": ["LIT-031", "LIT-034", "DIG-008"]}, "KBQ-LIT-D": {"id": "KBQ-LIT-D", "capability": "LIT", "cap_name": "Literature", "method": "ASSERT", "method_name": "Claim/assertion extraction", "mode": "B", "mode_name": "scan-corpus", "sources": "NACFC abstracts \u00b7 J Cyst Fibros \u00b7 SKYLINE analyses", "refreshed": "2026", "confidence": "Medium", "confidence_basis": "Accumulating surrogate evidence", "text": "Is sweat chloride a credible surrogate \u2014 does the biomarker track clinical outcome?", "contributing": ["LIT-041", "RWE-012"]}, "KBQ-LIT-E": {"id": "KBQ-LIT-E", "capability": "LIT", "cap_name": "Literature", "method": "DET", "method_name": "Segment / coverage detection", "mode": "B", "mode_name": "scan-corpus", "sources": "CFTR2 variant database \u00b7 genotype-response literature", "refreshed": "Apr 2026", "confidence": "High", "confidence_basis": "Variant-level genotype data", "text": "Which patient segments are addressable \u2014 and which are structurally NOT, by genotype?", "contributing": ["LIT-052", "LIT-G09"]}, "KBQ-LIT-I": {"id": "KBQ-LIT-I", "capability": "LIT", "cap_name": "Literature", "method": "IR-CLS", "method_name": "Information-retrieval classification", "mode": "B", "mode_name": "scan-corpus", "sources": "SEC filings \u00b7 Vertex releases \u00b7 trade press", "refreshed": "2026", "confidence": "High", "confidence_basis": "Corporate disclosure", "text": "How is the lifecycle / IP / portfolio picture shifting \u2014 including the sponsor's own programs?", "contributing": ["LIT-069", "LIT-077"]}, "KBQ-LIT-O": {"id": "KBQ-LIT-O", "capability": "LIT", "cap_name": "Literature", "method": "COVER", "method_name": "Coverage / absence detection", "mode": "B", "mode_name": "scan-corpus", "sources": "Corpus scan for >5-year outcome data", "refreshed": "2026", "confidence": "High", "confidence_basis": "Systematic absence is the signal", "text": "Where is the evidence missing \u2014 decades-scale outcomes for a drug taken for life?", "contributing": ["LIT-G05"]}, "KBQ-TL-D": {"id": "KBQ-TL-D", "capability": "TL", "cap_name": "Treatment Landscape", "method": "DET", "method_name": "Entity / event detection", "mode": "C", "mode_name": "monitor-feed", "sources": "ClinicalTrials.gov \u00b7 Vertex pipeline & releases \u00b7 analyst notes", "refreshed": "2026", "confidence": "High", "confidence_basis": "Primary pipeline + releases", "text": "How is the competitive / portfolio picture reshaping \u2014 including the sponsor's own successor?", "contributing": ["TL-021", "TL-024", "TL-031"]}, "KBQ-TL-E": {"id": "KBQ-TL-E", "capability": "TL", "cap_name": "Treatment Landscape", "method": "DET", "method_name": "Entity / event detection", "mode": "C", "mode_name": "monitor-feed", "sources": "Genetic-medicine pipeline \u00b7 Sionna disclosures \u00b7 scientific literature", "refreshed": "2026", "confidence": "Low", "confidence_basis": "Early-stage frontier", "text": "Is a paradigm-shift modality (mRNA / gene editing / NBD1 / tRNA) maturing \u2014 partner or threat?", "contributing": ["TL-024", "TL-033", "TL-034", "REG-026"]}, "KBQ-LIT-B": {"id": "KBQ-LIT-B", "capability": "LIT", "cap_name": "Literature", "method": "ASSERT", "method_name": "Claim/assertion extraction", "mode": "B", "mode_name": "scan-corpus", "sources": "SKYLINE Ph3 \u00b7 NACFC 2025 \u00b7 J Cyst Fibros 2026", "refreshed": "2026", "confidence": "High", "confidence_basis": "Head-to-head pivotal + congress", "text": "Where does the comparative evidence land \u2014 Alyftrek vs Trikafta head-to-head?", "contributing": ["LIT-066"]}, "KBQ-PAY-B": {"id": "KBQ-PAY-B", "capability": "PAY", "cap_name": "Payer & Access", "method": "DET", "method_name": "Payer-stance detection", "mode": "C", "mode_name": "monitor-feed", "sources": "Formulary trackers \u00b7 ICER history \u00b7 payer P&T", "refreshed": "2026", "confidence": "Medium", "confidence_basis": "Payer / HTA record", "text": "How do payers respond to a higher-priced successor from the same maker?", "contributing": ["PAY-006"]}, "KBQ-KOL-B": {"id": "KBQ-KOL-B", "capability": "KOL", "cap_name": "KOL & Stakeholder", "method": "STANCE", "method_name": "Stance detection", "mode": "B", "mode_name": "scan-corpus", "sources": "Care-centre networks \u00b7 congress commentary", "refreshed": "2026", "confidence": "Medium", "confidence_basis": "Specialist field signal", "text": "Where do CF specialists stand on switching stable patients vs leaving them on Trikafta?", "contributing": ["KOL-014", "RWE-015"]}}, decisions: {"d-switch": {"title": "Define the Trikafta\u2192Alyftrek switch playbook by genotype/segment", "urgency": "urgent", "category": "Lifecycle strategy", "status": "Open \u00b7 active", "summary": "Lead the switch with new starts and broad-coverage genotypes; protect patients stable on Trikafta from forced disruption. Sequence by segment, not all at once.", "themes": ["t-succession", "t-switch"], "revisit": "REVISIT QUARTERLY with switch-uptake data; on any payer step-edit.", "kbq": "KBQ-TL-D"}, "d-portfolio": {"title": "Decide the post-VX-522 path for the untreated minority", "urgency": "urgent", "category": "Portfolio strategy", "status": "Open", "summary": "In-license / partner an external genetic-medicine (ReCode / 4DMT) or a tRNA-readthrough approach for non-responders, versus ceding the segment. The internal lead answer has failed.", "themes": ["t-untreated", "t-vx522"], "revisit": "REVISIT WHEN any genetic-medicine candidate posts proof-of-concept.", "kbq": "KBQ-LIT-I"}, "d-durability": {"title": "Sustain a multi-year real-world durability & registry program", "urgency": "action", "category": "Evidence generation", "status": "Open", "summary": "Convert 'durable so far' into decades-scale evidence as the treated cohort ages \u2014 registry + long-term cohort follow-up.", "themes": ["t-durable", "t-decades"], "revisit": "REVISIT ANNUALLY with registry refresh; on any durability inflection.", "kbq": "KBQ-RWE-B"}, "d-safety": {"title": "Maintain active long-term safety surveillance", "urgency": "action", "category": "Safety surveillance", "status": "Open", "summary": "Keep monitoring for intracranial hypertension, hepatic events (boxed warning) and neuropsychiatric signals; keep label guidance current.", "themes": ["t-ltsafety"], "revisit": "REVISIT on any new pharmacovigilance signal or label change.", "kbq": "KBQ-LIT-C"}, "d-surrogate": {"title": "Advance sweat-chloride toward regulatory surrogate acceptance", "urgency": "action", "category": "Scientific positioning", "status": "Open", "summary": "The SwCl\u2013outcome linkage underpins both franchise and successor \u2014 push it toward formal surrogate acceptance at NACFC / regulatory interactions.", "themes": ["t-swcl"], "revisit": "REVISIT at each NACFC / regulatory interaction on surrogates.", "kbq": "KBQ-LIT-D"}, "d-value": {"title": "Build the value-defence for the higher-priced successor", "urgency": "action", "category": "Value / access", "status": "Open", "summary": "Pre-empt payer friction on a same-maker price step-up against standing ICER >$1M/QALY criticism; carry the value narrative into Alyftrek.", "themes": ["t-value"], "revisit": "REVISIT WHEN ICER / payer signals re-engagement on the successor.", "kbq": "KBQ-PAY-B"}, "d-iprunway": {"title": "Make franchise IP-runway extension explicit in lifecycle planning", "urgency": "action", "category": "Lifecycle strategy", "status": "Open", "summary": "Sequence Trikafta loss-of-exclusivity against Alyftrek's fresh exclusivity \u2014 the self-succession is the lifecycle defence.", "themes": ["t-iprunway", "t-succession"], "revisit": "REVISIT at each exclusivity / patent milestone.", "kbq": "KBQ-LIT-I"}, "d-horizon": {"title": "Stand up a formal genetic-medicine horizon watch", "urgency": "action", "category": "Horizon scanning", "status": "Open", "summary": "Track mRNA / gene-editing / tRNA as a modality SHIFT, not a same-class competitor \u2014 it could eventually obsolete the modulator franchise.", "themes": ["t-horizon"], "revisit": "REVISIT QUARTERLY; on any gene-editing / mRNA CF proof-of-concept.", "kbq": "KBQ-TL-E"}, "d-advocacy": {"title": "Engage advocacy on the 'last 10%'", "urgency": "action", "category": "Stakeholder / advocacy", "status": "Open", "summary": "Keep credibility and optionality in the structurally-untreated segment through advocacy engagement on the unmet need.", "themes": ["t-untreated", "t-addressable"], "revisit": "REVISIT WHEN advocacy / policy pressure shifts.", "kbq": "KBQ-LIT-E"}, "d-patient": {"title": "Monitor & address patient-reported mental-health signals", "urgency": "watch", "category": "Patient experience", "status": "Watch", "summary": "Track community mood / tolerability discussion and address proactively in materials.", "themes": ["t-ltsafety"], "revisit": "REVISIT WHEN sentiment data refresh.", "kbq": "KBQ-LIT-C"}, "d-sionna": {"title": "Assess Sionna's NBD1 mechanism \u2014 partner or threat", "urgency": "watch", "category": "Competitive response", "status": "Watch", "summary": "Monitor the Ph2a in Trikafta-stable patients; evaluate NBD1 as a future combination partner or an external threat.", "themes": ["t-nbd1", "t-horizon"], "revisit": "REVISIT WHEN Sionna Ph2a reads out.", "kbq": "KBQ-TL-E"}, "d-field": {"title": "Equip CF-specialist engagement on switch-vs-stay", "urgency": "watch", "category": "Field engagement", "status": "Watch", "summary": "Provide comparative evidence for switch-vs-stay decisions without pressuring disruption of stable patients.", "themes": ["t-switch"], "revisit": "REVISIT WHEN comparative RWE matures.", "kbq": "KBQ-KOL-B"}, "d-extmon": {"title": "Monitor external mRNA / genetic-medicine players across the addressable line", "urgency": "watch", "category": "Competitive response", "status": "Watch", "summary": "Track external mRNA / gene-editing efforts as both potential partners and threats spanning the addressable / structurally-unaddressable boundary.", "themes": ["t-horizon", "t-untreated"], "revisit": "REVISIT at each external readout.", "kbq": "KBQ-TL-E"}},
+ gaps: {"LIT": {"name": "Literature", "fired": 11, "total": 15, "pct": 73, "na": false}, "RWE": {"name": "Real-World Evidence", "fired": 5, "total": 6, "pct": 83, "na": false}, "TL": {"name": "Treatment Landscape", "fired": 5, "total": 6, "pct": 83, "na": false}, "REG": {"name": "Regulatory & Guideline", "fired": 3, "total": 5, "pct": 60, "na": false}, "PAY": {"name": "Payer & Access", "fired": 4, "total": 5, "pct": 80, "na": false}, "KOL": {"name": "KOL & Stakeholder", "fired": 3, "total": 5, "pct": 60, "na": false}, "CON": {"name": "Congress", "fired": 2, "total": 4, "pct": 50, "na": false}, "DIG": {"name": "Digital & Social", "fired": 2, "total": 5, "pct": 40, "na": false}}, movements: [{"date": "Oct 2019", "title": "Trikafta FDA approval (ages 12+)", "state": "Strengthening", "capability": "Regulatory & Guideline", "theme": "t-durable", "so": "The franchise foundation \u2014 transforms CF care for modulator-responsive patients."}, {"date": "Sep 2020", "title": "ICER: 'A' rating + affordability alert", "state": "Contested", "capability": "Payer & Access", "theme": "t-value", "so": ">$1M/QALY; 'monopoly pricing' critique and a recommended ~73% discount benchmark \u2014 the value debate that still frames the franchise."}, {"date": "2021 \u00b7 2023", "title": "Paediatric label expansions (6\u201311, then 2\u20135)", "state": "Strengthening", "capability": "Regulatory & Guideline", "theme": "t-addressable", "so": "Age-down broadens the treated population and lengthens lifelong exposure."}, {"date": "Jun 2024", "title": "NHS England reimbursement deal", "state": "Stable", "capability": "Payer & Access", "theme": "t-value", "so": "Access secured in a major HTA market after a positive NICE recommendation."}, {"date": "Dec 2024", "title": "Alyftrek FDA approval \u2014 the switch begins", "state": "Superseded", "capability": "Treatment Landscape", "theme": "t-succession", "so": "Vertex's own next-gen successor: once-daily, +31 mutations, lower SwCl, 7% higher list. Self-cannibalisation by design."}, {"date": "Feb 2025", "title": "Sionna Therapeutics IPO", "state": "Stable", "capability": "Treatment Landscape", "theme": "t-nbd1", "so": "First credible external CFTR-modulator mechanism (NBD1 stabiliser); Ph2a planned in Trikafta-stable patients."}, {"date": "May 2025 \u2192 2026", "title": "VX-522 paused, then discontinued", "state": "Contested", "capability": "Treatment Landscape", "theme": "t-vx522", "so": "The inhaled-mRNA answer for non-responders fails on persistent lung inflammation from LNP delivery \u2014 the untreated-minority lead falls."}, {"date": "Oct 2025", "title": "NACFC: Alyftrek SwCl advantage", "state": "Strengthening-Thin", "capability": "Congress", "theme": "t-swcl", "so": "Greater sweat-chloride reduction vs Trikafta; SwCl reduction associated with improved outcomes \u2014 strengthens the surrogate case."}, {"date": "Jan 2026", "title": "SKYLINE post-hoc: Alyftrek QoL > Trikafta", "state": "Strengthening-Thin", "capability": "Literature", "theme": "t-succession", "so": "Quality-of-life edge (CFQ-R-8D) reinforces the case for switching new starts."}, {"date": "Apr 1 2026", "title": "Dual-label expansion to ~95% of US CF", "state": "Strengthening", "capability": "Regulatory & Guideline", "theme": "t-addressable", "so": "564/521 responsive variants; ~800 more people eligible \u2014 the modulator-addressable population is essentially captured."}],
+ theme_titles: {"t-durable": "Durable real-world benefit established", "t-iprunway": "Franchise IP-runway extended via the successor", "t-addressable": "Modulator-addressable majority secured (~95%)", "t-swcl": "Sweat chloride as an emerging surrogate", "t-switch": "Switch economics vs disruption of stable patients", "t-value": "Value scrutiny carries into the higher-priced successor", "t-vx522": "The sponsor's own genetic-medicine answer failed", "t-nbd1": "External NBD1 mechanism on the horizon", "t-ltsafety": "Long-term safety vigilance (IH / hepatic / mood)", "t-decades": "Decades-scale outcome gap", "t-untreated": "Structural untreated minority remains (~10%)", "t-horizon": "Genetic-medicine horizon: opportunity & existential threat", "t-succession": "Managed succession: new starts shift to Alyftrek"}, decision_titles: {"d-switch": "Define the Trikafta\u2192Alyftrek switch playbook by genotype/segment", "d-portfolio": "Decide the post-VX-522 path for the untreated minority", "d-durability": "Sustain a multi-year real-world durability & registry program", "d-safety": "Maintain active long-term safety surveillance", "d-surrogate": "Advance sweat-chloride toward regulatory surrogate acceptance", "d-value": "Build the value-defence for the higher-priced successor", "d-iprunway": "Make franchise IP-runway extension explicit in lifecycle planning", "d-horizon": "Stand up a formal genetic-medicine horizon watch", "d-advocacy": "Engage advocacy on the 'last 10%'", "d-patient": "Monitor & address patient-reported mental-health signals", "d-sionna": "Assess Sionna's NBD1 mechanism \u2014 partner or threat", "d-field": "Equip CF-specialist engagement on switch-vs-stay", "d-extmon": "Monitor external mRNA / genetic-medicine players across the addressable line"}
+};
+const drawer=document.getElementById('drawer'), overlay=document.getElementById('drawer-overlay');
+const drawerEyebrow=document.getElementById('drawer-eyebrow'), drawerTitle=document.getElementById('drawer-title'), drawerBody=document.getElementById('drawer-body');
+function open(){drawer.classList.add('open');overlay.classList.add('open');}
+function close(){drawer.classList.remove('open');overlay.classList.remove('open');}
+document.getElementById('drawer-close').addEventListener('click',close);
+overlay.addEventListener('click',close);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+function chipState(state){const c={'Strengthening':'#5AAB60','Strengthening-Thin':'#B49563','Contested':'#E89327','Stable':'#5B92D1','Thin':'#9AA3AC','Superseded':'#5E6E8C'};return `<span class="state-chip" style="background:${c[state]||'#9AA3AC'}">${state}</span>`;}
+function renderConfidence(level){const n={High:3,Medium:2,Low:1}[level]||1;let dots='';for(let i=0;i<3;i++){dots+=`<span class="dot ${i<n?'on':''}"></span>`;}return `<span class="confidence-bar">${dots}</span> <b>${level}</b>`;}
+function renderSignalItem(sid){const sig=DATA.signals[sid];if(!sig){return `<div class="drawer-item">${sid} <span class="sub">catalog signal</span></div>`;}
+ const sc={'active':'#5AAB60','emerging':'#B49563','gap':'#D74F2A','inactive':'#9AA3AC','superseded':'#5E6E8C','structural':'#B08968'};const col=sc[sig.state]||'#9AA3AC';
+ return `<div class="drawer-item rich" onclick="openSignal('${sid}')"><span class="desc">${sig.desc}</span><span class="meta"><span class="sig-state" style="background:${col}">${sig.state}</span><span>${sid}</span><span class="sep">·</span><span>${sig.cap}</span><span class="sep">·</span><span>${sig.family}</span><span class="sep">·</span><span>last ${sig.last_seen}</span><span class="arrow">→</span></span></div>`;}
+function kbqBlock(kid){const k=DATA.kbqs[kid];if(!k)return '';const s=(k.contributing||[]).map(renderSignalItem).join('');
+ return `<div class="drawer-section"><h4>How we know this <span class="meta">${kid}</span></h4><div class="quote">${k.text}</div>
+ <div class="kv"><span class="k">Capability</span><span class="v"><span class="pill">${k.capability}</span> ${k.cap_name}</span></div>
+ <div class="kv"><span class="k">Method</span><span class="v"><span class="pill">${k.method}</span> ${k.method_name}</span></div>
+ <div class="kv"><span class="k">Mining mode</span><span class="v"><span class="pill">Mode ${k.mode}</span> ${k.mode_name}</span></div>
+ <div class="kv"><span class="k">Sources</span><span class="v">${k.sources}</span></div>
+ <div class="kv"><span class="k">Last refreshed</span><span class="v">${k.refreshed}</span></div>
+ <div class="kv"><span class="k">Confidence</span><span class="v">${renderConfidence(k.confidence)} <span style="display:block;margin-top:4px;font-family:'JetBrains Mono';font-size:10px;color:#6B7280">${k.confidence_basis}</span></span></div>
+ <div class="drawer-section" style="margin-top:12px;margin-bottom:0"><h4 style="font-size:10px">Contributing signals <span class="meta">${(k.contributing||[]).length}</span></h4><div class="drawer-list">${s}</div></div></div>`;}
+function openTheme(tid){const t=DATA.themes[tid];if(!t)return;
+ drawerEyebrow.innerHTML=`Theme ${chipState(t.state)} <span style="color:#9AA3AC">· ${tid}</span>`;drawerTitle.textContent=t.title;
+ const decs=(t.decisions||[]).map(d=>`<div class="drawer-item" onclick="openDecision('${d}')" style="cursor:pointer">${DATA.decision_titles[d]||d} <span class="sub">${d}</span></div>`).join('');
+ const sigs=(t.signals||[]).map(renderSignalItem).join('');
+ drawerBody.innerHTML=`<div class="drawer-section"><h4>What it means</h4><p>${t.summary}</p></div>
+ <div class="drawer-section"><h4>Contributing signals <span class="meta">${(t.signals||[]).length}</span></h4><div class="drawer-list">${sigs}</div></div>
+ <div class="drawer-section"><h4>Linked decisions <span class="meta">${(t.decisions||[]).length}</span></h4><div class="drawer-list">${decs}</div></div>${kbqBlock(t.kbq)}`;open();}
+function openDecision(did){const d=DATA.decisions[did];if(!d)return;
+ const uc={urgent:'#D74F2A',action:'#F79138',watch:'#1F7A92',commit:'#5A6470'};const ul={urgent:'Decide now',action:'Action',watch:'Watch',commit:'Committed'};
+ drawerEyebrow.innerHTML=`Decision <span class="state-chip" style="background:${uc[d.urgency]}">${ul[d.urgency]}</span> <span style="color:#9AA3AC">· ${did}</span>`;drawerTitle.textContent=d.title;
+ const th=(d.themes||[]).map(t=>`<div class="drawer-item" onclick="openTheme('${t}')" style="cursor:pointer">${DATA.theme_titles[t]||t} <span class="sub">${t}</span></div>`).join('');
+ const ss=new Set();(d.themes||[]).forEach(t=>{const tt=DATA.themes[t];if(tt)(tt.signals||[]).forEach(s=>ss.add(s));});const sl=Array.from(ss);
+ drawerBody.innerHTML=`<div class="drawer-section"><h4>The ask</h4><p>${d.summary}</p></div>
+ <div class="drawer-section"><h4>Linked themes <span class="meta">${(d.themes||[]).length}</span></h4><div class="drawer-list">${th}</div></div>
+ <div class="drawer-section"><h4>Underlying signals <span class="meta">${sl.length} · via themes</span></h4><div class="drawer-list">${sl.map(renderSignalItem).join('')}</div></div>
+ <div class="drawer-section"><h4>Revisit condition</h4><p>${d.revisit}</p></div>
+ <div class="drawer-section"><h4>Status &amp; category</h4><div class="kv"><span class="k">Category</span><span class="v">${d.category}</span></div><div class="kv"><span class="k">Status</span><span class="v">${d.status}</span></div><div class="kv"><span class="k">Urgency</span><span class="v">${ul[d.urgency]}</span></div></div>${kbqBlock(d.kbq)}`;open();}
+function openGap(code){const g=DATA.gaps[code];if(!g)return;const kbqs=Object.values(DATA.kbqs).filter(k=>k.capability===code);
+ drawerEyebrow.innerHTML=`Capability gap <span style="color:#9AA3AC">· ${code}</span>`;drawerTitle.textContent=g.name;
+ const kh=kbqs.map(k=>`<div class="drawer-item" style="display:block"><div style="font-size:12.5px;font-style:italic;color:#161D24;line-height:1.45;margin-bottom:5px">${k.text}</div><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="sub">${k.id} · Mode ${k.mode} · ${k.method}</span><span class="sub">confidence ${k.confidence}</span></div></div>`).join('');
+ const status=g.pct>=70?'good coverage':(g.pct>=50?'partial coverage':'thin coverage');
+ drawerBody.innerHTML=`<div class="drawer-section"><h4>Probe coverage</h4><p><b>${g.fired} of ${g.total}</b> KBQs in this capability fired during the Trikafta pressure test — <b>${g.pct}%</b> (${status}).</p></div>
+ <div class="drawer-section"><h4>KBQs in this capability <span class="meta">${kbqs.length} shown</span></h4><div class="drawer-list">${kh||'<div class="drawer-item">No KBQ sample in current build.</div>'}</div></div>`;open();}
+function openMovement(idx){const m=DATA.movements[idx];if(!m)return;
+ drawerEyebrow.innerHTML=`Movement event ${chipState(m.state)} <span style="color:#9AA3AC">· ${m.date}</span>`;drawerTitle.textContent=m.title;
+ drawerBody.innerHTML=`<div class="drawer-section"><h4>So what</h4><p>${m.so}</p></div>
+ <div class="drawer-section"><h4>Linked theme</h4><div class="drawer-list"><div class="drawer-item" onclick="openTheme('${m.theme}')" style="cursor:pointer">${DATA.theme_titles[m.theme]||m.theme} <span class="sub">${m.theme}</span></div></div></div>
+ <div class="drawer-section"><h4>Source capability</h4><div class="kv"><span class="k">Capability</span><span class="v">${m.capability}</span></div><div class="kv"><span class="k">Detected</span><span class="v">${m.date}</span></div><div class="kv"><span class="k">State</span><span class="v">${chipState(m.state)}</span></div></div>`;open();}
+function openWhy(kid,title){drawerEyebrow.innerHTML=`How we know this <span style="color:#9AA3AC">· ${kid}</span>`;drawerTitle.textContent=title||'Source & method';drawerBody.innerHTML=kbqBlock(kid);open();}
+function openSignal(sid){const s=DATA.signals[sid];if(!s)return;
+ const sc={'active':'#5AAB60','emerging':'#B49563','gap':'#D74F2A','inactive':'#9AA3AC','superseded':'#5E6E8C','structural':'#B08968'};const col=sc[s.state]||'#9AA3AC';
+ const lt=Object.entries(DATA.themes).filter(([id,t])=>(t.signals||[]).includes(sid)).map(([id,t])=>({id,title:t.title,state:t.state}));
+ const lk=Object.values(DATA.kbqs).filter(k=>(k.contributing||[]).includes(sid));
+ drawerEyebrow.innerHTML=`Signal <span class="sig-state" style="background:${col}">${s.state}</span> <span style="color:#9AA3AC">· ${sid}</span>`;drawerTitle.textContent=s.desc;
+ const th=lt.length?lt.map(t=>`<div class="drawer-item" onclick="openTheme('${t.id}')" style="cursor:pointer">${t.title} <span class="sub">${t.id} · ${t.state}</span></div>`).join(''):'<div class="drawer-item" style="color:#9AA3AC">No themes reference this signal directly.</div>';
+ const kh=lk.length?lk.map(k=>`<div class="drawer-item" onclick="openWhy('${k.id}','${k.cap_name}')" style="cursor:pointer;display:block"><div style="font-size:12.5px;font-style:italic;color:#161D24;line-height:1.45;margin-bottom:5px">${k.text}</div><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="sub">${k.id} · Mode ${k.mode} · ${k.method}</span><span class="sub">confidence ${k.confidence}</span></div></div>`).join(''):'<div class="drawer-item" style="color:#9AA3AC">No KBQs reference this signal.</div>';
+ drawerBody.innerHTML=`<div class="drawer-section"><h4>What this signal tracks</h4><p>${s.desc}</p></div>
+ <div class="drawer-section"><h4>Detection mechanics</h4><div class="kv"><span class="k">Capability</span><span class="v"><span class="pill">${s.cap}</span></span></div><div class="kv"><span class="k">Detection family</span><span class="v"><span class="pill">${s.family}</span></span></div><div class="kv"><span class="k">Mining mode</span><span class="v"><span class="pill">Mode ${s.mode}</span></span></div><div class="kv"><span class="k">Sources</span><span class="v">${s.sources}</span></div><div class="kv"><span class="k">Last detected</span><span class="v">${s.last_seen}</span></div><div class="kv"><span class="k">State</span><span class="v"><span class="sig-state" style="background:${col}">${s.state}</span></span></div></div>
+ <div class="drawer-section"><h4>Linked themes <span class="meta">${lt.length}</span></h4><div class="drawer-list">${th}</div></div>
+ <div class="drawer-section"><h4>Linked KBQs <span class="meta">${lk.length}</span></h4><div class="drawer-list">${kh}</div></div>`;open();}
+</script>
+
+</body></html>

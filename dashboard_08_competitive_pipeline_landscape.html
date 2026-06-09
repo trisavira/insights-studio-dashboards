@@ -1,0 +1,349 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Insights Studio — Competitive & Pipeline Landscape (design reference)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Avira brand */
+  --teal:#1D98B6; --teal-dk:#0C6F8A; --teal-deep:#0A5270;
+  --orange:#F79138; --orange-dk:#D97516;
+
+  /* Status — richer palette */
+  --crit:#DC2626;   --crit-bg:#FEF2F2;
+  --action:#F79138; --action-bg:#FFF3E6;
+  --watch:#1D98B6;  --watch-bg:#E0F5FA;
+  --commit:#6366F1; --commit-bg:#EEF2FF;
+  --success:#16A34A;--success-bg:#DCFCE7;
+  --purple:#9333EA; --purple-bg:#F5F3FF;
+  --amber:#D97706;  --amber-bg:#FFFBEB;
+
+  /* Surfaces */
+  --bg:#F7FAFB; --panel:#FFFFFF; --panel-alt:#F8FAFC;
+  --border:#E2E8F0; --line:#CBD5E1; --hair:#EEF2F6;
+
+  /* Text */
+  --ink:#1A1F24; --ink-muted:#3F4A55; --ink-soft:#62748E; --ink-dim:#9AA3AC;
+
+  /* Signal */
+  --s-strong:#16A34A; --s-contest:#D97706; --s-thin:#9AA3AC;
+  --s-stable:#1D98B6; --s-mixed:#9333EA;
+
+  /* Tokens */
+  --r:12px; --r-sm:6px;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 1px 3px rgba(0,0,0,.06);
+  --shadow-panel:0 1px 3px rgba(0,0,0,.05),0 4px 12px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:'Inter',system-ui,sans-serif;font-size:13.5px;line-height:1.6;
+  -webkit-font-smoothing:antialiased}
+.serif{font-family:'Inter',sans-serif;font-weight:700}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-feature-settings:'tnum' on}
+
+/* === BRAND BAR === */
+.brand{background:#fff;color:var(--ink);padding:12px 28px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:20px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.brand-logo{height:32px;width:auto;display:block;flex-shrink:0}
+.brand-divider{width:1px;height:28px;background:var(--border);flex-shrink:0}
+.brand-left{display:flex;flex-direction:column;gap:3px}
+.brand-studio{
+  font-family:'Inter';font-size:11px;letter-spacing:0.01em;
+  color:#F79138;font-style:italic;font-weight:700;
+  display:inline-flex;align-items:center;
+  background:#FFF3E6;border:1px solid rgba(247,148,29,.2);
+  border-radius:4px;padding:3px 8px;width:fit-content;line-height:1.4;
+}
+.brand-asset{font-family:'Inter';font-weight:700;font-size:17px;letter-spacing:-0.02em;color:var(--ink);line-height:1.2}
+.brand-codes{font-family:'JetBrains Mono';font-size:10px;color:var(--ink-dim);padding:2px 8px;background:var(--hair);border-radius:100px;border:1px solid var(--border);flex-shrink:0}
+.brand-meta{margin-left:auto;display:flex;gap:10px;align-items:center;font-size:11px;color:var(--ink-soft);flex-wrap:wrap;flex-shrink:0}
+.brand-meta b{color:var(--ink);font-weight:600}
+.brand-stage{font-family:'Inter';font-size:10px;padding:3px 10px;background:var(--watch-bg);border:1px solid rgba(29,152,182,.2);border-radius:100px;font-weight:700;letter-spacing:0.06em;color:var(--teal)}
+.brand-posture{font-family:'Inter';font-size:10px;padding:3px 10px;background:var(--action-bg);font-weight:700;letter-spacing:0.04em;color:var(--orange-dk);border-radius:100px;border:1px solid rgba(247,145,56,.25)}
+.brand-link{color:var(--ink-soft);font-size:11px;text-decoration:none;font-weight:500;font-family:'Inter'}
+.brand-link:hover{color:var(--teal)}
+
+/* === KPI STRIP === */
+.kpi{display:grid;grid-template-columns:repeat(5,1fr);background:var(--panel);border-bottom:1px solid var(--border);box-shadow:var(--shadow)}
+.kpi-cell{padding:20px 28px;border-left:1px solid var(--hair)}
+.kpi-cell:first-child{border-left:none}
+.kpi-cell .l{font-family:'Inter';font-size:9.5px;letter-spacing:0.08em;text-transform:uppercase;color:#9DACC1;font-weight:700;margin-bottom:10px}
+.kpi-cell .v{font-family:'Inter';font-size:28px;font-weight:800;color:var(--ink);line-height:1;letter-spacing:-0.02em}
+.kpi-cell .v.crit{color:var(--crit)}
+.kpi-cell .v.action{color:var(--orange-dk)}
+.kpi-cell .v.watch{color:var(--teal)}
+.kpi-cell .n{font-size:11.5px;color:var(--ink-soft);margin-top:8px;line-height:1.5;font-weight:500}
+
+/* === DASHBOARD GRID === */
+main{padding:24px;max-width:1480px;margin:0 auto}
+.dash{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:20px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);display:flex;flex-direction:column;box-shadow:var(--shadow-panel)}
+.panel-h{padding:16px 20px;border-bottom:1px solid var(--hair);display:flex;align-items:center;justify-content:space-between;gap:8px;border-radius:var(--r) var(--r) 0 0}
+.panel-h .t{font-family:'Inter';font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+.panel-h .c{font-family:'Inter';font-size:10px;color:var(--ink-dim);letter-spacing:0.04em}
+.panel-body{padding:20px;flex:1;overflow:auto}
+
+/* spans */
+.span-1{grid-column:span 1}
+.span-2{grid-column:span 2}
+.span-3{grid-column:span 3}
+
+/* === THEME BOARD === */
+.theme-board{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.theme-col{display:flex;flex-direction:column;gap:6px}
+.theme-col-h{font-family:'Inter';font-size:9.5px;letter-spacing:0.06em;text-transform:uppercase;font-weight:700;padding:5px 10px;color:#fff;display:flex;justify-content:space-between;align-items:center;border-radius:var(--r-sm)}
+.theme-chip{background:var(--panel-alt);border:1px solid var(--hair);border-left:3px solid;padding:12px 14px;cursor:pointer;font-size:12px;line-height:1.35;color:var(--ink);transition:background .15s,border-color .15s;position:relative;border-radius:0 var(--r-sm) var(--r-sm) 0}
+.theme-chip:hover{background:#FFFFFF;border-color:var(--teal)}
+.theme-chip .why{position:absolute;top:5px;right:5px}
+
+/* === GAP RADAR === */
+.gap-bars{display:flex;flex-direction:column;gap:14px}
+.gap-row{display:grid;grid-template-columns:80px 1fr 60px 24px;gap:10px;align-items:center;font-size:12px}
+.gap-lbl{font-family:'Inter';font-size:11px;color:var(--ink);font-weight:600;letter-spacing:0.02em}
+.gap-track{height:8px;background:var(--hair);position:relative;cursor:pointer;border-radius:100px;overflow:hidden}
+.gap-track:hover{outline:1px solid var(--teal)}
+.gap-fill{height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:5px;font-family:'Inter';font-size:9px;color:#fff;font-weight:600;letter-spacing:0.04em;border-radius:2px}
+.gap-val{font-family:'JetBrains Mono';font-size:11px;color:var(--ink-soft);font-weight:500;text-align:right}
+
+/* === MOVEMENT === */
+.mv-list{display:flex;flex-direction:column}
+.mv-row{display:grid;grid-template-columns:74px 64px 1fr 24px;gap:8px;padding:12px 0;border-top:1px solid var(--hair);align-items:start;cursor:pointer;position:relative}
+.mv-row:hover{background:var(--panel-alt)}
+.mv-row:first-child{border-top:none;padding-top:2px}
+.mv-date{font-family:'JetBrains Mono';font-size:10.5px;color:var(--ink-soft);font-weight:500}
+.mv-cap{font-family:'Inter';font-size:9px;font-weight:700;padding:2px 8px;color:#fff;text-align:center;letter-spacing:0.04em;height:fit-content;border-radius:100px}
+.mv-title{font-size:12px;color:var(--ink);font-weight:500;line-height:1.35}
+.mv-title .so{font-size:11px;color:var(--ink-soft);margin-top:2px;line-height:1.35;font-weight:400}
+
+/* === DECISIONS REGISTER === */
+.dec-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.dec-card{background:var(--panel-alt);border:1px solid var(--hair);border-left:3px solid;padding:14px 16px;cursor:pointer;font-size:11.5px;line-height:1.35;position:relative;transition:background .15s,border-color .15s;border-radius:0 var(--r-sm) var(--r-sm) 0}
+.dec-card:hover{background:#fff;border-color:var(--teal)}
+.dec-card.urgent{border-left-color:var(--crit)}
+.dec-card.action{border-left-color:var(--orange)}
+.dec-card.watch{border-left-color:var(--watch)}
+.dec-card.commit{border-left-color:var(--commit)}
+.dec-id{font-family:'Inter';font-size:9.5px;color:var(--ink-dim);font-weight:600;letter-spacing:0.04em;margin-bottom:2px}
+.dec-title{color:var(--ink);font-weight:500;font-size:12px;line-height:1.3;padding-right:18px}
+.dec-cat{font-family:'Inter';font-size:9px;font-weight:600;color:var(--ink-soft);margin-top:5px;letter-spacing:0.06em;text-transform:uppercase}
+.dec-card .why{position:absolute;top:6px;right:6px}
+
+/* === ? icon === */
+.why{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;border:1px solid var(--border);background:#fff;color:var(--ink-soft);font-family:'JetBrains Mono';font-size:10px;font-weight:700;cursor:pointer;line-height:1;flex-shrink:0;transition:background .15s,color .15s,border-color .15s}
+.why:hover{background:var(--teal-deep);color:#fff;border-color:var(--teal-deep)}
+.why:focus{outline:2px solid var(--teal);outline-offset:1px}
+
+/* === SUPPLEMENTARY (below dashboard) === */
+.supp-h{display:flex;align-items:baseline;justify-content:space-between;padding:6px 4px;margin-top:10px}
+.supp-h .t{font-family:'Inter';font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft);font-weight:700}
+.supp-h .n{font-family:'Inter';font-size:10.5px;color:var(--ink-dim);letter-spacing:0.04em}
+
+/* state-chip helper */
+.state-chip{font-family:'Inter';font-size:9px;font-weight:700;padding:2px 8px;color:#fff;letter-spacing:0.04em;display:inline-block;line-height:1.35;border-radius:100px}
+
+/* mini stacked bars (KOL sentiment small panel) */
+.kbar{display:grid;grid-template-columns:1fr;gap:5px}
+.kbar-row{display:grid;grid-template-columns:130px 1fr;gap:8px;align-items:center;font-size:11px}
+.kbar-lbl{color:var(--ink);line-height:1.3}
+.kbar-track{display:flex;height:13px;background:var(--hair);overflow:hidden}
+.kbar-seg{height:100%}
+.kbar-seg.pos{background:var(--s-strong)}
+.kbar-seg.split{background:var(--s-contest)}
+.kbar-seg.neg{background:var(--crit)}
+.kbar-seg.neu{background:var(--s-thin)}
+
+/* horizontal compact bars (topic freq) */
+.tbar-row{display:grid;grid-template-columns:170px 1fr 30px;gap:8px;padding:4px 0;align-items:center;font-size:11.5px}
+.tbar-lbl{color:var(--ink);line-height:1.3}
+.tbar-track{height:11px;background:var(--hair)}
+.tbar-fill{height:100%}
+.tbar-val{font-family:'JetBrains Mono';font-size:10px;color:var(--ink-soft);text-align:right;font-weight:500}
+
+/* cost bar mini */
+.ce-mini{display:grid;grid-template-columns:1fr;gap:7px}
+.ce-mrow{display:grid;grid-template-columns:120px 1fr;gap:8px;align-items:center;font-size:11px}
+.ce-mlbl{color:var(--ink);line-height:1.3}
+.ce-mtrack{position:relative;height:14px;background:var(--hair)}
+.ce-mfill{height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:5px;color:#fff;font-family:'JetBrains Mono';font-size:10px;font-weight:600}
+
+/* === DRAWER === */
+.drawer-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(12,71,84,0.45);opacity:0;pointer-events:none;transition:opacity .22s ease;z-index:90}
+.drawer-overlay.open{opacity:1;pointer-events:all}
+.drawer{position:fixed;top:0;right:0;width:480px;max-width:92vw;height:100vh;background:var(--panel);border-left:1px solid var(--border);box-shadow:-12px 0 36px rgba(0,0,0,0.10);transform:translateX(100%);transition:transform .26s ease;z-index:95;display:flex;flex-direction:column;overflow:hidden}
+.drawer.open{transform:translateX(0)}
+.drawer-h{padding:24px 28px 20px;border-bottom:1px solid var(--hair);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-shrink:0}
+.drawer-h-l{flex:1}
+.drawer-eyebrow{font-family:'Inter';font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--teal);font-weight:700;margin-bottom:6px;display:flex;gap:8px;align-items:center}
+.drawer-title{font-family:'Inter';font-size:18px;line-height:1.3;font-weight:700;color:var(--ink);letter-spacing:-0.02em}
+.drawer-close{background:none;border:1px solid var(--border);border-radius:8px;color:var(--ink-soft);width:30px;height:30px;cursor:pointer;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit;transition:background .15s}
+.drawer-close:hover{background:var(--hair);color:var(--ink)}
+.drawer-body{flex:1;overflow-y:auto;padding:24px 28px 40px}
+.drawer-section{margin-bottom:28px}
+.drawer-section h4{font-family:'Inter';font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:#9DACC1;font-weight:700;margin:0 0 8px;display:flex;align-items:baseline;gap:8px}
+.drawer-section h4 .meta{color:var(--ink-dim);font-size:10px;letter-spacing:0.04em;text-transform:none;font-family:'JetBrains Mono';font-weight:500}
+.drawer-section p{margin:0 0 8px;font-size:13.5px;color:var(--ink-muted);line-height:1.55}
+.drawer-section p:last-child{margin-bottom:0}
+.drawer-section .quote{background:var(--watch-bg);border-left:3px solid var(--teal);padding:10px 14px;border-radius:0 8px 8px 0;font-family:'Inter';font-size:13.5px;line-height:1.6;color:var(--ink);font-style:italic;margin-bottom:6px;border:1px solid rgba(29,152,182,.15);border-left:3px solid var(--teal)}
+.drawer-list{display:flex;flex-direction:column;gap:10px}
+.drawer-item{background:var(--panel-alt);border:1px solid var(--hair);padding:8px 12px;border-radius:8px;font-size:12px;color:var(--ink);display:flex;justify-content:space-between;align-items:center;gap:8px;transition:background .15s,border-color .15s}
+.drawer-item .sub{font-size:10.5px;color:var(--ink-soft);font-family:'Inter';letter-spacing:0.04em}
+.kv{display:grid;grid-template-columns:130px 1fr;gap:10px;padding:10px 0;border-top:1px solid var(--hair);font-size:12.5px}
+.kv:first-child{border-top:none;padding-top:0}
+.kv .k{font-family:'Inter';font-size:9.5px;color:#9DACC1;letter-spacing:0.08em;text-transform:uppercase;font-weight:700}
+.kv .v{color:var(--ink);line-height:1.5;font-weight:500}
+.kv .v .pill{font-family:'Inter';font-size:10px;background:var(--hair);color:var(--ink-muted);padding:2px 8px;letter-spacing:0.04em;display:inline-block;margin-right:5px;border-radius:100px}
+.confidence-bar{display:inline-flex;gap:3px;align-items:center;margin-left:5px}
+.confidence-bar .dot{width:7px;height:7px;border-radius:50%;background:var(--hair)}
+.confidence-bar .dot.on{background:var(--s-strong)}
+.confidence-bar .dot.med{background:var(--orange)}
+
+@media (max-width:1100px){
+  .dash{grid-template-columns:1fr 1fr}
+  .span-3{grid-column:span 2}
+  .theme-board{grid-template-columns:repeat(2,1fr)}
+  .dec-grid{grid-template-columns:repeat(2,1fr)}
+  .kpi{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:700px){
+  .dash{grid-template-columns:1fr}
+  .span-1,.span-2,.span-3{grid-column:span 1}
+  .theme-board,.dec-grid{grid-template-columns:1fr}
+  .drawer{width:100%}
+}
+
+.drawer-item.rich{display:block;cursor:pointer;line-height:1.4}
+.drawer-item.rich .desc{color:var(--ink);display:block;margin-bottom:5px;font-weight:600}
+.drawer-item.rich .meta{display:flex;gap:6px;align-items:center;font-family:'Inter';font-size:9.5px;color:var(--ink-soft);letter-spacing:0.04em;flex-wrap:wrap}
+.drawer-item.rich .meta .sep{color:var(--ink-dim)}
+.drawer-item.rich .meta .arrow{margin-left:auto;color:var(--orange);font-weight:600;font-size:13px}
+.drawer-item.rich:hover{background:#fff;border-color:var(--teal)}
+.drawer-item.rich:hover .arrow{color:var(--orange-dk)}
+.sig-state{font-family:'Inter';font-size:9px;padding:2px 8px;color:#fff;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;border-radius:100px}
+
+/* Panel left-accent color variants */
+.panel.teal{border-top:3px solid var(--teal)}
+.panel.orange{border-top:3px solid var(--orange)}
+.panel.purple{border-top:3px solid var(--purple)}
+.panel.green{border-top:3px solid var(--success)}
+.panel.red{border-top:3px solid var(--crit)}
+.panel.indigo{border-top:3px solid var(--commit)}
+.panel.amber{border-top:3px solid var(--amber)}
+
+/* KPI cell color accents */
+.kpi-cell.hi-teal .v{color:var(--teal)}
+.kpi-cell.hi-orange .v{color:var(--orange-dk)}
+.kpi-cell.hi-green .v{color:var(--success)}
+.kpi-cell.hi-red .v{color:var(--crit)}
+.kpi-cell.hi-purple .v{color:var(--purple)}
+</style>
+<style>
+.subnav{position:sticky;top:0;z-index:30;display:flex;gap:0;flex-wrap:wrap;background:#fff;padding:0 20px;border-bottom:1px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.subnav a{font-size:12px;font-family:'Inter';color:var(--ink-soft);text-decoration:none;padding:12px 16px;font-weight:500;letter-spacing:.01em;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s,border-color .15s}
+.subnav a:hover{color:var(--ink);border-bottom-color:var(--border)}
+.subnav a.active,.subnav a:first-child{color:var(--teal);border-bottom-color:var(--teal)}
+.filterbar{display:flex;flex-wrap:wrap;gap:8px;padding:12px 24px;background:var(--panel);border-bottom:1px solid var(--border);align-items:center}
+.fchip{font-size:12px;font-family:'Inter';color:var(--ink-soft);background:var(--panel-alt);border:1px solid var(--border);border-radius:100px;padding:4px 12px;display:flex;gap:6px;align-items:center;font-weight:500;transition:background .15s,border-color .15s}
+.fchip:hover{background:#fff;border-color:var(--teal);color:var(--teal)}
+.fchip b{color:var(--ink);font-weight:600}.fchip .cx{color:var(--ink-dim)}
+.fchip.active{background:var(--watch-bg);border-color:rgba(29,152,182,.3);color:var(--teal);font-weight:600}
+.alertstrip{display:flex;flex-wrap:wrap;gap:8px;padding:11px 22px;background:var(--panel-alt);border-bottom:1px solid var(--border)}
+.alert{font-size:11.5px;padding:6px 11px;border-radius:3px;border:1px solid var(--border);border-left-width:3px;display:flex;gap:7px;align-items:center;background:#fff}
+.alert b{font-weight:600}.alert.crit{border-left-color:var(--crit);background:var(--crit-bg)}.alert.action{border-left-color:var(--orange);background:var(--action-bg)}
+.alert.watch{border-left-color:var(--watch);background:var(--watch-bg)}.alert.new{border-left-color:#6B5BA0;background:#F1EEF8}
+.cv{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:11px;margin-top:8px}.lg{font-size:10px;color:var(--ink-soft);display:flex;align-items:center;gap:5px}
+.dot{width:9px;height:9px;border-radius:2px;display:inline-block}
+.hbars{display:flex;flex-direction:column;gap:8px;margin-top:2px}
+.hb{display:grid;grid-template-columns:1fr 78px 50px;gap:8px;align-items:center;font-size:11.5px}
+.hb-l{color:var(--ink-muted)}.hb-t{height:9px;background:var(--hair);border-radius:2px;overflow:hidden}
+.hb-f{display:block;height:100%}.hb-v{font-family:'Inter';font-size:10.5px;color:var(--ink-soft);text-align:right;font-weight:600}
+.h2h{display:flex;flex-direction:column;gap:9px;margin-top:2px}
+.h2h-row{font-size:11.5px}.h2h-c{color:var(--ink-muted);display:block;margin-bottom:3px}
+.h2h-bars{display:flex;flex-direction:column;gap:3px}.h2h-b{height:7px;border-radius:2px}
+.statrow{display:flex;gap:18px;flex-wrap:wrap;padding:6px 0}.stat{display:flex;flex-direction:column}.stat .sv{font-size:22px;font-weight:700;line-height:1}.stat .sl{font-size:10px;color:var(--ink-soft);margin-top:3px}
+.flow{display:flex;align-items:center;gap:2px;margin-top:4px}
+.flow-box{flex:1;text-align:center;background:var(--panel-alt);border:1px solid var(--border);border-radius:4px;padding:10px 3px}
+.flow-n{font-size:20px;font-weight:700;color:var(--ink)}.flow-l{font-size:9px;color:var(--ink-soft);margin-top:2px}
+.flow-arrow{color:var(--ink-dim);font-size:15px;flex:0 0 auto}
+.tbl{width:100%;border-collapse:collapse;font-size:11px}
+.tbl th{text-align:left;color:var(--ink-soft);font-weight:600;font-size:9.5px;text-transform:uppercase;letter-spacing:.04em;padding:4px 6px;border-bottom:1px solid var(--border)}
+.tbl td{padding:6px;border-bottom:1px dotted var(--hair);color:var(--ink-muted);vertical-align:top}.tbl td b{color:var(--ink)}
+.pill{font-size:9px;font-family:'JetBrains Mono';padding:2px 7px;border-radius:10px;color:#fff;font-weight:600;white-space:nowrap}
+.list{display:flex;flex-direction:column}
+.list-row{padding:7px 0;border-top:1px dotted var(--hair);font-size:11.5px;color:var(--ink-muted);display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.list-row:first-child{border-top:none}.list-n{font-family:'Inter';font-weight:700;font-size:10px}
+.band{display:flex;align-items:baseline;gap:12px;padding:16px 22px 4px;scroll-margin-top:42px}
+.band-l{font-size:13px;font-weight:700;color:var(--teal-dk);text-transform:uppercase;letter-spacing:.05em}.band-s{font-size:11px;color:var(--ink-soft)}
+.mockflag{background:#FFF4E6;border:1px solid #F4C98A;border-left:3px solid var(--orange);padding:8px 14px;font-size:11.5px;color:#7A4A12;display:flex;gap:9px;align-items:center}
+.mockflag .ic{font-family:'Inter';font-size:8.5px;font-weight:700;letter-spacing:.06em;background:var(--orange);color:#fff;padding:2px 7px}
+.brand-stage.decide{background:#B5762A;border-color:#C99A52}
+.callbox{background:var(--panel-alt);border:1px solid var(--border);border-left:3px solid #1D98B6;border-radius:4px;padding:12px 14px}
+.callbox .h{font-size:8.5px;font-family:'Inter';font-weight:700;letter-spacing:.06em;color:var(--teal-deep);text-transform:uppercase}
+.callbox .n{font-size:14px;font-weight:700;color:var(--ink);margin:4px 0}.callbox .d{font-size:11px;color:var(--ink-muted);line-height:1.5}
+.bn-wrap{margin:18px 22px 34px}.bn-title{font-family:'Inter';font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal-deep);font-weight:700;margin:14px 0 8px}
+table.bn{width:100%;border-collapse:collapse;font-size:10.5px}
+table.bn th{background:var(--teal);color:#fff;text-align:left;padding:6px 8px;font-weight:600;border:1px solid #fff}
+table.bn td{padding:6px 8px;border:1px solid var(--border);vertical-align:top;color:var(--ink-muted)}
+table.bn tr:nth-child(even) td{background:var(--panel-alt)}table.bn td b{color:var(--ink)}
+.panel-foot{font-size:10px;color:var(--ink-soft);padding:0 14px 10px;font-family:'JetBrains Mono'}
+</style>
+<header class="brand">
+ <a href="index.html"><img src="../Avira Logo.svg" class="brand-logo" alt="Avira Digital"></a>
+ <span class="brand-divider"></span>
+ <div class="brand-left">
+  <span class="brand-studio">Insights Studio</span>
+  <span class="brand-asset">Competitive & Pipeline Landscape</span>
+ </div>
+ <span class="brand-codes">competitors · pipeline · catalysts · positioning · threats</span>
+ <span class="brand-meta"><span>Psychiatry · schizophrenia</span><span class="brand-stage decide">DECIDE</span><a class="brand-link" href="insights_studio_cobenfy.html">← Operator view</a></span>
+</header>
+<nav class="subnav">
+ <a href="#landscape">Landscape</a><a href="#pipeline">Pipeline</a><a href="#catalysts">Catalysts</a><a href="#positioning">Positioning</a><a href="#threat">Threat</a><a href="#mechanism">Mechanism</a><a href="#events">Events</a><a href="#action">Action</a>
+</nav>
+<div class="filterbar">
+ <span class="fchip">TA <b>Psychiatry</b><span class="cx">▾</span></span><span class="fchip">Indication <b>Schizophrenia</b><span class="cx">▾</span></span><span class="fchip">Mechanism <b>All</b><span class="cx">▾</span></span><span class="fchip">Phase <b>All</b><span class="cx">▾</span></span><span class="fchip">Company <b>All</b><span class="cx">▾</span></span><span class="fchip">Threat <b>All</b><span class="cx">▾</span></span><span class="fchip">Horizon <b>18 mo</b><span class="cx">▾</span></span>
+</div>
+<div class="alertstrip">
+ <span class="alert crit"><b>⚠</b> Rival M4 muscarinic <b>Ph3 readout Q3 '26</b> — direct threat</span>
+ <span class="alert new"><b>★</b> Next-gen muscarinic entrant in Ph1/2</span>
+ <span class="alert watch"><b>▲</b> Caplyta label expansion filed</span>
+ <span class="alert action"><b>⚠ 3</b> high-impact catalysts in 12 mo</span>
+ <span class="alert new"><b>✓</b> We lead novel-MoA share of voice (34%)</span>
+</div>
+<div class="mockflag"><span class="ic">Mock</span><div>Illustrative data (public schizophrenia landscape) — design reference in the Studio visual language. Asset names/stages are illustrative. This <b>Decide ★</b> surface is the <b>external-axis</b> complement to the internal asset/stakeholder views. Rebuild in Tableau from the worksheet spec at the bottom.</div></div>
+<div class="kpi">
+ <div class="kpi-cell"><div class="l">Assets tracked</div><div class="v">42</div><div class="n">in-TA competitive set</div></div>
+ <div class="kpi-cell"><div class="l">In Ph3+</div><div class="v">11</div><div class="n">late-stage</div></div>
+ <div class="kpi-cell"><div class="l">Catalysts · 12 mo</div><div class="v" style="color:var(--orange-dk)">9</div><div class="n">readouts &amp; filings</div></div>
+ <div class="kpi-cell"><div class="l">High threats</div><div class="v" style="color:var(--crit)">3</div><div class="n">direct</div></div>
+ <div class="kpi-cell"><div class="l">Novel-MoA classes</div><div class="v">5</div><div class="n">in development</div></div>
+ <div class="kpi-cell"><div class="l">Our SoV rank</div><div class="v" style="color:var(--s-strong)">#1</div><div class="n">novel-MoA · 34%</div></div>
+ <div class="kpi-cell"><div class="l">Positioning</div><div class="v" style="font-size:18px">Lead</div><div class="n">metabolic-neutral</div></div>
+</div>
+<main>
+<div class="band" id="landscape"><span class="band-l">1 · Landscape overview</span><span class="band-s">who's in the space &amp; how we stack up</span></div><div class="dash"><div class="panel span-2"><div class="panel-h"><span class="t">Competitive set</span><span class="c">key assets · mechanism · stage · threat</span></div><div class="panel-body"><table class="tbl"><tr><th>Asset</th><th>Company</th><th>Mechanism</th><th>Stage</th><th>Threat</th></tr><tr><td><b>Cobenfy (KarXT) ★</b></td><td>Ours</td><td>Muscarinic M1/M4</td><td>Approved (SCZ)</td><td><span class="pill" style="background:#5AAB60">—</span></td></tr><tr><td><b>Emraclidine</b></td><td>AbbVie</td><td>Muscarinic M4</td><td>Ph3</td><td><span class="pill" style="background:#D74F2A">High</span></td></tr><tr><td><b>Caplyta (lumateperone)</b></td><td>ITCI / J&J</td><td>5-HT2A / D2</td><td>Approved · expanding</td><td><span class="pill" style="background:#E89327">Medium</span></td></tr><tr><td><b>Atypical LAIs (class)</b></td><td>Multiple</td><td>D2 long-acting</td><td>Approved</td><td><span class="pill" style="background:#E89327">Medium</span></td></tr><tr><td><b>Ulotaront-class (TAAR1)</b></td><td>Pipeline</td><td>TAAR1 agonist</td><td>Ph3 (mixed)</td><td><span class="pill" style="background:#E89327">Medium</span></td></tr><tr><td><b>GlyT1 inhibitors</b></td><td>Pipeline</td><td>Glutamatergic</td><td>Ph3 (cognition)</td><td><span class="pill" style="background:#9AA3AC">Low</span></td></tr><tr><td><b>Next-gen muscarinics</b></td><td>Pipeline</td><td>Muscarinic selective</td><td>Ph1 / 2</td><td><span class="pill" style="background:#5B92D1">Watch</span></td></tr></table></div><div class="panel-foot">42 assets tracked; the rival M4 muscarinic is the primary direct threat</div></div><div class="panel span-1"><div class="panel-h"><span class="t">Class share</span><span class="c">Rx / treatment share by mechanism</span></div><div class="panel-body"><svg viewBox="0 0 180 170" class="cv"><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#9AA3AC" stroke-width="22" stroke-dasharray="204.08 147.78" stroke-dashoffset="0.00" transform="rotate(-90 90.0 81.0)"/><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#5B92D1" stroke-width="22" stroke-dasharray="49.26 302.60" stroke-dashoffset="-204.08" transform="rotate(-90 90.0 81.0)"/><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#1D98B6" stroke-width="22" stroke-dasharray="42.22 309.64" stroke-dashoffset="-253.34" transform="rotate(-90 90.0 81.0)"/><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#6B5BA0" stroke-width="22" stroke-dasharray="35.19 316.67" stroke-dashoffset="-295.56" transform="rotate(-90 90.0 81.0)"/><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#CBD3DA" stroke-width="22" stroke-dasharray="21.11 330.75" stroke-dashoffset="-330.75" transform="rotate(-90 90.0 81.0)"/><text x="90.0" y="80.0" font-size="20" font-weight="700" fill="#161D24" text-anchor="middle">12%</text><text x="90.0" y="96.0" font-size="9" fill="#6B7280" text-anchor="middle">muscarinic</text></svg><div class="legend"><span class="lg"><span class="dot" style="background:#9AA3AC"></span>D2 atypicals</span><span class="lg"><span class="dot" style="background:#5B92D1"></span>5-HT2A / novel</span><span class="lg"><span class="dot" style="background:#1D98B6"></span>Muscarinic</span><span class="lg"><span class="dot" style="background:#6B5BA0"></span>LAI</span><span class="lg"><span class="dot" style="background:#CBD3DA"></span>Other</span></div></div></div></div><div class="dash"><div class="panel span-1"><div class="panel-h"><span class="t">Scientific share of voice</span><span class="c">congress + publication presence</span></div><div class="panel-body"><div class="hbars"><div class="hb"><span class="hb-l">Cobenfy (ours)</span><span class="hb-t"><span class="hb-f" style="width:100.0%;background:#1D98B6"></span></span><span class="hb-v">34%</span></div><div class="hb"><span class="hb-l">Emraclidine</span><span class="hb-t"><span class="hb-f" style="width:64.7%;background:#6B5BA0"></span></span><span class="hb-v">22%</span></div><div class="hb"><span class="hb-l">Caplyta</span><span class="hb-t"><span class="hb-f" style="width:52.9%;background:#5B92D1"></span></span><span class="hb-v">18%</span></div><div class="hb"><span class="hb-l">LAIs</span><span class="hb-t"><span class="hb-f" style="width:41.2%;background:#9AA3AC"></span></span><span class="hb-v">14%</span></div><div class="hb"><span class="hb-l">Others</span><span class="hb-t"><span class="hb-f" style="width:35.3%;background:#CBD3DA"></span></span><span class="hb-v">12%</span></div></div></div><div class="panel-foot">we lead novel-MoA SoV at 34%</div></div><div class="panel span-1"><div class="panel-h"><span class="t">Landscape summary</span><span class="c">competitive headline</span></div><div class="panel-body"><div style='padding-top:4px'><div class="statrow"><div class="stat"><span class="sv" style="color:#1D98B6">42</span><span class="sl">Assets tracked</span></div><div class="stat"><span class="sv" style="color:#D74F2A">3</span><span class="sl">High threats</span></div><div class="stat"><span class="sv" style="color:#E89327">5</span><span class="sl">Medium</span></div><div class="stat"><span class="sv" style="color:#5AAB60">#1</span><span class="sl">Novel-MoA rank</span></div></div></div></div></div><div class="panel span-1"><div class="panel-h"><span class="t">Positioning headline</span><span class="c">where we stand</span></div><div class="panel-body"><div style='padding-top:2px'><div class="callbox"><div class="h">Our position</div><div class="n">Novel-MoA leader · metabolic-neutral</div><div class="d">First muscarinic to market with the tolerability story. Defensible on metabolic profile; exposed on maintenance-data maturity &amp; dosing.</div></div></div></div></div></div><div class="band" id="pipeline"><span class="band-l">2 · Pipeline by phase &amp; MoA ★</span><span class="band-s">what's coming through the field</span></div><div class="dash"><div class="panel span-3"><div class="panel-h"><span class="t">Pipeline by phase</span><span class="c">in-TA assets · preclinical → approved</span></div><div class="panel-body"><div class="flow"><div class="flow-box" style="border-top:3px solid #9AA3AC"><div class="flow-n">14</div><div class="flow-l">Preclinical</div></div><span class="flow-arrow">›</span><div class="flow-box" style="border-top:3px solid #5B92D1"><div class="flow-n">9</div><div class="flow-l">Ph1</div></div><span class="flow-arrow">›</span><div class="flow-box" style="border-top:3px solid #6B5BA0"><div class="flow-n">11</div><div class="flow-l">Ph2</div></div><span class="flow-arrow">›</span><div class="flow-box" style="border-top:3px solid #1D98B6"><div class="flow-n">6</div><div class="flow-l">Ph3</div></div><span class="flow-arrow">›</span><div class="flow-box" style="border-top:3px solid #0F687D"><div class="flow-n">2</div><div class="flow-l">Filed</div></div><span class="flow-arrow">›</span><div class="flow-box" style="border-top:3px solid #5AAB60"><div class="flow-n">3</div><div class="flow-l">Approved</div></div></div></div><div class="panel-foot">45 assets across the funnel; 11 in Ph3 or beyond — a busy late stage</div></div></div><div class="dash"><div class="panel span-1"><div class="panel-h"><span class="t">Pipeline by mechanism</span><span class="c">assets by MoA</span></div><div class="panel-body"><div class="hbars"><div class="hb"><span class="hb-l">D2 / atypical</span><span class="hb-t"><span class="hb-f" style="width:100.0%;background:#9AA3AC"></span></span><span class="hb-v">12</span></div><div class="hb"><span class="hb-l">Muscarinic</span><span class="hb-t"><span class="hb-f" style="width:66.7%;background:#1D98B6"></span></span><span class="hb-v">8</span></div><div class="hb"><span class="hb-l">5-HT / serotonergic</span><span class="hb-t"><span class="hb-f" style="width:50.0%;background:#5B92D1"></span></span><span class="hb-v">6</span></div><div class="hb"><span class="hb-l">Glutamatergic</span><span class="hb-t"><span class="hb-f" style="width:41.7%;background:#6B5BA0"></span></span><span class="hb-v">5</span></div><div class="hb"><span class="hb-l">TAAR1</span><span class="hb-t"><span class="hb-f" style="width:33.3%;background:#0F687D"></span></span><span class="hb-v">4</span></div><div class="hb"><span class="hb-l">Other novel</span><span class="hb-t"><span class="hb-f" style="width:58.3%;background:#CBD3DA"></span></span><span class="hb-v">7</span></div></div></div></div><div class="panel span-1"><div class="panel-h"><span class="t">Pipeline by company</span><span class="c">concentration</span></div><div class="panel-body"><div class="hbars"><div class="hb"><span class="hb-l">AbbVie</span><span class="hb-t"><span class="hb-f" style="width:18.5%;background:#1D98B6"></span></span><span class="hb-v">5</span></div><div class="hb"><span class="hb-l">ITCI / J&J</span><span class="hb-t"><span class="hb-f" style="width:14.8%;background:#5B92D1"></span></span><span class="hb-v">4</span></div><div class="hb"><span class="hb-l">Boehringer</span><span class="hb-t"><span class="hb-f" style="width:11.1%;background:#6B5BA0"></span></span><span class="hb-v">3</span></div><div class="hb"><span class="hb-l">Sumitomo</span><span class="hb-t"><span class="hb-f" style="width:11.1%;background:#9AA3AC"></span></span><span class="hb-v">3</span></div><div class="hb"><span class="hb-l">Others</span><span class="hb-t"><span class="hb-f" style="width:100.0%;background:#CBD3DA"></span></span><span class="hb-v">27</span></div></div></div></div><div class="panel span-1"><div class="panel-h"><span class="t">Crowding by segment</span><span class="c">where it's getting busy</span></div><div class="panel-body"><div class="list"><div class="list-row"><span><b>D2 / atypical</b></span><span style="font-size:10px;color:#D74F2A;font-weight:600">Saturated — generics + LAIs</span></div><div class="list-row"><span><b>Muscarinic</b></span><span style="font-size:10px;color:#E89327;font-weight:600">Emerging — crowding fast</span></div><div class="list-row"><span><b>TAAR1</b></span><span style="font-size:10px;color:#5B92D1;font-weight:600">Sparse — mixed data</span></div><div class="list-row"><span><b>Glutamatergic / cognition</b></span><span style="font-size:10px;color:#5AAB60;font-weight:600">White space</span></div></div></div></div></div><div class="band" id="catalysts"><span class="band-l">3 · Catalysts &amp; readouts</span><span class="band-s">the events that will move the landscape</span></div><div class="dash"><div class="panel span-3"><div class="panel-h"><span class="t">Catalyst calendar</span><span class="c">upcoming readouts &amp; regulatory events</span></div><div class="panel-body"><svg viewBox="0 0 640 185" class="cv"><text x="34" y="14" font-size="7.5" fill="#9AA3AC">◆ catalyst · red=high impact · amber=medium · teal=ours · grey=low</text><line x1="34" y1="92.5" x2="606" y2="92.5" stroke="#CBD3DA" stroke-width="1.5"/><line x1="34.0" y1="88.5" x2="34.0" y2="96.5" stroke="#9AA3AC"/><text x="34.0" y="110.5" font-size="8" fill="#6B7280" text-anchor="middle">Q3 '26</text><line x1="148.4" y1="88.5" x2="148.4" y2="96.5" stroke="#9AA3AC"/><text x="148.4" y="110.5" font-size="8" fill="#6B7280" text-anchor="middle">Q4 '26</text><line x1="262.8" y1="88.5" x2="262.8" y2="96.5" stroke="#9AA3AC"/><text x="262.8" y="110.5" font-size="8" fill="#6B7280" text-anchor="middle">Q1 '27</text><line x1="377.2" y1="88.5" x2="377.2" y2="96.5" stroke="#9AA3AC"/><text x="377.2" y="110.5" font-size="8" fill="#6B7280" text-anchor="middle">Q2 '27</text><line x1="491.6" y1="88.5" x2="491.6" y2="96.5" stroke="#9AA3AC"/><text x="491.6" y="110.5" font-size="8" fill="#6B7280" text-anchor="middle">Q3 '27</text><line x1="606.0" y1="88.5" x2="606.0" y2="96.5" stroke="#9AA3AC"/><text x="606.0" y="110.5" font-size="8" fill="#6B7280" text-anchor="middle">Q4 '27</text><line x1="34.0" y1="92.5" x2="34.0" y2="84.5" stroke="#D74F2A" stroke-width="1.5"/><polygon points="34.0,86.5 39.0,92.5 34.0,98.5 29.0,92.5" fill="#D74F2A"/><text x="34.0" y="72.5" font-size="8" fill="#3F4A55" text-anchor="middle" font-weight="600">Rival M4 Ph3</text><line x1="148.4" y1="92.5" x2="148.4" y2="100.5" stroke="#E89327" stroke-width="1.5"/><polygon points="148.4,86.5 153.4,92.5 148.4,98.5 143.4,92.5" fill="#E89327"/><text x="148.4" y="126.5" font-size="8" fill="#3F4A55" text-anchor="middle" font-weight="600">TAAR1 Ph3 data</text><line x1="262.8" y1="92.5" x2="262.8" y2="84.5" stroke="#E89327" stroke-width="1.5"/><polygon points="262.8,86.5 267.8,92.5 262.8,98.5 257.8,92.5" fill="#E89327"/><text x="262.8" y="72.5" font-size="8" fill="#3F4A55" text-anchor="middle" font-weight="600">Caplyta PDUFA</text><line x1="377.2" y1="92.5" x2="377.2" y2="100.5" stroke="#D74F2A" stroke-width="1.5"/><polygon points="377.2,86.5 382.2,92.5 377.2,98.5 372.2,92.5" fill="#D74F2A"/><text x="377.2" y="126.5" font-size="8" fill="#3F4A55" text-anchor="middle" font-weight="600">Rival filing</text><line x1="491.6" y1="92.5" x2="491.6" y2="84.5" stroke="#1D98B6" stroke-width="1.5"/><polygon points="491.6,86.5 496.6,92.5 491.6,98.5 486.6,92.5" fill="#1D98B6"/><text x="491.6" y="72.5" font-size="8" fill="#3F4A55" text-anchor="middle" font-weight="600">Cobenfy ADP data</text><line x1="606.0" y1="92.5" x2="606.0" y2="100.5" stroke="#9AA3AC" stroke-width="1.5"/><polygon points="606.0,86.5 611.0,92.5 606.0,98.5 601.0,92.5" fill="#9AA3AC"/><text x="606.0" y="126.5" font-size="8" fill="#3F4A55" text-anchor="middle" font-weight="600">GlyT1 cognition</text></svg></div><div class="panel-foot">rival M4 Ph3 (Q3 '26) is the nearest high-impact catalyst; our ADP data lands Q3 '27</div></div></div><div class="dash"><div class="panel span-2"><div class="panel-h"><span class="t">Key readouts</span><span class="c">data catalysts &amp; impact</span></div><div class="panel-body"><table class="tbl"><tr><th>Readout</th><th>Timing</th><th>Impact</th><th>Why it matters</th></tr><tr><td><b>Rival M4 agonist · Ph3 efficacy</b></td><td>Q3 '26</td><td><span class="pill" style="background:#D74F2A">High</span></td><td style="font-size:10px">direct muscarinic competitor</td></tr><tr><td><b>TAAR1 agonist · Ph3</b></td><td>Q4 '26</td><td><span class="pill" style="background:#E89327">Medium</span></td><td style="font-size:10px">novel-MoA validation</td></tr><tr><td><b>Cobenfy ADP · Ph3 (ours)</b></td><td>Q3 '27</td><td><span class="pill" style="background:#D74F2A">High</span></td><td style="font-size:10px">our expansion catalyst</td></tr><tr><td><b>GlyT1 · cognition Ph3</b></td><td>Q4 '27</td><td><span class="pill" style="background:#9AA3AC">Low</span></td><td style="font-size:10px">cognition white-space</td></tr></table></div></div><div class="panel span-1"><div class="panel-h"><span class="t">Regulatory milestones</span><span class="c">filings &amp; approvals</span></div><div class="panel-body"><div class="list"><div class="list-row"><span>Caplyta label expansion · PDUFA</span><span style="font-size:10px;color:var(--ink-soft)">Q1 '27</span></div><div class="list-row"><span>Rival M4 · anticipated filing</span><span style="font-size:10px;color:var(--ink-soft)">Q2 '27</span></div><div class="list-row"><span>Cobenfy ADP · filing (planned)</span><span style="font-size:10px;color:var(--ink-soft)">2028</span></div><div class="list-row"><span>Generic atypical entries</span><span style="font-size:10px;color:var(--ink-soft)">ongoing</span></div></div></div></div></div><div class="dash"><div class="panel span-3"><div class="panel-h"><span class="t">Catalyst impact</span><span class="c">what each could do</span></div><div class="panel-body"><table class="tbl"><tr><th>Catalyst</th><th>Impact</th><th>Likelihood</th></tr><tr><td><b>Rival M4 Ph3 success</b></td><td><span style="color:#D74F2A;font-weight:600">High</span></td><td>Likely</td></tr><tr><td><b>TAAR1 validation</b></td><td><span style="color:#E89327;font-weight:600">Medium</span></td><td>Possible</td></tr><tr><td><b>New muscarinic entrant</b></td><td><span style="color:#E89327;font-weight:600">High</span></td><td>Emerging</td></tr><tr><td><b>Generic erosion (class)</b></td><td><span style="color:#9AA3AC;font-weight:600">Medium</span></td><td>Ongoing</td></tr></table></div></div></div><div class="band" id="positioning"><span class="band-l">4 · Competitive positioning</span><span class="band-s">how we differentiate</span></div><div class="dash"><div class="panel span-1"><div class="panel-h"><span class="t">Positioning map</span><span class="c">tolerability × efficacy · bubble = relevance</span></div><div class="panel-body"><svg viewBox="0 0 380 275" class="cv"><line x1="190" y1="36" x2="190" y2="237" stroke="#EDF0F3"/><line x1="38" y1="138" x2="342" y2="138" stroke="#EDF0F3"/><line x1="38" y1="237" x2="342" y2="237" stroke="#CBD3DA"/><line x1="38" y1="36" x2="38" y2="237" stroke="#CBD3DA"/><text x="117" y="46" font-size="7" fill="#9AA3AC" text-anchor="middle">efficacy-first</text><text x="266" y="46" font-size="7" fill="#9AA3AC" text-anchor="middle">best-in-class</text><text x="117" y="231" font-size="7" fill="#9AA3AC" text-anchor="middle">laggards</text><text x="266" y="231" font-size="7" fill="#9AA3AC" text-anchor="middle">tolerability-first</text><circle cx="287" cy="86" r="15" fill="#1D98B6" opacity="0.6"/><text x="287" y="88" font-size="7" fill="#2E2E38" text-anchor="middle">Cobenfy</text><circle cx="160" cy="78" r="13" fill="#9AA3AC" opacity="0.6"/><text x="160" y="80" font-size="7" fill="#2E2E38" text-anchor="middle">Atypicals</text><circle cx="233" cy="98" r="11" fill="#5B92D1" opacity="0.6"/><text x="233" y="100" font-size="7" fill="#2E2E38" text-anchor="middle">Caplyta</text><circle cx="275" cy="118" r="11" fill="#6B5BA0" opacity="0.6"/><text x="275" y="120" font-size="7" fill="#2E2E38" text-anchor="middle">Rival M4</text><circle cx="178" cy="74" r="11" fill="#0F687D" opacity="0.6"/><text x="178" y="76" font-size="7" fill="#2E2E38" text-anchor="middle">LAIs</text><circle cx="251" cy="128" r="9" fill="#E89327" opacity="0.6"/><text x="251" y="130" font-size="7" fill="#2E2E38" text-anchor="middle">TAAR1</text><text x="190" y="270" font-size="9" fill="#6B7280" text-anchor="middle">Tolerability / metabolic →</text><text x="13" y="138" font-size="9" fill="#6B7280" text-anchor="middle" transform="rotate(-90 13 138)">Efficacy →</text></svg></div><div class="panel-foot">Cobenfy sits top-right: strong efficacy with best-in-class tolerability</div></div><div class="panel span-2"><div class="panel-h"><span class="t">Target-product-profile head-to-head</span><span class="c">Cobenfy vs rival M4 (illustrative %)</span></div><div class="panel-body"><div class="h2h"><div class="h2h-row"><span class="h2h-c">Efficacy (PANSS)</span><span class="h2h-bars"><span class="h2h-b" style="width:80%;background:#1D98B6"></span><span class="h2h-b" style="width:82%;background:#6B5BA0"></span></span></div><div class="h2h-row"><span class="h2h-c">Tolerability / metabolic</span><span class="h2h-bars"><span class="h2h-b" style="width:88%;background:#1D98B6"></span><span class="h2h-b" style="width:72%;background:#6B5BA0"></span></span></div><div class="h2h-row"><span class="h2h-c">Dosing convenience</span><span class="h2h-bars"><span class="h2h-b" style="width:55%;background:#1D98B6"></span><span class="h2h-b" style="width:70%;background:#6B5BA0"></span></span></div><div class="h2h-row"><span class="h2h-c">Maintenance data</span><span class="h2h-bars"><span class="h2h-b" style="width:54%;background:#1D98B6"></span><span class="h2h-b" style="width:40%;background:#6B5BA0"></span></span></div><div class="h2h-row"><span class="h2h-c">Cognition signal</span><span class="h2h-bars"><span class="h2h-b" style="width:46%;background:#1D98B6"></span><span class="h2h-b" style="width:58%;background:#6B5BA0"></span></span></div><div class="h2h-row"><span class="h2h-c">Access / coverage</span><span class="h2h-bars"><span class="h2h-b" style="width:61%;background:#1D98B6"></span><span class="h2h-b" style="width:55%;background:#6B5BA0"></span></span></div></div><div class="legend" style="margin-top:6px"><span class="lg"><span class="dot" style="background:#1D98B6"></span>Cobenfy</span><span class="lg"><span class="dot" style="background:#6B5BA0"></span>Rival M4</span></div></div><div class="panel-foot">we lead on tolerability; rival could close on dosing &amp; cognition — maintenance data is contested</div></div></div><div class="dash"><div class="panel span-1"><div class="panel-h"><span class="t">White space</span><span class="c">unclaimed positioning</span></div><div class="panel-body"><div class="list"><div class="list-row"><span><b style="color:#5AAB60">◇</b> Metabolically-neutral efficacy + maintenance data</span></div><div class="list-row"><span><b style="color:#5AAB60">◇</b> Cognition-positive positioning</span></div><div class="list-row"><span><b style="color:#5AAB60">◇</b> Early / first-episode use</span></div></div></div></div><div class="panel span-1"><div class="panel-h"><span class="t">Our vulnerabilities</span><span class="c">where rivals can attack</span></div><div class="panel-body"><div class="list"><div class="list-row"><span><b>Anticholinergic GI tolerability</b></span><span style="font-size:10px;color:var(--crit)">exploitable by rivals</span></div><div class="list-row"><span><b>Twice-daily dosing</b></span><span style="font-size:10px;color:var(--crit)">vs once-daily / LAI rivals</span></div><div class="list-row"><span><b>Maintenance data maturity</b></span><span style="font-size:10px;color:var(--crit)">competitor LAIs ahead</span></div></div></div></div><div class="panel span-1"><div class="panel-h"><span class="t">Differentiation anchor</span><span class="c">own this</span></div><div class="panel-body"><div style='padding-top:18px;text-align:center'><div style='font-size:15px;font-weight:700;color:#1D98B6'>Metabolic neutrality</div><div style='font-size:11px;color:var(--ink-soft);margin-top:4px'>+ emerging maintenance data<br>= the defensible core</div></div></div></div></div><div class="band" id="threat"><span class="band-l">5 · Threat &amp; opportunity</span><span class="band-s">what to defend against &amp; where to play</span></div><div class="dash"><div class="panel span-1"><div class="panel-h"><span class="t">Threat matrix</span><span class="c">likelihood × impact · bubble = proximity</span></div><div class="panel-body"><svg viewBox="0 0 380 275" class="cv"><line x1="190" y1="36" x2="190" y2="237" stroke="#EDF0F3"/><line x1="38" y1="138" x2="342" y2="138" stroke="#EDF0F3"/><line x1="38" y1="237" x2="342" y2="237" stroke="#CBD3DA"/><line x1="38" y1="36" x2="38" y2="237" stroke="#CBD3DA"/><text x="117" y="46" font-size="7" fill="#9AA3AC" text-anchor="middle">monitor</text><text x="266" y="46" font-size="7" fill="#9AA3AC" text-anchor="middle">critical</text><text x="117" y="231" font-size="7" fill="#9AA3AC" text-anchor="middle">watch</text><text x="266" y="231" font-size="7" fill="#9AA3AC" text-anchor="middle">manage</text><circle cx="266" cy="68" r="16" fill="#D74F2A" opacity="0.6"/><text x="266" y="70" font-size="7" fill="#2E2E38" text-anchor="middle">Rival M4 (Ph3)</text><circle cx="281" cy="128" r="12" fill="#E89327" opacity="0.6"/><text x="281" y="130" font-size="7" fill="#2E2E38" text-anchor="middle">Caplyta expansion</text><circle cx="205" cy="118" r="11" fill="#5B92D1" opacity="0.6"/><text x="205" y="120" font-size="7" fill="#2E2E38" text-anchor="middle">TAAR1 class</text><circle cx="144" cy="78" r="11" fill="#6B5BA0" opacity="0.6"/><text x="144" y="80" font-size="7" fill="#2E2E38" text-anchor="middle">New muscarinic entrant</text><circle cx="226" cy="153" r="10" fill="#9AA3AC" opacity="0.6"/><text x="226" y="155" font-size="7" fill="#2E2E38" text-anchor="middle">Generic erosion</text><text x="190" y="270" font-size="9" fill="#6B7280" text-anchor="middle">Likelihood →</text><text x="13" y="138" font-size="9" fill="#6B7280" text-anchor="middle" transform="rotate(-90 13 138)">Impact →</text></svg></div><div class="panel-foot">rival M4 sits top-right — high likelihood, high impact: the priority threat</div></div><div class="panel span-2"><div class="panel-h"><span class="t">Emerging threats</span><span class="c">new &amp; advancing competitors</span></div><div class="panel-body"><table class="tbl"><tr><th>Threat</th><th>Source</th><th>Stage</th><th>Why</th><th>Level</th></tr><tr><td><b>Rival M4 agonist</b></td><td>AbbVie</td><td>Ph3</td><td style="font-size:10px">Direct mechanism overlap; Ph3 readout Q3 '26</td><td><span class="pill" style="background:#D74F2A">High</span></td></tr><tr><td><b>Next-gen selective muscarinics</b></td><td>Multiple</td><td>Ph1/2</td><td style="font-size:10px">Could leapfrog on tolerability</td><td><span class="pill" style="background:#5B92D1">Watch</span></td></tr><tr><td><b>TAAR1 agonists</b></td><td>Pipeline</td><td>Ph3</td><td style="font-size:10px">Novel non-D2; mixed data so far</td><td><span class="pill" style="background:#E89327">Medium</span></td></tr><tr><td><b>Long-acting muscarinic</b></td><td>Pipeline</td><td>Preclinical</td><td style="font-size:10px">Would neutralise dosing advantage</td><td><span class="pill" style="background:#5B92D1">Watch</span></td></tr></table></div></div></div><div class="dash"><div class="panel span-1"><div class="panel-h"><span class="t">White-space opportunities</span><span class="c">where to move</span></div><div class="panel-body"><div class="list"><div class="list-row"><span><b style="color:#5AAB60">▲</b> <b>Maintenance / relapse evidence lead</b></span><span style="font-size:10px;color:var(--ink-soft)">generate before rivals mature</span></div><div class="list-row"><span><b style="color:#5AAB60">▲</b> <b>Metabolic-neutrality differentiation</b></span><span style="font-size:10px;color:var(--ink-soft)">own the tolerability narrative</span></div><div class="list-row"><span><b style="color:#5AAB60">▲</b> <b>ADP expansion (first-mover)</b></span><span style="font-size:10px;color:var(--ink-soft)">new indication white-space</span></div></div></div></div><div class="panel span-2"><div class="panel-h"><span class="t">Competitive scenarios</span><span class="c">plan for the branches</span></div><div class="panel-body"><div class="list"><div class="list-row"><span><b>Rival M4 Ph3 succeeds</b> — tolerability + data become the battleground</span></div><div class="list-row"><span><b>Rival M4 Ph3 disappoints</b> — Cobenfy consolidates muscarinic leadership</span></div><div class="list-row"><span><b>TAAR1 validates</b> — novel-MoA market expands for all</span></div></div></div></div></div><div class="band" id="mechanism"><span class="band-l">6 · Mechanism &amp; science landscape</span><span class="band-s">the science the field is moving toward</span></div><div class="dash"><div class="panel span-1"><div class="panel-h"><span class="t">MoA landscape</span><span class="c">assets by mechanism</span></div><div class="panel-body"><div class="hbars"><div class="hb"><span class="hb-l">D2 / atypical</span><span class="hb-t"><span class="hb-f" style="width:100.0%;background:#9AA3AC"></span></span><span class="hb-v">12</span></div><div class="hb"><span class="hb-l">Muscarinic</span><span class="hb-t"><span class="hb-f" style="width:66.7%;background:#1D98B6"></span></span><span class="hb-v">8</span></div><div class="hb"><span class="hb-l">Other novel</span><span class="hb-t"><span class="hb-f" style="width:58.3%;background:#CBD3DA"></span></span><span class="hb-v">7</span></div><div class="hb"><span class="hb-l">5-HT / serotonergic</span><span class="hb-t"><span class="hb-f" style="width:50.0%;background:#5B92D1"></span></span><span class="hb-v">6</span></div><div class="hb"><span class="hb-l">Glutamatergic</span><span class="hb-t"><span class="hb-f" style="width:41.7%;background:#6B5BA0"></span></span><span class="hb-v">5</span></div><div class="hb"><span class="hb-l">TAAR1</span><span class="hb-t"><span class="hb-f" style="width:33.3%;background:#0F687D"></span></span><span class="hb-v">4</span></div></div></div></div><div class="panel span-1"><div class="panel-h"><span class="t">Novel targets emerging</span><span class="c">what's next</span></div><div class="panel-body"><div class="list"><div class="list-row"><span><b>M4-selective muscarinic</b></span><span style="font-size:10px;color:var(--ink-soft)">tolerability-optimised next gen</span></div><div class="list-row"><span><b>TAAR1 agonism</b></span><span style="font-size:10px;color:var(--ink-soft)">non-dopaminergic</span></div><div class="list-row"><span><b>GlyT1 inhibition</b></span><span style="font-size:10px;color:var(--ink-soft)">cognition-directed</span></div><div class="list-row"><span><b>KOR antagonism</b></span><span style="font-size:10px;color:var(--ink-soft)">exploratory</span></div></div></div></div><div class="panel span-1"><div class="panel-h"><span class="t">Scientific trends</span><span class="c">direction of the field</span></div><div class="panel-body"><div class="list"><div class="list-row"><span>Shift away from pure D2 blockade</span></div><div class="list-row"><span>Tolerability / metabolic as differentiator</span></div><div class="list-row"><span>Cognition &amp; negative symptoms as targets</span></div><div class="list-row"><span>Maintenance &amp; real-world durability focus</span></div></div></div></div></div><div class="band" id="events"><span class="band-l">7 · Market events</span><span class="band-s">recent moves in the landscape</span></div><div class="dash"><div class="panel span-2"><div class="panel-h"><span class="t">Recent competitive events</span><span class="c">data · filings · approvals</span></div><div class="panel-body"><div class="list"><div class="list-row"><span style="border-left:3px solid #E89327;padding-left:8px">Rival M4 Ph2 data presented</span><span style="font-size:10px;color:var(--ink-soft)">congress (#2) · May</span></div><div class="list-row"><span style="border-left:3px solid #5B92D1;padding-left:8px">Caplyta indication expansion filed</span><span style="font-size:10px;color:var(--ink-soft)">Apr</span></div><div class="list-row"><span style="border-left:3px solid #9AA3AC;padding-left:8px">TAAR1 Ph3 topline (mixed)</span><span style="font-size:10px;color:var(--ink-soft)">Mar</span></div><div class="list-row"><span style="border-left:3px solid #5AAB60;padding-left:8px">Cobenfy ADP Ph3 fully enrolled</span><span style="font-size:10px;color:var(--ink-soft)">Feb</span></div></div></div><div class="panel-foot">sourced partly from Congress Intelligence (#2) &amp; literature monitoring</div></div><div class="panel span-1"><div class="panel-h"><span class="t">Deals &amp; partnerships</span><span class="c">M&amp;A / licensing</span></div><div class="panel-body"><div class="list"><div class="list-row"><span><b>Large pharma + muscarinic biotech</b></span><span style="font-size:10px;color:var(--ink-soft)">licensing — class validation</span></div><div class="list-row"><span><b>CNS platform acquisition</b></span><span style="font-size:10px;color:var(--ink-soft)">pipeline consolidation</span></div><div class="list-row"><span><b>Digital-therapeutic partnership</b></span><span style="font-size:10px;color:var(--ink-soft)">adherence play</span></div></div></div></div></div><div class="band" id="action"><span class="band-l">8 · Strategic implications &amp; action</span><span class="band-s">what the landscape means for us</span></div><div class="dash"><div class="panel span-2"><div class="panel-h"><span class="t">Strategic implications</span><span class="c">landscape → response · priority</span></div><div class="panel-body"><table class="tbl"><tr><th>Implication</th><th>Strategic response</th><th>Priority</th></tr><tr><td><b>Rival M4 is the primary threat</b></td><td>Accelerate maintenance &amp; tolerability evidence (→#5)</td><td><span class="pill" style="background:#D74F2A">High</span></td></tr><tr><td><b>Muscarinic class crowding</b></td><td>Differentiate on data maturity &amp; metabolic profile</td><td><span class="pill" style="background:#D74F2A">High</span></td></tr><tr><td><b>ADP expansion is first-mover white-space</b></td><td>Protect &amp; accelerate the ADP program (→#7)</td><td><span class="pill" style="background:#E89327">Medium</span></td></tr><tr><td><b>Cognition is contested white-space</b></td><td>Decide whether to invest in cognition evidence</td><td><span class="pill" style="background:#E89327">Medium</span></td></tr></table></div></div><div class="panel span-1"><div class="panel-h"><span class="t">Plays</span><span class="c">defensive · offensive · monitor</span></div><div class="panel-body"><div class="list"><div class="list-row"><span><b style="color:#1D98B6">Defensive</b> — Lock maintenance + tolerability evidence ahead of rival Ph3</span></div><div class="list-row"><span><b style="color:#5AAB60">Offensive</b> — First-mover ADP expansion; own novel-MoA narrative</span></div><div class="list-row"><span><b style="color:#E89327">Monitor</b> — TAAR1 &amp; next-gen muscarinic readouts; ready response</span></div></div></div></div></div><div class="dash"><div class="panel span-1"><div class="panel-h"><span class="t">Evidence implications</span><span class="c">what we must generate to compete → #5</span></div><div class="panel-body"><table class="tbl"><tr><th>Competitive need</th><th>Evidence response</th></tr><tr><td>Counter rival M4 on tolerability</td><td><b>Tolerability + metabolic evidence (#5)</b></td></tr><tr><td>Defend maintenance positioning</td><td><b>1-yr maintenance RWE (#5/#6)</b></td></tr><tr><td>ADP first-mover</td><td><b>ADP Ph3 readout (#7)</b></td></tr></table></div></div><div class="panel span-2"><div class="panel-h"><span class="t">Linkage to strategic questions</span><span class="c">how landscape signal feeds the KBQs</span></div><div class="panel-body"><table class="tbl"><tr><th>Landscape signal</th><th>Strategic question it feeds</th></tr><tr><td>Rival M4 Ph3 threat</td><td><b>KBQ-TL-D — competitive evidence</b></td></tr><tr><td>Muscarinic crowding</td><td><b>KBQ-CMP-A — class dynamics</b></td></tr><tr><td>Catalyst calendar</td><td><b>KBQ-CMP-B — market events</b></td></tr><tr><td>White-space (cognition / ADP)</td><td><b>KBQ-STR-A — portfolio strategy</b></td></tr><tr><td>Evidence implications</td><td><b>KBQ-LIT-O — evidence coverage</b></td></tr></table></div></div></div>
+</main>
+<div class="bn-wrap">
+<div class="bn-title">Tableau build notes — worksheet spec by panel</div>
+<table class="bn">
+<tr><th>Panel</th><th>Mark / sheet</th><th>Dimensions</th><th>Measures</th><th>Filters / logic</th><th>Source</th></tr>
+<tr><td><b>Competitive set</b></td><td>Table</td><td>asset · company · mechanism · stage · threat_level</td><td>—</td><td>TA; stage; threat</td><td>competitive-intelligence DB + pipeline DB</td></tr>
+<tr><td><b>Class share / SoV / summary</b></td><td>Donut · bar · BANs</td><td>moa_class; asset</td><td>Rx share %; SoV %; COUNT</td><td>TA</td><td>market data + congress/pub SoV (#2)</td></tr>
+<tr><td><b>Pipeline by phase ★</b></td><td>Process flow / funnel</td><td>development_phase</td><td>COUNT(asset) per phase</td><td>TA</td><td>pipeline DB (e.g. trial registries / Citeline-type)</td></tr>
+<tr><td><b>Pipeline by MoA / company / crowding</b></td><td>Bar · list</td><td>moa; company; segment</td><td>COUNT(asset); crowding index</td><td>TA</td><td>pipeline DB</td></tr>
+<tr><td><b>Catalyst calendar</b></td><td>Timeline (event markers on date axis)</td><td>event · QUARTER(date)</td><td>impact level (colour)</td><td>next 12–18 mo</td><td>catalyst tracker (readouts, PDUFA, filings)</td></tr>
+<tr><td><b>Readouts / reg milestones / impact</b></td><td>Table · list</td><td>event · date · impact · likelihood</td><td>—</td><td>upcoming</td><td>catalyst tracker + regulatory tracker</td></tr>
+<tr><td><b>Positioning map</b></td><td>Scatter (bubble)</td><td>asset</td><td>x=tolerability, y=efficacy, size=relevance</td><td>key assets</td><td>TPP scoring (curated)</td></tr>
+<tr><td><b>TPP head-to-head</b></td><td>Grouped bar</td><td>tpp_dimension · asset</td><td>score</td><td>vs selected rival</td><td>TPP comparison (curated)</td></tr>
+<tr><td><b>White space / vulnerabilities / differentiation</b></td><td>List · callout</td><td>theme</td><td>—</td><td>—</td><td>competitive analysis (curated)</td></tr>
+<tr><td><b>Threat matrix</b></td><td>Scatter (likelihood × impact)</td><td>threat</td><td>x=likelihood, y=impact, size=proximity</td><td>active threats</td><td>threat assessment (curated)</td></tr>
+<tr><td><b>Emerging threats / opportunities / scenarios</b></td><td>Table · list</td><td>threat / opportunity / scenario</td><td>level</td><td>emerging</td><td>competitive intelligence</td></tr>
+<tr><td><b>MoA landscape / novel targets / trends</b></td><td>Bar · list</td><td>moa; target; trend</td><td>COUNT(asset)</td><td>TA</td><td>pipeline + scientific-trend analysis</td></tr>
+<tr><td><b>Market events / deals</b></td><td>List</td><td>event · date · type</td><td>—</td><td>recent</td><td>news / deal tracker + congress (#2)</td></tr>
+<tr><td><b>Implications / plays / evidence / KBQ</b></td><td>Table · list</td><td>implication · response · priority; KBQ_id</td><td>—</td><td>—</td><td>routing → #5 Evidence · #7 Launch (ADP) · #3 KOL · KBQs</td></tr>
+</table>
+<div style="font-size:11px;color:var(--ink-soft);margin-top:10px;line-height:1.55"><b>Data model.</b> The grain is the <b>competitor asset</b> (asset_id · company · mechanism/MoA · development_phase · indication · threat_level · positioning scores) with a child <b>catalyst</b> table (asset_id · event_type · date · impact · likelihood) for the calendar and a <b>TPP-scoring</b> table (asset_id · dimension · score) for positioning. Much of the high-value content — threat levels, TPP scores, white-space, scenarios — is <b>analyst-curated</b>, blending external feeds (pipeline / trial registries, regulatory trackers, news) with internal judgement; the pipeline counts and catalyst dates are sourced, the strategic interpretation is human. SoV &amp; market events draw on Congress Intelligence (#2). This is the <b>external-axis ★</b> surface — the competitor-and-pipeline complement to the internal asset/stakeholder views. ~30 worksheets across 8 sections.</div>
+</div>
+
+</body></html>

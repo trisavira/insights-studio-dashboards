@@ -1,0 +1,350 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Insights Studio — Value & Access / HTA (design reference)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Avira brand */
+  --teal:#1D98B6; --teal-dk:#0C6F8A; --teal-deep:#0A5270;
+  --orange:#F79138; --orange-dk:#D97516;
+
+  /* Status — richer palette */
+  --crit:#DC2626;   --crit-bg:#FEF2F2;
+  --action:#F79138; --action-bg:#FFF3E6;
+  --watch:#1D98B6;  --watch-bg:#E0F5FA;
+  --commit:#6366F1; --commit-bg:#EEF2FF;
+  --success:#16A34A;--success-bg:#DCFCE7;
+  --purple:#9333EA; --purple-bg:#F5F3FF;
+  --amber:#D97706;  --amber-bg:#FFFBEB;
+
+  /* Surfaces */
+  --bg:#F7FAFB; --panel:#FFFFFF; --panel-alt:#F8FAFC;
+  --border:#E2E8F0; --line:#CBD5E1; --hair:#EEF2F6;
+
+  /* Text */
+  --ink:#1A1F24; --ink-muted:#3F4A55; --ink-soft:#62748E; --ink-dim:#9AA3AC;
+
+  /* Signal */
+  --s-strong:#16A34A; --s-contest:#D97706; --s-thin:#9AA3AC;
+  --s-stable:#1D98B6; --s-mixed:#9333EA;
+
+  /* Tokens */
+  --r:12px; --r-sm:6px;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 1px 3px rgba(0,0,0,.06);
+  --shadow-panel:0 1px 3px rgba(0,0,0,.05),0 4px 12px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:'Inter',system-ui,sans-serif;font-size:13.5px;line-height:1.6;
+  -webkit-font-smoothing:antialiased}
+.serif{font-family:'Inter',sans-serif;font-weight:700}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-feature-settings:'tnum' on}
+
+/* === BRAND BAR === */
+.brand{background:#fff;color:var(--ink);padding:12px 28px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:20px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.brand-logo{height:32px;width:auto;display:block;flex-shrink:0}
+.brand-divider{width:1px;height:28px;background:var(--border);flex-shrink:0}
+.brand-left{display:flex;flex-direction:column;gap:3px}
+.brand-studio{
+  font-family:'Inter';font-size:11px;letter-spacing:0.01em;
+  color:#F79138;font-style:italic;font-weight:700;
+  display:inline-flex;align-items:center;
+  background:#FFF3E6;border:1px solid rgba(247,148,29,.2);
+  border-radius:4px;padding:3px 8px;width:fit-content;line-height:1.4;
+}
+.brand-asset{font-family:'Inter';font-weight:700;font-size:17px;letter-spacing:-0.02em;color:var(--ink);line-height:1.2}
+.brand-codes{font-family:'JetBrains Mono';font-size:10px;color:var(--ink-dim);padding:2px 8px;background:var(--hair);border-radius:100px;border:1px solid var(--border);flex-shrink:0}
+.brand-meta{margin-left:auto;display:flex;gap:10px;align-items:center;font-size:11px;color:var(--ink-soft);flex-wrap:wrap;flex-shrink:0}
+.brand-meta b{color:var(--ink);font-weight:600}
+.brand-stage{font-family:'Inter';font-size:10px;padding:3px 10px;background:var(--watch-bg);border:1px solid rgba(29,152,182,.2);border-radius:100px;font-weight:700;letter-spacing:0.06em;color:var(--teal)}
+.brand-posture{font-family:'Inter';font-size:10px;padding:3px 10px;background:var(--action-bg);font-weight:700;letter-spacing:0.04em;color:var(--orange-dk);border-radius:100px;border:1px solid rgba(247,145,56,.25)}
+.brand-link{color:var(--ink-soft);font-size:11px;text-decoration:none;font-weight:500;font-family:'Inter'}
+.brand-link:hover{color:var(--teal)}
+
+/* === KPI STRIP === */
+.kpi{display:grid;grid-template-columns:repeat(5,1fr);background:var(--panel);border-bottom:1px solid var(--border);box-shadow:var(--shadow)}
+.kpi-cell{padding:20px 28px;border-left:1px solid var(--hair)}
+.kpi-cell:first-child{border-left:none}
+.kpi-cell .l{font-family:'Inter';font-size:9.5px;letter-spacing:0.08em;text-transform:uppercase;color:#9DACC1;font-weight:700;margin-bottom:10px}
+.kpi-cell .v{font-family:'Inter';font-size:28px;font-weight:800;color:var(--ink);line-height:1;letter-spacing:-0.02em}
+.kpi-cell .v.crit{color:var(--crit)}
+.kpi-cell .v.action{color:var(--orange-dk)}
+.kpi-cell .v.watch{color:var(--teal)}
+.kpi-cell .n{font-size:11.5px;color:var(--ink-soft);margin-top:8px;line-height:1.5;font-weight:500}
+
+/* === DASHBOARD GRID === */
+main{padding:24px;max-width:1480px;margin:0 auto}
+.dash{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:20px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);display:flex;flex-direction:column;box-shadow:var(--shadow-panel)}
+.panel-h{padding:16px 20px;border-bottom:1px solid var(--hair);display:flex;align-items:center;justify-content:space-between;gap:8px;border-radius:var(--r) var(--r) 0 0}
+.panel-h .t{font-family:'Inter';font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+.panel-h .c{font-family:'Inter';font-size:10px;color:var(--ink-dim);letter-spacing:0.04em}
+.panel-body{padding:20px;flex:1;overflow:auto}
+
+/* spans */
+.span-1{grid-column:span 1}
+.span-2{grid-column:span 2}
+.span-3{grid-column:span 3}
+
+/* === THEME BOARD === */
+.theme-board{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.theme-col{display:flex;flex-direction:column;gap:6px}
+.theme-col-h{font-family:'Inter';font-size:9.5px;letter-spacing:0.06em;text-transform:uppercase;font-weight:700;padding:5px 10px;color:#fff;display:flex;justify-content:space-between;align-items:center;border-radius:var(--r-sm)}
+.theme-chip{background:var(--panel-alt);border:1px solid var(--hair);border-left:3px solid;padding:12px 14px;cursor:pointer;font-size:12px;line-height:1.35;color:var(--ink);transition:background .15s,border-color .15s;position:relative;border-radius:0 var(--r-sm) var(--r-sm) 0}
+.theme-chip:hover{background:#FFFFFF;border-color:var(--teal)}
+.theme-chip .why{position:absolute;top:5px;right:5px}
+
+/* === GAP RADAR === */
+.gap-bars{display:flex;flex-direction:column;gap:14px}
+.gap-row{display:grid;grid-template-columns:80px 1fr 60px 24px;gap:10px;align-items:center;font-size:12px}
+.gap-lbl{font-family:'Inter';font-size:11px;color:var(--ink);font-weight:600;letter-spacing:0.02em}
+.gap-track{height:8px;background:var(--hair);position:relative;cursor:pointer;border-radius:100px;overflow:hidden}
+.gap-track:hover{outline:1px solid var(--teal)}
+.gap-fill{height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:5px;font-family:'Inter';font-size:9px;color:#fff;font-weight:600;letter-spacing:0.04em;border-radius:2px}
+.gap-val{font-family:'JetBrains Mono';font-size:11px;color:var(--ink-soft);font-weight:500;text-align:right}
+
+/* === MOVEMENT === */
+.mv-list{display:flex;flex-direction:column}
+.mv-row{display:grid;grid-template-columns:74px 64px 1fr 24px;gap:8px;padding:12px 0;border-top:1px solid var(--hair);align-items:start;cursor:pointer;position:relative}
+.mv-row:hover{background:var(--panel-alt)}
+.mv-row:first-child{border-top:none;padding-top:2px}
+.mv-date{font-family:'JetBrains Mono';font-size:10.5px;color:var(--ink-soft);font-weight:500}
+.mv-cap{font-family:'Inter';font-size:9px;font-weight:700;padding:2px 8px;color:#fff;text-align:center;letter-spacing:0.04em;height:fit-content;border-radius:100px}
+.mv-title{font-size:12px;color:var(--ink);font-weight:500;line-height:1.35}
+.mv-title .so{font-size:11px;color:var(--ink-soft);margin-top:2px;line-height:1.35;font-weight:400}
+
+/* === DECISIONS REGISTER === */
+.dec-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.dec-card{background:var(--panel-alt);border:1px solid var(--hair);border-left:3px solid;padding:14px 16px;cursor:pointer;font-size:11.5px;line-height:1.35;position:relative;transition:background .15s,border-color .15s;border-radius:0 var(--r-sm) var(--r-sm) 0}
+.dec-card:hover{background:#fff;border-color:var(--teal)}
+.dec-card.urgent{border-left-color:var(--crit)}
+.dec-card.action{border-left-color:var(--orange)}
+.dec-card.watch{border-left-color:var(--watch)}
+.dec-card.commit{border-left-color:var(--commit)}
+.dec-id{font-family:'Inter';font-size:9.5px;color:var(--ink-dim);font-weight:600;letter-spacing:0.04em;margin-bottom:2px}
+.dec-title{color:var(--ink);font-weight:500;font-size:12px;line-height:1.3;padding-right:18px}
+.dec-cat{font-family:'Inter';font-size:9px;font-weight:600;color:var(--ink-soft);margin-top:5px;letter-spacing:0.06em;text-transform:uppercase}
+.dec-card .why{position:absolute;top:6px;right:6px}
+
+/* === ? icon === */
+.why{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;border:1px solid var(--border);background:#fff;color:var(--ink-soft);font-family:'JetBrains Mono';font-size:10px;font-weight:700;cursor:pointer;line-height:1;flex-shrink:0;transition:background .15s,color .15s,border-color .15s}
+.why:hover{background:var(--teal-deep);color:#fff;border-color:var(--teal-deep)}
+.why:focus{outline:2px solid var(--teal);outline-offset:1px}
+
+/* === SUPPLEMENTARY (below dashboard) === */
+.supp-h{display:flex;align-items:baseline;justify-content:space-between;padding:6px 4px;margin-top:10px}
+.supp-h .t{font-family:'Inter';font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft);font-weight:700}
+.supp-h .n{font-family:'Inter';font-size:10.5px;color:var(--ink-dim);letter-spacing:0.04em}
+
+/* state-chip helper */
+.state-chip{font-family:'Inter';font-size:9px;font-weight:700;padding:2px 8px;color:#fff;letter-spacing:0.04em;display:inline-block;line-height:1.35;border-radius:100px}
+
+/* mini stacked bars (KOL sentiment small panel) */
+.kbar{display:grid;grid-template-columns:1fr;gap:5px}
+.kbar-row{display:grid;grid-template-columns:130px 1fr;gap:8px;align-items:center;font-size:11px}
+.kbar-lbl{color:var(--ink);line-height:1.3}
+.kbar-track{display:flex;height:13px;background:var(--hair);overflow:hidden}
+.kbar-seg{height:100%}
+.kbar-seg.pos{background:var(--s-strong)}
+.kbar-seg.split{background:var(--s-contest)}
+.kbar-seg.neg{background:var(--crit)}
+.kbar-seg.neu{background:var(--s-thin)}
+
+/* horizontal compact bars (topic freq) */
+.tbar-row{display:grid;grid-template-columns:170px 1fr 30px;gap:8px;padding:4px 0;align-items:center;font-size:11.5px}
+.tbar-lbl{color:var(--ink);line-height:1.3}
+.tbar-track{height:11px;background:var(--hair)}
+.tbar-fill{height:100%}
+.tbar-val{font-family:'JetBrains Mono';font-size:10px;color:var(--ink-soft);text-align:right;font-weight:500}
+
+/* cost bar mini */
+.ce-mini{display:grid;grid-template-columns:1fr;gap:7px}
+.ce-mrow{display:grid;grid-template-columns:120px 1fr;gap:8px;align-items:center;font-size:11px}
+.ce-mlbl{color:var(--ink);line-height:1.3}
+.ce-mtrack{position:relative;height:14px;background:var(--hair)}
+.ce-mfill{height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:5px;color:#fff;font-family:'JetBrains Mono';font-size:10px;font-weight:600}
+
+/* === DRAWER === */
+.drawer-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(12,71,84,0.45);opacity:0;pointer-events:none;transition:opacity .22s ease;z-index:90}
+.drawer-overlay.open{opacity:1;pointer-events:all}
+.drawer{position:fixed;top:0;right:0;width:480px;max-width:92vw;height:100vh;background:var(--panel);border-left:1px solid var(--border);box-shadow:-12px 0 36px rgba(0,0,0,0.10);transform:translateX(100%);transition:transform .26s ease;z-index:95;display:flex;flex-direction:column;overflow:hidden}
+.drawer.open{transform:translateX(0)}
+.drawer-h{padding:24px 28px 20px;border-bottom:1px solid var(--hair);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-shrink:0}
+.drawer-h-l{flex:1}
+.drawer-eyebrow{font-family:'Inter';font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--teal);font-weight:700;margin-bottom:6px;display:flex;gap:8px;align-items:center}
+.drawer-title{font-family:'Inter';font-size:18px;line-height:1.3;font-weight:700;color:var(--ink);letter-spacing:-0.02em}
+.drawer-close{background:none;border:1px solid var(--border);border-radius:8px;color:var(--ink-soft);width:30px;height:30px;cursor:pointer;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit;transition:background .15s}
+.drawer-close:hover{background:var(--hair);color:var(--ink)}
+.drawer-body{flex:1;overflow-y:auto;padding:24px 28px 40px}
+.drawer-section{margin-bottom:28px}
+.drawer-section h4{font-family:'Inter';font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:#9DACC1;font-weight:700;margin:0 0 8px;display:flex;align-items:baseline;gap:8px}
+.drawer-section h4 .meta{color:var(--ink-dim);font-size:10px;letter-spacing:0.04em;text-transform:none;font-family:'JetBrains Mono';font-weight:500}
+.drawer-section p{margin:0 0 8px;font-size:13.5px;color:var(--ink-muted);line-height:1.55}
+.drawer-section p:last-child{margin-bottom:0}
+.drawer-section .quote{background:var(--watch-bg);border-left:3px solid var(--teal);padding:10px 14px;border-radius:0 8px 8px 0;font-family:'Inter';font-size:13.5px;line-height:1.6;color:var(--ink);font-style:italic;margin-bottom:6px;border:1px solid rgba(29,152,182,.15);border-left:3px solid var(--teal)}
+.drawer-list{display:flex;flex-direction:column;gap:10px}
+.drawer-item{background:var(--panel-alt);border:1px solid var(--hair);padding:8px 12px;border-radius:8px;font-size:12px;color:var(--ink);display:flex;justify-content:space-between;align-items:center;gap:8px;transition:background .15s,border-color .15s}
+.drawer-item .sub{font-size:10.5px;color:var(--ink-soft);font-family:'Inter';letter-spacing:0.04em}
+.kv{display:grid;grid-template-columns:130px 1fr;gap:10px;padding:10px 0;border-top:1px solid var(--hair);font-size:12.5px}
+.kv:first-child{border-top:none;padding-top:0}
+.kv .k{font-family:'Inter';font-size:9.5px;color:#9DACC1;letter-spacing:0.08em;text-transform:uppercase;font-weight:700}
+.kv .v{color:var(--ink);line-height:1.5;font-weight:500}
+.kv .v .pill{font-family:'Inter';font-size:10px;background:var(--hair);color:var(--ink-muted);padding:2px 8px;letter-spacing:0.04em;display:inline-block;margin-right:5px;border-radius:100px}
+.confidence-bar{display:inline-flex;gap:3px;align-items:center;margin-left:5px}
+.confidence-bar .dot{width:7px;height:7px;border-radius:50%;background:var(--hair)}
+.confidence-bar .dot.on{background:var(--s-strong)}
+.confidence-bar .dot.med{background:var(--orange)}
+
+@media (max-width:1100px){
+  .dash{grid-template-columns:1fr 1fr}
+  .span-3{grid-column:span 2}
+  .theme-board{grid-template-columns:repeat(2,1fr)}
+  .dec-grid{grid-template-columns:repeat(2,1fr)}
+  .kpi{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:700px){
+  .dash{grid-template-columns:1fr}
+  .span-1,.span-2,.span-3{grid-column:span 1}
+  .theme-board,.dec-grid{grid-template-columns:1fr}
+  .drawer{width:100%}
+}
+
+.drawer-item.rich{display:block;cursor:pointer;line-height:1.4}
+.drawer-item.rich .desc{color:var(--ink);display:block;margin-bottom:5px;font-weight:600}
+.drawer-item.rich .meta{display:flex;gap:6px;align-items:center;font-family:'Inter';font-size:9.5px;color:var(--ink-soft);letter-spacing:0.04em;flex-wrap:wrap}
+.drawer-item.rich .meta .sep{color:var(--ink-dim)}
+.drawer-item.rich .meta .arrow{margin-left:auto;color:var(--orange);font-weight:600;font-size:13px}
+.drawer-item.rich:hover{background:#fff;border-color:var(--teal)}
+.drawer-item.rich:hover .arrow{color:var(--orange-dk)}
+.sig-state{font-family:'Inter';font-size:9px;padding:2px 8px;color:#fff;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;border-radius:100px}
+
+/* Panel left-accent color variants */
+.panel.teal{border-top:3px solid var(--teal)}
+.panel.orange{border-top:3px solid var(--orange)}
+.panel.purple{border-top:3px solid var(--purple)}
+.panel.green{border-top:3px solid var(--success)}
+.panel.red{border-top:3px solid var(--crit)}
+.panel.indigo{border-top:3px solid var(--commit)}
+.panel.amber{border-top:3px solid var(--amber)}
+
+/* KPI cell color accents */
+.kpi-cell.hi-teal .v{color:var(--teal)}
+.kpi-cell.hi-orange .v{color:var(--orange-dk)}
+.kpi-cell.hi-green .v{color:var(--success)}
+.kpi-cell.hi-red .v{color:var(--crit)}
+.kpi-cell.hi-purple .v{color:var(--purple)}
+</style>
+<style>
+.subnav{position:sticky;top:0;z-index:30;display:flex;gap:0;flex-wrap:wrap;background:#fff;padding:0 20px;border-bottom:1px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.subnav a{font-size:12px;font-family:'Inter';color:var(--ink-soft);text-decoration:none;padding:12px 16px;font-weight:500;letter-spacing:.01em;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s,border-color .15s}
+.subnav a:hover{color:var(--ink);border-bottom-color:var(--border)}
+.subnav a.active,.subnav a:first-child{color:var(--teal);border-bottom-color:var(--teal)}
+.filterbar{display:flex;flex-wrap:wrap;gap:8px;padding:12px 24px;background:var(--panel);border-bottom:1px solid var(--border);align-items:center}
+.fchip{font-size:12px;font-family:'Inter';color:var(--ink-soft);background:var(--panel-alt);border:1px solid var(--border);border-radius:100px;padding:4px 12px;display:flex;gap:6px;align-items:center;font-weight:500;transition:background .15s,border-color .15s}
+.fchip:hover{background:#fff;border-color:var(--teal);color:var(--teal)}
+.fchip b{color:var(--ink);font-weight:600}.fchip .cx{color:var(--ink-dim)}
+.fchip.active{background:var(--watch-bg);border-color:rgba(29,152,182,.3);color:var(--teal);font-weight:600}
+.alertstrip{display:flex;flex-wrap:wrap;gap:8px;padding:11px 22px;background:var(--panel-alt);border-bottom:1px solid var(--border)}
+.alert{font-size:11.5px;padding:6px 11px;border-radius:3px;border:1px solid var(--border);border-left-width:3px;display:flex;gap:7px;align-items:center;background:#fff}
+.alert b{font-weight:600}.alert.crit{border-left-color:var(--crit);background:var(--crit-bg)}.alert.action{border-left-color:var(--orange);background:var(--action-bg)}
+.alert.watch{border-left-color:var(--watch);background:var(--watch-bg)}.alert.new{border-left-color:#6B5BA0;background:#F1EEF8}
+.cv{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:11px;margin-top:8px}.lg{font-size:10px;color:var(--ink-soft);display:flex;align-items:center;gap:5px}
+.dot{width:9px;height:9px;border-radius:2px;display:inline-block}
+.hbars{display:flex;flex-direction:column;gap:8px;margin-top:2px}
+.hb{display:grid;grid-template-columns:1fr 78px 54px;gap:8px;align-items:center;font-size:11.5px}
+.hb-l{color:var(--ink-muted)}.hb-t{height:9px;background:var(--hair);border-radius:2px;overflow:hidden}
+.hb-f{display:block;height:100%}.hb-v{font-family:'JetBrains Mono';font-size:10.5px;color:var(--ink-soft);text-align:right;font-weight:600}
+.h2h{display:flex;flex-direction:column;gap:9px;margin-top:2px}
+.h2h-row{font-size:11.5px}.h2h-c{color:var(--ink-muted);display:block;margin-bottom:3px}
+.h2h-bars{display:flex;flex-direction:column;gap:3px}.h2h-b{height:7px;border-radius:2px}
+.statrow{display:flex;gap:18px;flex-wrap:wrap;padding:6px 0}.stat{display:flex;flex-direction:column}.stat .sv{font-size:22px;font-weight:700;line-height:1}.stat .sl{font-size:10px;color:var(--ink-soft);margin-top:3px}
+.flow{display:flex;align-items:center;gap:2px;margin-top:4px}
+.flow-box{flex:1;text-align:center;background:var(--panel-alt);border:1px solid var(--border);border-radius:4px;padding:10px 3px}
+.flow-n{font-size:20px;font-weight:700;color:var(--ink)}.flow-l{font-size:9px;color:var(--ink-soft);margin-top:2px}
+.flow-arrow{color:var(--ink-dim);font-size:15px;flex:0 0 auto}
+.hm{width:100%;border-collapse:collapse;font-size:10px;margin-top:2px}
+.hm th{font-size:9px;color:var(--ink-soft);font-weight:600;padding:4px 3px;text-align:center}
+.hm-rl{font-size:10.5px;color:var(--ink-muted);text-align:right;padding:4px 8px 4px 0;white-space:nowrap}
+.hm-cell{text-align:center;font-family:'Inter';font-size:9px;font-weight:700;padding:7px 2px;border:2px solid #fff;border-radius:2px}
+.tbl{width:100%;border-collapse:collapse;font-size:11px}
+.tbl th{text-align:left;color:var(--ink-soft);font-weight:600;font-size:9.5px;text-transform:uppercase;letter-spacing:.04em;padding:4px 6px;border-bottom:1px solid var(--border)}
+.tbl td{padding:6px;border-bottom:1px dotted var(--hair);color:var(--ink-muted);vertical-align:top}.tbl td b{color:var(--ink)}
+.pill{font-size:9px;font-family:'JetBrains Mono';padding:2px 7px;border-radius:10px;color:#fff;font-weight:600;white-space:nowrap}
+.list{display:flex;flex-direction:column}
+.list-row{padding:7px 0;border-top:1px dotted var(--hair);font-size:11.5px;color:var(--ink-muted);display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.list-row:first-child{border-top:none}.list-n{font-family:'Inter';font-weight:700;font-size:10px}
+.band{display:flex;align-items:baseline;gap:12px;padding:16px 22px 4px;scroll-margin-top:42px}
+.band-l{font-size:13px;font-weight:700;color:var(--teal-dk);text-transform:uppercase;letter-spacing:.05em}.band-s{font-size:11px;color:var(--ink-soft)}
+.mockflag{background:#FFF4E6;border:1px solid #F4C98A;border-left:3px solid var(--orange);padding:8px 14px;font-size:11.5px;color:#7A4A12;display:flex;gap:9px;align-items:center}
+.mockflag .ic{font-family:'Inter';font-size:8.5px;font-weight:700;letter-spacing:.06em;background:var(--orange);color:#fff;padding:2px 7px}
+.brand-stage.xcut{background:#5E6E8C;border-color:#7C8AA6}
+.lens{display:flex;gap:14px}.lens-col{flex:1}
+.lens-h{font-size:9.5px;font-family:'Inter';font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-bottom:5px}
+.lens-row{font-size:11px;padding:5px 0;border-top:1px dotted var(--hair);display:flex;justify-content:space-between;gap:6px}.lens-row:first-child{border-top:none}
+.bn-wrap{margin:18px 22px 34px}.bn-title{font-family:'Inter';font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal-deep);font-weight:700;margin:14px 0 8px}
+table.bn{width:100%;border-collapse:collapse;font-size:10.5px}
+table.bn th{background:var(--teal);color:#fff;text-align:left;padding:6px 8px;font-weight:600;border:1px solid #fff}
+table.bn td{padding:6px 8px;border:1px solid var(--border);vertical-align:top;color:var(--ink-muted)}
+table.bn tr:nth-child(even) td{background:var(--panel-alt)}table.bn td b{color:var(--ink)}
+.panel-foot{font-size:10px;color:var(--ink-soft);padding:0 14px 10px;font-family:'JetBrains Mono'}
+</style>
+<header class="brand">
+ <a href="index.html"><img src="../Avira Logo.svg" class="brand-logo" alt="Avira Digital"></a>
+ <span class="brand-divider"></span>
+ <div class="brand-left">
+  <span class="brand-studio">Insights Studio</span>
+  <span class="brand-asset">Value & Access / HTA</span>
+ </div>
+ <span class="brand-codes">HTA submissions · access · value evidence · payer requirements</span>
+ <span class="brand-meta"><span>Cobenfy · global access</span><span class="brand-stage xcut">CROSS-CUTTING</span><a class="brand-link" href="insights_studio_cobenfy.html">← Operator view</a></span>
+</header>
+<nav class="subnav">
+ <a href="#hta">HTA</a><a href="#access">Access</a><a href="#value">Value Evidence</a><a href="#requirements">Payer Needs</a><a href="#economics">Economics</a><a href="#engagement">HTA Engagement</a><a href="#barriers">Barriers</a><a href="#action">Action</a>
+</nav>
+<div class="filterbar">
+ <span class="fchip">Asset <b>Cobenfy</b><span class="cx">▾</span></span><span class="fchip">Indication <b>Schizophrenia</b><span class="cx">▾</span></span><span class="fchip">Market <b>All</b><span class="cx">▾</span></span><span class="fchip">HTA body <b>All</b><span class="cx">▾</span></span><span class="fchip">Evidence type <b>All</b><span class="cx">▾</span></span><span class="fchip">Access status <b>All</b><span class="cx">▾</span></span><span class="fchip">Barrier <b>All</b><span class="cx">▾</span></span>
+</div>
+<div class="alertstrip">
+ <span class="alert action"><b>⚠</b> NICE &amp; ICER — <b>comparative-effectiveness</b> evidence gap</span>
+ <span class="alert new"><b>★</b> ICER review initiated for ADP indication</span>
+ <span class="alert watch"><b>▲</b> Germany G-BA early dialogue scheduled</span>
+ <span class="alert action"><b>⚠</b> Prior-auth friction rising (field #10)</span>
+ <span class="alert new"><b>✓</b> Reimbursement secured in 6 markets</span>
+</div>
+<div class="mockflag"><span class="ic">Mock</span><div>Illustrative data (Cobenfy / schizophrenia + ADP example) — design reference in the Studio visual language. This <b>cross-cutting ★</b> surface is the <b>payer/access axis</b>: it scores evidence against the HTA/payer bar (distinct from #5) and routes value-evidence gaps to generation. Medical-Affairs lens (value evidence, HTA dossiers) — not commercial pricing. Rebuild in Tableau from the worksheet spec at the bottom.</div></div>
+<div class="kpi">
+ <div class="kpi-cell"><div class="l">HTA submissions</div><div class="v">9</div><div class="n">across markets</div></div>
+ <div class="kpi-cell"><div class="l">Markets w/ access</div><div class="v" style="color:var(--s-strong)">6</div><div class="n">of 12 priority</div></div>
+ <div class="kpi-cell"><div class="l">Value-evidence cov.</div><div class="v" style="color:var(--s-stable)">64%</div><div class="n">vs payer needs</div></div>
+ <div class="kpi-cell"><div class="l">Payer evidence gaps</div><div class="v" style="color:var(--crit)">7</div><div class="n">→ evidence gen</div></div>
+ <div class="kpi-cell"><div class="l">HTA decisions pending</div><div class="v" style="color:var(--orange-dk)">3</div><div class="n">under review</div></div>
+ <div class="kpi-cell"><div class="l">Active access barriers</div><div class="v" style="color:var(--orange-dk)">5</div><div class="n">3 high</div></div>
+ <div class="kpi-cell"><div class="l">HTA requirement fit</div><div class="v">68%</div><div class="n">aligned</div></div>
+</div>
+<main>
+<div class="band" id="hta"><span class="band-l">1 · HTA landscape &amp; submissions</span><span class="band-s">where we stand with the assessment bodies</span></div><div class="dash"><div class="panel span-2"><div class="panel-h"><span class="t">HTA submission tracker</span><span class="c">market · body · status</span></div><div class="panel-body"><table class="tbl"><tr><th>Market</th><th>HTA body</th><th>Type</th><th>Status</th><th>Note</th></tr><tr><td><b>United States</b></td><td>ICER</td><td>Value assessment</td><td><span class="pill" style="background:#E89327">Under review</span></td><td style="font-size:10px">ADP review initiated</td></tr><tr><td><b>United Kingdom</b></td><td>NICE</td><td>Single tech appraisal</td><td><span class="pill" style="background:#5B92D1">Submitted</span></td><td style="font-size:10px">comparative-effectiveness query</td></tr><tr><td><b>Germany</b></td><td>G-BA / IQWiG</td><td>Early benefit</td><td><span class="pill" style="background:#9AA3AC">Early dialogue</span></td><td style="font-size:10px">scheduled Q3</td></tr><tr><td><b>France</b></td><td>HAS</td><td>Transparency</td><td><span class="pill" style="background:#9AA3AC">Planned</span></td><td style="font-size:10px">—</td></tr><tr><td><b>Canada</b></td><td>CADTH</td><td>Reimbursement review</td><td><span class="pill" style="background:#5B92D1">Submitted</span></td><td style="font-size:10px">under review</td></tr><tr><td><b>Australia</b></td><td>PBAC</td><td>Major submission</td><td><span class="pill" style="background:#9AA3AC">Planned</span></td><td style="font-size:10px">—</td></tr></table></div><div class="panel-foot">9 submissions across markets; ICER &amp; NICE in active review</div></div><div class="panel span-1"><div class="panel-h"><span class="t">Submission flow</span><span class="c">planned → decision</span></div><div class="panel-body"><div class="flow"><div class="flow-box" style="border-top:3px solid #9AA3AC"><div class="flow-n">3</div><div class="flow-l">Planned</div></div><span class="flow-arrow">›</span><div class="flow-box" style="border-top:3px solid #5B92D1"><div class="flow-n">3</div><div class="flow-l">Submitted</div></div><span class="flow-arrow">›</span><div class="flow-box" style="border-top:3px solid #E89327"><div class="flow-n">2</div><div class="flow-l">Under review</div></div><span class="flow-arrow">›</span><div class="flow-box" style="border-top:3px solid #5AAB60"><div class="flow-n">1</div><div class="flow-l">Decision</div></div></div></div><div class="panel-foot">pipeline of HTA work</div></div><div class="panel span-1"><div class="panel-h"><span class="t">By status</span><span class="c">submission mix</span></div><div class="panel-body"><svg viewBox="0 0 180 170" class="cv"><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#9AA3AC" stroke-width="22" stroke-dasharray="117.29 234.57" stroke-dashoffset="0.00" transform="rotate(-90 90.0 81.0)"/><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#5B92D1" stroke-width="22" stroke-dasharray="78.19 273.67" stroke-dashoffset="-117.29" transform="rotate(-90 90.0 81.0)"/><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#E89327" stroke-width="22" stroke-dasharray="78.19 273.67" stroke-dashoffset="-195.48" transform="rotate(-90 90.0 81.0)"/><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#5AAB60" stroke-width="22" stroke-dasharray="78.19 273.67" stroke-dashoffset="-273.67" transform="rotate(-90 90.0 81.0)"/><text x="90.0" y="80.0" font-size="20" font-weight="700" fill="#161D24" text-anchor="middle">9</text><text x="90.0" y="96.0" font-size="9" fill="#6B7280" text-anchor="middle">total</text></svg><div class="legend"><span class="lg"><span class="dot" style="background:#9AA3AC"></span>Planned</span><span class="lg"><span class="dot" style="background:#5B92D1"></span>Submitted</span><span class="lg"><span class="dot" style="background:#E89327"></span>Under review</span><span class="lg"><span class="dot" style="background:#5AAB60"></span>Decided</span></div></div></div></div><div class="dash"><div class="panel span-1"><div class="panel-h"><span class="t">Upcoming HTA milestones</span><span class="c">next decisions</span></div><div class="panel-body"><div class="list"><div class="list-row"><span>ICER · ADP evidence report</span><span style="font-size:10px;color:var(--ink-soft)">Q3 2026</span></div><div class="list-row"><span>NICE · committee meeting</span><span style="font-size:10px;color:var(--ink-soft)">Q3 2026</span></div><div class="list-row"><span>G-BA · early dialogue</span><span style="font-size:10px;color:var(--ink-soft)">Q3 2026</span></div><div class="list-row"><span>CADTH · recommendation</span><span style="font-size:10px;color:var(--ink-soft)">Q4 2026</span></div></div></div></div><div class="panel span-2"><div class="panel-h"><span class="t">HTA note</span><span class="c">why this is cross-cutting</span></div><div class="panel-body"><div style='font-size:11.5px;color:var(--ink-muted);line-height:1.55;padding-top:4px'>HTA bodies judge <b>value</b>, not just efficacy. A positive regulatory file does not guarantee a positive HTA — which is why this surface tracks a <b>different evidence bar</b> than the Evidence Map (#5).</div></div></div></div><div class="band" id="access"><span class="band-l">2 · Access status &amp; coverage</span><span class="band-s">can patients actually get it</span></div><div class="dash"><div class="panel span-2"><div class="panel-h"><span class="t">Access status by market</span><span class="c">coverage · restrictions</span></div><div class="panel-body"><table class="tbl"><tr><th>Market</th><th>Coverage</th><th>Restrictions</th><th>Status</th></tr><tr><td><b>United States</b></td><td>Covered (commercial) · Medicaid partial</td><td style="font-size:10px">Prior-auth + step</td><td><span class="pill" style="background:#5AAB60">Broad</span></td></tr><tr><td><b>Japan</b></td><td>Reimbursed</td><td style="font-size:10px">—</td><td><span class="pill" style="background:#5AAB60">Broad</span></td></tr><tr><td><b>United Kingdom</b></td><td>Pending NICE</td><td style="font-size:10px">—</td><td><span class="pill" style="background:#E89327">Pending</span></td></tr><tr><td><b>Canada</b></td><td>Under CADTH review</td><td style="font-size:10px">—</td><td><span class="pill" style="background:#E89327">Pending</span></td></tr><tr><td><b>Germany</b></td><td>Pending G-BA</td><td style="font-size:10px">—</td><td><span class="pill" style="background:#E89327">Pending</span></td></tr><tr><td><b>France</b></td><td>Planned</td><td style="font-size:10px">—</td><td><span class="pill" style="background:#9AA3AC">Not yet</span></td></tr></table></div><div class="panel-foot">broad access in US &amp; Japan; EU markets pending HTA</div></div><div class="panel span-1"><div class="panel-h"><span class="t">Markets with access</span><span class="c">of 12 priority</span></div><div class="panel-body"><svg viewBox="0 0 180 170" class="cv"><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#5AAB60" stroke-width="22" stroke-dasharray="175.93 175.93" stroke-dashoffset="0.00" transform="rotate(-90 90.0 81.0)"/><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#E89327" stroke-width="22" stroke-dasharray="117.29 234.57" stroke-dashoffset="-175.93" transform="rotate(-90 90.0 81.0)"/><circle cx="90.0" cy="81.0" r="56" fill="none" stroke="#9AA3AC" stroke-width="22" stroke-dasharray="58.64 293.22" stroke-dashoffset="-293.22" transform="rotate(-90 90.0 81.0)"/><text x="90.0" y="80.0" font-size="20" font-weight="700" fill="#161D24" text-anchor="middle">6</text><text x="90.0" y="96.0" font-size="9" fill="#6B7280" text-anchor="middle">secured</text></svg><div class="legend"><span class="lg"><span class="dot" style="background:#5AAB60"></span>Access secured</span><span class="lg"><span class="dot" style="background:#E89327"></span>Pending HTA</span><span class="lg"><span class="dot" style="background:#9AA3AC"></span>Not yet filed</span></div></div></div></div><div class="dash"><div class="panel span-1"><div class="panel-h"><span class="t">Access trajectory</span><span class="c">markets secured over time</span></div><div class="panel-body"><svg viewBox="0 0 560 150" class="cv"><polyline points="24.0,126.0 126.4,100.5 228.8,75.0 331.2,49.5 433.6,24.0 536.0,24.0" fill="none" stroke="#5AAB60" stroke-width="2.2"/><circle cx="24.0" cy="126.0" r="2.4" fill="#5AAB60"/><circle cx="126.4" cy="100.5" r="2.4" fill="#5AAB60"/><circle cx="228.8" cy="75.0" r="2.4" fill="#5AAB60"/><circle cx="331.2" cy="49.5" r="2.4" fill="#5AAB60"/><circle cx="433.6" cy="24.0" r="2.4" fill="#5AAB60"/><circle cx="536.0" cy="24.0" r="2.4" fill="#5AAB60"/><text x="24.0" y="144" font-size="8" fill="#9AA3AC" text-anchor="middle">Q1'25</text><text x="126.4" y="144" font-size="8" fill="#9AA3AC" text-anchor="middle">Q2'25</text><text x="228.8" y="144" font-size="8" fill="#9AA3AC" text-anchor="middle">Q3'25</text><text x="331.2" y="144" font-size="8" fill="#9AA3AC" text-anchor="middle">Q4'25</text><text x="433.6" y="144" font-size="8" fill="#9AA3AC" text-anchor="middle">Q1'26</text><text x="536.0" y="144" font-size="8" fill="#9AA3AC" text-anchor="middle">Q2'26</text></svg></div><div class="panel-foot">steady access expansion since launch</div></div><div class="panel span-1"><div class="panel-h"><span class="t">Common restrictions</span><span class="c">barriers to overcome</span></div><div class="panel-body"><div class="list"><div class="list-row"><span><b>Prior authorisation</b></span><span style="font-size:10px;color:var(--ink-soft)">most US payers</span></div><div class="list-row"><span><b>Step therapy (atypicals first)</b></span><span style="font-size:10px;color:var(--ink-soft)">several plans</span></div><div class="list-row"><span><b>Formulary tier 3</b></span><span style="font-size:10px;color:var(--ink-soft)">common at launch</span></div></div></div></div><div class="panel span-1"><div class="panel-h"><span class="t">Access headline</span><span class="c">status</span></div><div class="panel-body"><div style='padding-top:22px;text-align:center'><div style='font-size:30px;font-weight:700;color:#5AAB60'>6/12</div><div style='font-size:11px;color:var(--ink-soft);margin-top:2px'>priority markets<br>with reimbursement</div></div></div></div></div><div class="band" id="value"><span class="band-l">3 · Value evidence &amp; dossiers ★</span><span class="band-s">the evidence payers &amp; HTA bodies actually want</span></div><div class="dash"><div class="panel span-2"><div class="panel-h"><span class="t">Value-evidence coverage</span><span class="c">evidence type × market · vs payer needs</span></div><div class="panel-body"><table class="hm"><tr><th></th><th class="hm-ch">US (ICER)</th><th class="hm-ch">UK (NICE)</th><th class="hm-ch">Germany</th><th class="hm-ch">France</th><th class="hm-ch">Canada</th></tr><tr><td class="hm-rl">Cost-effectiveness model</td><td class="hm-cell" style="background:#1D98B6;color:#FFFFFF">Strong</td><td class="hm-cell" style="background:#BBDDE6;color:#0F687D">Mod</td><td class="hm-cell" style="background:#BBDDE6;color:#0F687D">Mod</td><td class="hm-cell" style="background:#BBDDE6;color:#0F687D">Mod</td><td class="hm-cell" style="background:#BBDDE6;color:#0F687D">Mod</td></tr><tr><td class="hm-rl">Budget-impact model</td><td class="hm-cell" style="background:#1D98B6;color:#FFFFFF">Strong</td><td class="hm-cell" style="background:#BBDDE6;color:#0F687D">Mod</td><td class="hm-cell" style="background:#BBDDE6;color:#0F687D">Mod</td><td class="hm-cell" style="background:#FCE3C4;color:#B5762A">Thin</td><td class="hm-cell" style="background:#BBDDE6;color:#0F687D">Mod</td></tr><tr><td class="hm-rl">Comparative effectiveness</td><td class="hm-cell" style="background:#FCE3C4;color:#B5762A">Thin</td><td class="hm-cell" style="background:#FCE3C4;color:#B5762A">Thin</td><td class="hm-cell" style="background:#FCE3C4;color:#B5762A">Thin</td><td class="hm-cell" style="background:#FCE3C4;color:#B5762A">Thin</td><td class="hm-cell" style="background:#EDF0F3;color:#9AA3AC">—</td></tr><tr><td class="hm-rl">RWE outcomes</td><td class="hm-cell" style="background:#BBDDE6;color:#0F687D">Mod</td><td class="hm-cell" style="background:#FCE3C4;color:#B5762A">Thin</td><td class="hm-cell" style="background:#FCE3C4;color:#B5762A">Thin</td><td class="hm-cell" style="background:#FCE3C4;color:#B5762A">Thin</td><td class="hm-cell" style="background:#FCE3C4;color:#B5762A">Thin</td></tr><tr><td class="hm-rl">HRQoL / PRO</td><td class="hm-cell" style="background:#BBDDE6;color:#0F687D">Mod</td><td class="hm-cell" style="background:#FCE3C4;color:#B5762A">Thin</td><td class="hm-cell" style="background:#FCE3C4;color:#B5762A">Thin</td><td class="hm-cell" style="background:#FCE3C4;color:#B5762A">Thin</td><td class="hm-cell" style="background:#FCE3C4;color:#B5762A">Thin</td></tr><tr><td class="hm-rl">Adherence / persistence</td><td class="hm-cell" style="background:#FCE3C4;color:#B5762A">Thin</td><td class="hm-cell" style="background:#EDF0F3;color:#9AA3AC">—</td><td class="hm-cell" style="background:#EDF0F3;color:#9AA3AC">—</td><td class="hm-cell" style="background:#EDF0F3;color:#9AA3AC">—</td><td class="hm-cell" style="background:#EDF0F3;color:#9AA3AC">—</td></tr></table><div class="legend" style="margin-top:8px"><span class="lg"><span class="dot" style="background:#1D98B6"></span>Strong</span><span class="lg"><span class="dot" style="background:#BBDDE6"></span>Moderate</span><span class="lg"><span class="dot" style="background:#FCE3C4"></span>Thin</span><span class="lg"><span class="dot" style="background:#EDF0F3"></span>None</span></div></div><div class="panel-foot">strong on economic models; thin on comparative effectiveness, RWE &amp; adherence — exactly what HTA bodies weight most</div></div><div class="panel span-1"><div class="panel-h"><span class="t">Value dossier readiness</span><span class="c">% complete</span></div><div class="panel-body"><div class="hbars"><div class="hb"><span class="hb-l">Global value dossier</span><span class="hb-t"><span class="hb-f" style="width:90%;background:#5AAB60"></span></span><span class="hb-v">90%</span></div><div class="hb"><span class="hb-l">AMCP dossier (US)</span><span class="hb-t"><span class="hb-f" style="width:100%;background:#5AAB60"></span></span><span class="hb-v">100%</span></div><div class="hb"><span class="hb-l">Cost-effectiveness model</span><span class="hb-t"><span class="hb-f" style="width:85%;background:#5AAB60"></span></span><span class="hb-v">85%</span></div><div class="hb"><span class="hb-l">Budget-impact model</span><span class="hb-t"><span class="hb-f" style="width:80%;background:#5AAB60"></span></span><span class="hb-v">80%</span></div><div class="hb"><span class="hb-l">Comparative-effectiveness pack</span><span class="hb-t"><span class="hb-f" style="width:45%;background:#D74F2A"></span></span><span class="hb-v">45%</span></div><div class="hb"><span class="hb-l">RWE value pack</span><span class="hb-t"><span class="hb-f" style="width:52%;background:#D74F2A"></span></span><span class="hb-v">52%</span></div></div></div></div></div><div class="dash"><div class="panel span-1"><div class="panel-h"><span class="t">Value-evidence base</span><span class="c">headline</span></div><div class="panel-body"><div style='padding-top:4px'><div class="statrow"><div class="stat"><span class="sv" style="color:#5B92D1">64%</span><span class="sl">Value-evidence coverage</span></div><div class="stat"><span class="sv" style="color:#5AAB60">4</span><span class="sl">Economic models built</span></div><div class="stat"><span class="sv" style="color:#D74F2A">7</span><span class="sl">Payer evidence gaps</span></div><div class="stat"><span class="sv" style="color:#1D98B6">3</span><span class="sl">RWE studies for value</span></div></div></div></div></div><div class="panel span-2"><div class="panel-h"><span class="t">Value-evidence gaps</span><span class="c">what's missing vs HTA requirements</span></div><div class="panel-body"><table class="tbl"><tr><th>Value-evidence gap</th><th>Required by</th><th>Status</th></tr><tr><td><b>Head-to-head comparative effectiveness</b></td><td style="font-size:10px">NICE · ICER · G-BA</td><td><span style="color:#D74F2A;font-weight:600">Gap — high priority</span></td></tr><tr><td><b>Real-world adherence / persistence</b></td><td style="font-size:10px">ICER · G-BA</td><td><span style="color:#D74F2A;font-weight:600">Gap</span></td></tr><tr><td><b>Long-term maintenance outcomes</b></td><td style="font-size:10px">All HTA</td><td><span style="color:#E89327;font-weight:600">Partial (ties #5)</span></td></tr><tr><td><b>HRQoL (validated instrument)</b></td><td style="font-size:10px">NICE · HAS</td><td><span style="color:#E89327;font-weight:600">Partial</span></td></tr><tr><td><b>Indirect treatment comparison</b></td><td style="font-size:10px">NICE</td><td><span style="color:#5B92D1;font-weight:600">In progress</span></td></tr></table></div><div class="panel-foot">comparative effectiveness &amp; adherence are the priority gaps — they feed the Evidence Map (#5)</div></div></div><div class="band" id="requirements"><span class="band-l">4 · Payer evidence requirements</span><span class="band-s">approval ≠ access — the payer asks for more</span></div><div class="dash"><div class="panel span-2"><div class="panel-h"><span class="t">Payer requirements vs our evidence</span><span class="c">requirement · required by · status</span></div><div class="panel-body"><table class="tbl"><tr><th>Payer requirement</th><th>Required by</th><th>Status</th></tr><tr><td><b>Comparative effectiveness vs atypicals</b></td><td style="font-size:10px">NICE, ICER, G-BA</td><td><span style="color:#D74F2A;font-weight:600">Gap</span></td></tr><tr><td><b>Cost per QALY / cost-effectiveness</b></td><td style="font-size:10px">All HTA</td><td><span style="color:#5AAB60;font-weight:600">Have (model)</span></td></tr><tr><td><b>Budget-impact model</b></td><td style="font-size:10px">US payers</td><td><span style="color:#5AAB60;font-weight:600">Have</span></td></tr><tr><td><b>Real-world adherence / persistence</b></td><td style="font-size:10px">ICER, G-BA</td><td><span style="color:#D74F2A;font-weight:600">Gap</span></td></tr><tr><td><b>HRQoL (validated)</b></td><td style="font-size:10px">NICE, HAS</td><td><span style="color:#E89327;font-weight:600">Partial</span></td></tr><tr><td><b>Long-term / maintenance outcomes</b></td><td style="font-size:10px">All</td><td><span style="color:#E89327;font-weight:600">Partial</span></td></tr></table></div><div class="panel-foot">the payer bar is distinct from the regulatory bar</div></div><div class="panel span-1"><div class="panel-h"><span class="t">Regulator vs payer lens</span><span class="c">same asset, two evidence bars</span></div><div class="panel-body"><div style='padding-top:4px'><div class="lens"><div class="lens-col"><div class="lens-h" style="color:#5AAB60">Regulator lens — satisfied</div><div class="lens-row"><span>PANSS total</span><span style="color:#5AAB60;font-size:10px">approval-grade ✓</span></div><div class="lens-row"><span>CGI-S / CGI-I</span><span style="color:#5AAB60;font-size:10px">accepted ✓</span></div><div class="lens-row"><span>Time-to-relapse</span><span style="color:#5AAB60;font-size:10px">accepted ✓</span></div></div><div class="lens-col"><div class="lens-h" style="color:#D74F2A">Payer lens — additional needs</div><div class="lens-row"><span>Comparative effectiveness</span><span style="font-size:10px;color:#D74F2A">✗ gap</span></div><div class="lens-row"><span>Cost per QALY (model)</span><span style="font-size:10px;color:#5AAB60">✓ have</span></div><div class="lens-row"><span>Real-world adherence</span><span style="font-size:10px;color:#D74F2A">✗ gap</span></div><div class="lens-row"><span>Budget impact</span><span style="font-size:10px;color:#5AAB60">✓ have</span></div><div class="lens-row"><span>HRQoL</span><span style="font-size:10px;color:#E89327">~ partial</span></div></div></div></div></div><div class="panel-foot">we cleared the regulatory bar; the payer bar needs comparative &amp; real-world evidence</div></div></div><div class="dash"><div class="panel span-1"><div class="panel-h"><span class="t">Endpoints payers weight</span><span class="c">importance to HTA / payers</span></div><div class="panel-body"><div class="hbars"><div class="hb"><span class="hb-l">Comparative effectiveness</span><span class="hb-t"><span class="hb-f" style="width:100.0%;background:#D74F2A"></span></span><span class="hb-v">92</span></div><div class="hb"><span class="hb-l">Cost-effectiveness / QALY</span><span class="hb-t"><span class="hb-f" style="width:92.4%;background:#5B92D1"></span></span><span class="hb-v">85</span></div><div class="hb"><span class="hb-l">Budget impact</span><span class="hb-t"><span class="hb-f" style="width:87.0%;background:#5B92D1"></span></span><span class="hb-v">80</span></div><div class="hb"><span class="hb-l">Real-world adherence</span><span class="hb-t"><span class="hb-f" style="width:84.8%;background:#E89327"></span></span><span class="hb-v">78</span></div><div class="hb"><span class="hb-l">HRQoL / utilities</span><span class="hb-t"><span class="hb-f" style="width:76.1%;background:#9AA3AC"></span></span><span class="hb-v">70</span></div><div class="hb"><span class="hb-l">Hospitalisation / costs</span><span class="hb-t"><span class="hb-f" style="width:71.7%;background:#9AA3AC"></span></span><span class="hb-v">66</span></div></div></div><div class="panel-foot">comparative effectiveness tops the payer list — and is our biggest gap</div></div><div class="panel span-1"><div class="panel-h"><span class="t">RWE needs for access</span><span class="c">real-world evidence payers want</span></div><div class="panel-body"><div class="list"><div class="list-row"><span>Adherence / persistence vs atypicals</span></div><div class="list-row"><span>Hospitalisation &amp; resource use</span></div><div class="list-row"><span>Real-world tolerability / metabolic costs</span></div></div></div></div><div class="panel span-1"><div class="panel-h"><span class="t">Comparator requirement</span><span class="c">key ask</span></div><div class="panel-body"><div style='padding-top:18px;text-align:center'><div style='font-size:15px;font-weight:700;color:#D74F2A'>Head-to-head</div><div style='font-size:11px;color:var(--ink-soft);margin-top:4px'>vs atypical antipsychotics<br>— required by NICE &amp; ICER</div></div></div></div></div><div class="band" id="economics"><span class="band-l">5 · Value proposition &amp; economics</span><span class="band-s">the value story (illustrative)</span></div><div class="dash"><div class="panel span-1"><div class="panel-h"><span class="t">Value drivers</span><span class="c">the value narrative</span></div><div class="panel-body"><div class="list"><div class="list-row"><span><b style="color:#5AAB60">▲</b> Metabolic neutrality → avoided metabolic-disease costs</span></div><div class="list-row"><span><b style="color:#5AAB60">▲</b> Adherence → fewer relapses / hospitalisations</span></div><div class="list-row"><span><b style="color:#5AAB60">▲</b> Novel MoA → option after atypical failure</span></div></div></div></div><div class="panel span-1"><div class="panel-h"><span class="t">Cost-effectiveness</span><span class="c">illustrative ICER position</span></div><div class="panel-body"><div style='padding-top:14px'><svg viewBox="0 0 320 62" class="cv"><rect x="12" y="26" width="118" height="11" fill="#E1E5EA" rx="2"/><rect x="130" y="26" width="89" height="11" fill="#F4C98A"/><rect x="219" y="26" width="89" height="11" fill="#9FCBA6" rx="2"/><line x1="201" y1="22" x2="201" y2="41" stroke="#0C4754" stroke-width="2"/><polygon points="196,22 206,22 201,29" fill="#0C4754"/><text x="201" y="17" font-size="12" font-weight="700" fill="#0C4754" text-anchor="middle">64</text><text x="12" y="54" font-size="9" fill="#6B7280">Above threshold</text><text x="308" y="54" font-size="9" fill="#6B7280" text-anchor="end">Cost-effective</text></svg></div></div><div class="panel-foot">model favourable on total cost of care; sensitive to comparative-effectiveness inputs</div></div><div class="panel span-1"><div class="panel-h"><span class="t">Value vs comparator</span><span class="c">Cobenfy vs atypical (illustrative %)</span></div><div class="panel-body"><div class="h2h"><div class="h2h-row"><span class="h2h-c">Clinical efficacy</span><span class="h2h-bars"><span class="h2h-b" style="width:80%;background:#1D98B6"></span><span class="h2h-b" style="width:78%;background:#9AA3AC"></span></span></div><div class="h2h-row"><span class="h2h-c">Tolerability / metabolic</span><span class="h2h-bars"><span class="h2h-b" style="width:88%;background:#1D98B6"></span><span class="h2h-b" style="width:52%;background:#9AA3AC"></span></span></div><div class="h2h-row"><span class="h2h-c">Adherence value</span><span class="h2h-bars"><span class="h2h-b" style="width:70%;background:#1D98B6"></span><span class="h2h-b" style="width:58%;background:#9AA3AC"></span></span></div><div class="h2h-row"><span class="h2h-c">Acquisition cost</span><span class="h2h-bars"><span class="h2h-b" style="width:40%;background:#1D98B6"></span><span class="h2h-b" style="width:72%;background:#9AA3AC"></span></span></div><div class="h2h-row"><span class="h2h-c">Total cost of care</span><span class="h2h-bars"><span class="h2h-b" style="width:74%;background:#1D98B6"></span><span class="h2h-b" style="width:60%;background:#9AA3AC"></span></span></div></div><div class="legend" style="margin-top:6px"><span class="lg"><span class="dot" style="background:#1D98B6"></span>Cobenfy</span><span class="lg"><span class="dot" style="background:#9AA3AC"></span>Atypical</span></div></div></div></div><div class="band" id="engagement"><span class="band-l">6 · HTA engagement</span><span class="band-s">scientific dialogue with the assessors</span></div><div class="dash"><div class="panel span-2"><div class="panel-h"><span class="t">HTA scientific advice &amp; dialogue</span><span class="c">early engagement &amp; outcomes</span></div><div class="panel-body"><table class="tbl"><tr><th>HTA engagement</th><th>Status</th><th>Outcome</th></tr><tr><td><b>ICER — early scientific input</b></td><td><span class="pill" style="background:#5AAB60">Done</span></td><td style="font-size:10px">economic model accepted</td></tr><tr><td><b>NICE — pre-submission meeting</b></td><td><span class="pill" style="background:#5AAB60">Done</span></td><td style="font-size:10px">comparator scope agreed</td></tr><tr><td><b>G-BA — early dialogue</b></td><td><span class="pill" style="background:#E89327">Scheduled</span></td><td style="font-size:10px">Q3 2026</td></tr><tr><td><b>Mock HTA panel (internal)</b></td><td><span class="pill" style="background:#5AAB60">Done</span></td><td style="font-size:10px">flagged comparative gap</td></tr></table></div><div class="panel-foot">internal mock-HTA flagged the comparative-effectiveness gap early</div></div><div class="panel span-1"><div class="panel-h"><span class="t">Requirement alignment</span><span class="c">% aligned with HTA</span></div><div class="panel-body"><div style='padding-top:10px'><svg viewBox="0 0 320 62" class="cv"><rect x="12" y="26" width="118" height="11" fill="#E1E5EA" rx="2"/><rect x="130" y="26" width="89" height="11" fill="#F4C98A"/><rect x="219" y="26" width="89" height="11" fill="#9FCBA6" rx="2"/><line x1="213" y1="22" x2="213" y2="41" stroke="#0C4754" stroke-width="2"/><polygon points="208,22 218,22 213,29" fill="#0C4754"/><text x="213" y="17" font-size="12" font-weight="700" fill="#0C4754" text-anchor="middle">68</text><text x="12" y="54" font-size="9" fill="#6B7280">Misaligned</text><text x="308" y="54" font-size="9" fill="#6B7280" text-anchor="end">Aligned</text></svg></div></div></div></div><div class="dash"><div class="panel span-1"><div class="panel-h"><span class="t">Alignment status</span><span class="c">where we stand with HTA</span></div><div class="panel-body"><div class="list"><div class="list-row"><span>Aligned with HTA on cost-effectiveness method</span><span style="font-size:10px;color:#5AAB60">✓</span></div><div class="list-row"><span>Comparator scope agreed with NICE</span><span style="font-size:10px;color:#5AAB60">✓</span></div><div class="list-row"><span>Open: comparative-effectiveness evidence</span><span style="font-size:10px;color:#D74F2A">✗ gap</span></div></div></div></div><div class="panel span-2"><div class="panel-h"><span class="t">Engagement note</span><span class="c">the cross-cutting role</span></div><div class="panel-body"><div style='font-size:11.5px;color:var(--ink-muted);line-height:1.55;padding-top:4px'>Early HTA dialogue lets us shape evidence generation <b>before</b> submission — turning a likely access barrier into a planned study. This is where Value &amp; Access reaches back into the Evidence Map (#5) and Book-of-Work (#6).</div></div></div></div><div class="band" id="barriers"><span class="band-l">7 · Access barriers &amp; field</span><span class="band-s">what's blocking patients on the ground</span></div><div class="dash"><div class="panel span-2"><div class="panel-h"><span class="t">Access barrier register</span><span class="c">barrier · severity · trend</span></div><div class="panel-body"><table class="tbl"><tr><th>Access barrier</th><th>Severity</th><th>Trend</th></tr><tr><td><b>Prior authorisation burden</b></td><td><span class="pill" style="background:#D74F2A">High</span></td><td style="font-size:10px">rising (field #10)</td></tr><tr><td><b>Step therapy (atypicals first)</b></td><td><span class="pill" style="background:#D74F2A">High</span></td><td style="font-size:10px">stable</td></tr><tr><td><b>Formulary tier 3 placement</b></td><td><span class="pill" style="background:#E89327">Medium</span></td><td style="font-size:10px">launch-typical</td></tr><tr><td><b>Comparative-evidence demand</b></td><td><span class="pill" style="background:#E89327">Medium</span></td><td style="font-size:10px">HTA-driven</td></tr><tr><td><b>Metabolic-monitoring requirements</b></td><td><span class="pill" style="background:#9AA3AC">Low</span></td><td style="font-size:10px">minor</td></tr></table></div><div class="panel-foot">surfaced partly from the field (#10) — prior-auth burden is rising</div></div><div class="panel span-1"><div class="panel-h"><span class="t">Prior-auth friction</span><span class="c">trend · % of scripts</span></div><div class="panel-body"><svg viewBox="0 0 560 150" class="cv"><polyline points="24.0,126.0 126.4,105.6 228.8,85.2 331.2,59.7 433.6,44.4 536.0,24.0" fill="none" stroke="#D74F2A" stroke-width="2.2"/><circle cx="24.0" cy="126.0" r="2.4" fill="#D74F2A"/><circle cx="126.4" cy="105.6" r="2.4" fill="#D74F2A"/><circle cx="228.8" cy="85.2" r="2.4" fill="#D74F2A"/><circle cx="331.2" cy="59.7" r="2.4" fill="#D74F2A"/><circle cx="433.6" cy="44.4" r="2.4" fill="#D74F2A"/><circle cx="536.0" cy="24.0" r="2.4" fill="#D74F2A"/><text x="24.0" y="144" font-size="8" fill="#9AA3AC" text-anchor="middle">Q1'25</text><text x="126.4" y="144" font-size="8" fill="#9AA3AC" text-anchor="middle">Q2'25</text><text x="228.8" y="144" font-size="8" fill="#9AA3AC" text-anchor="middle">Q3'25</text><text x="331.2" y="144" font-size="8" fill="#9AA3AC" text-anchor="middle">Q4'25</text><text x="433.6" y="144" font-size="8" fill="#9AA3AC" text-anchor="middle">Q1'26</text><text x="536.0" y="144" font-size="8" fill="#9AA3AC" text-anchor="middle">Q2'26</text></svg></div><div class="panel-foot">rising — a field &amp; value priority</div></div></div><div class="dash"><div class="panel span-1"><div class="panel-h"><span class="t">Payer decision-maker engagement</span><span class="c">by stakeholder type</span></div><div class="panel-body"><div class="hbars"><div class="hb"><span class="hb-l">Payer medical directors</span><span class="hb-t"><span class="hb-f" style="width:100.0%;background:#1D98B6"></span></span><span class="hb-v">14</span></div><div class="hb"><span class="hb-l">HTA assessors</span><span class="hb-t"><span class="hb-f" style="width:57.1%;background:#5B92D1"></span></span><span class="hb-v">8</span></div><div class="hb"><span class="hb-l">P&amp;T committee KOLs</span><span class="hb-t"><span class="hb-f" style="width:78.6%;background:#6B5BA8"></span></span><span class="hb-v">11</span></div><div class="hb"><span class="hb-l">Formulary decision-makers</span><span class="hb-t"><span class="hb-f" style="width:64.3%;background:#9AA3AC"></span></span><span class="hb-v">9</span></div></div></div></div><div class="panel span-2"><div class="panel-h"><span class="t">Access insights</span><span class="c">what the field &amp; payers tell us</span></div><div class="panel-body"><div class="list"><div class="list-row"><span>Payers want head-to-head vs olanzapine</span></div><div class="list-row"><span>Adherence data would ease step-therapy</span></div><div class="list-row"><span>Metabolic-cost story resonates with medical directors</span></div></div></div></div></div><div class="band" id="action"><span class="band-l">8 · Action &amp; linkage</span><span class="band-s">turning access gaps into evidence &amp; field plays</span></div><div class="dash"><div class="panel span-2"><div class="panel-h"><span class="t">Value-evidence gaps → generation</span><span class="c">access need → study route</span></div><div class="panel-body"><table class="tbl"><tr><th>Value-evidence gap</th><th>Generation route</th><th>Priority</th></tr><tr><td><b>Head-to-head comparative effectiveness</b></td><td>→ active-comparator trial (#6)</td><td><span class="pill" style="background:#D74F2A">High</span></td></tr><tr><td><b>Real-world adherence / persistence</b></td><td>→ RWE study (#5/#6)</td><td><span class="pill" style="background:#D74F2A">High</span></td></tr><tr><td><b>HRQoL validated instrument</b></td><td>→ add to ongoing studies (#6)</td><td><span class="pill" style="background:#E89327">Medium</span></td></tr><tr><td><b>Indirect treatment comparison</b></td><td>→ HEOR analysis</td><td><span class="pill" style="background:#E89327">Medium</span></td></tr></table></div><div class="panel-foot">the payer/access axis generates its own evidence-generation demand → #5 / #6</div></div><div class="panel span-1"><div class="panel-h"><span class="t">Barrier mitigation</span><span class="c">→ field (#10)</span></div><div class="panel-body"><div class="list"><div class="list-row"><span><b>Prior-auth burden</b> — Equip MSLs with value evidence (#10)</span><span style="font-size:9px;color:#D74F2A">●</span></div><div class="list-row"><span><b>Step therapy</b> — Generate comparative + adherence data</span><span style="font-size:9px;color:#D74F2A">●</span></div><div class="list-row"><span><b>HTA comparative gap</b> — Prioritise ITC + H2H (#5/#6)</span><span style="font-size:9px;color:#E89327">●</span></div></div></div></div></div><div class="dash"><div class="panel span-2"><div class="panel-h"><span class="t">Linkage to strategic questions</span><span class="c">how value/access signal feeds the KBQs</span></div><div class="panel-body"><table class="tbl"><tr><th>Value / access signal</th><th>Strategic question it feeds</th></tr><tr><td>Comparative-effectiveness gap</td><td><b>KBQ-PAY-A — access readiness</b></td></tr><tr><td>Prior-auth / step therapy</td><td><b>KBQ-PAY-B — payer / access</b></td></tr><tr><td>HTA submission risk</td><td><b>KBQ-PAY-C — HTA strategy</b></td></tr><tr><td>RWE adherence need</td><td><b>KBQ-LIT-O — evidence coverage</b></td></tr><tr><td>Value proposition</td><td><b>KBQ-VAL-A — value narrative</b></td></tr></table></div></div><div class="panel span-1"><div class="panel-h"><span class="t">Value-access loop</span><span class="c">access → evidence → access</span></div><div class="panel-body"><div class='list'><div class='list-row'><span>HTA submissions</span><span class='list-n'>9</span></div><div class='list-row'><span>Markets w/ access</span><span class='list-n' style='color:#5AAB60'>6/12</span></div><div class='list-row'><span>Value-evidence coverage</span><span class='list-n' style='color:#5B92D1'>64%</span></div><div class='list-row'><span>Payer gaps → #5/#6</span><span class='list-n' style='color:#D74F2A'>7</span></div><div class='list-row'><span>Barriers → #10</span><span class='list-n' style='color:#E89327'>5</span></div></div></div></div></div>
+</main>
+<div class="bn-wrap">
+<div class="bn-title">Tableau build notes — worksheet spec by panel</div>
+<table class="bn">
+<tr><th>Panel</th><th>Mark / sheet</th><th>Dimensions</th><th>Measures</th><th>Filters / logic</th><th>Source</th></tr>
+<tr><td><b>HTA submission tracker</b></td><td>Table</td><td>market · hta_body · type · status</td><td>—</td><td>market; status</td><td>HTA tracker</td></tr>
+<tr><td><b>Submission flow / by status / milestones</b></td><td>Process flow · donut · list</td><td>submission_stage; status; milestone</td><td>COUNT(submission)</td><td>active</td><td>HTA tracker</td></tr>
+<tr><td><b>Access status / markets / trajectory / restrictions</b></td><td>Table · donut · line · list</td><td>market; MONTH(date); restriction</td><td>COUNT by access_status; markets secured</td><td>priority markets</td><td>access / reimbursement tracker</td></tr>
+<tr><td><b>Value-evidence coverage ★</b></td><td>Highlight table (heatmap)</td><td>evidence_type × market</td><td>coverage level (0–3) <b>vs payer requirement</b></td><td>asset</td><td>value-evidence inventory scored against HTA needs</td></tr>
+<tr><td><b>Dossier readiness / evidence base / gaps</b></td><td>Bar · BANs · table</td><td>dossier; evidence_gap</td><td>% complete; gap priority</td><td><b>status=gap</b></td><td>value dossier + HEOR inventory</td></tr>
+<tr><td><b>Payer requirements / regulator-vs-payer lens</b></td><td>Table · two-column compare</td><td>requirement; lens(regulator/payer)</td><td>have / partial / gap</td><td>—</td><td>payer-requirement matrix × evidence inventory; <b>regulatory standing from #5</b></td></tr>
+<tr><td><b>Payer endpoints / RWE needs / comparator</b></td><td>Bar · list · callout</td><td>endpoint; rwe_need</td><td>payer-importance weight</td><td>—</td><td>payer-requirement matrix</td></tr>
+<tr><td><b>Value drivers / cost-effectiveness / value-vs-comparator</b></td><td>List · meter · grouped bar</td><td>driver; comparator</td><td>ICER position (illustrative); value scores</td><td>—</td><td>HEOR economic model (curated)</td></tr>
+<tr><td><b>HTA advice / alignment</b></td><td>Table · meter · list</td><td>engagement; requirement</td><td>% aligned</td><td>—</td><td>HTA engagement log + mock-HTA</td></tr>
+<tr><td><b>Access barriers / prior-auth / payer-DM / insights</b></td><td>Table · line · bar · list</td><td>barrier; MONTH(date); stakeholder_type</td><td>severity; prior-auth %; engagements</td><td>active barriers</td><td>field (#10) + access tracker + payer-engagement log</td></tr>
+<tr><td><b>Gaps → generation / mitigation / KBQ / loop</b></td><td>Table · list</td><td>gap · route; barrier; KBQ_id</td><td>priority</td><td>open gaps</td><td>routing → #5 Evidence · #6 Book-of-Work · #10 Field</td></tr>
+</table>
+<div style="font-size:11px;color:var(--ink-soft);margin-top:10px;line-height:1.55"><b>Data model.</b> Several reference grains: an <b>HTA submission</b> (submission_id · market · body · type · status · decision), a <b>market access</b> record (market · coverage · restrictions · status), and a <b>payer-requirement matrix</b> (requirement · hta_body/payer · importance · our_status) joined to the value-evidence inventory. The defining idea is that this surface scores evidence against a <b>different bar than #5</b>: HTA bodies weight comparative effectiveness, cost-effectiveness, real-world adherence and HRQoL — so a regulator-strong asset can still be access-thin. Those payer-specific gaps are <b>routed to the Evidence Map (#5) and Book-of-Work (#6)</b> as generation demand, while access barriers route to the field (#10). The economic model (ICER, budget impact) is HEOR-curated, not computed in Tableau. This is the <b>payer/access axis ★</b> — a cross-cutting surface spanning all four pillars. ~30 worksheets across 8 sections.</div>
+</div>
+
+</body></html>
