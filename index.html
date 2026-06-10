@@ -17,7 +17,7 @@
     --line-soft:#E5EDF0;
     --text:#1A1F24;
     --muted:#62748E;
-    --faint:#9DA3A8;
+    --faint:#9DACC1;
     --primary:#00A3C4;
     --primary-soft:#E6F7FB;
     --primary-glow:rgba(0,163,196,.15);
@@ -26,8 +26,8 @@
     --signal:#009966;
     --signal-soft:#ECFDF5;
     --shadow:0 1px 2px rgba(0,0,0,.04),0 1px 3px rgba(0,0,0,.06);
-    --shadow-lift:0 4px 6px -4px rgba(0,163,196,.18),0 10px 15px -3px rgba(0,163,196,.12);
-    --shadow-card:0 1px 2px -1px rgba(0,0,0,.10),0 1px 3px rgba(0,0,0,.10);
+    --shadow-lift:0 4px 6px -4px rgba(0,163,196,.22),0 12px 24px -4px rgba(0,163,196,.14);
+    --shadow-card:0 1px 2px -1px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.06);
   }
 
   *{box-sizing:border-box;margin:0;padding:0}
@@ -39,23 +39,25 @@
     color:var(--text);
     line-height:1.5;
     -webkit-font-smoothing:antialiased;
-    min-height:100vh;position:relative;overflow-x:hidden;
+    min-height:100vh;
+    position:relative;
+    overflow-x:hidden;
   }
 
   /* atmospheric background */
   body::before{
     content:"";position:fixed;inset:0;
     background:
-      radial-gradient(900px 600px at 85% -8%, rgba(0,163,196,.32), transparent 58%),
-      radial-gradient(700px 700px at -8% 110%, rgba(247,148,29,.22), transparent 52%),
-      radial-gradient(500px 400px at 50% 100%, rgba(0,163,196,.14), transparent 60%);
+      radial-gradient(900px 600px at 85% -8%, rgba(0,163,196,.28), transparent 58%),
+      radial-gradient(700px 700px at -8% 110%, rgba(247,148,29,.18), transparent 52%),
+      radial-gradient(500px 400px at 50% 100%, rgba(0,163,196,.10), transparent 60%);
     pointer-events:none;z-index:0;
   }
   body::after{
     content:"";position:fixed;inset:0;
     background-image:
-      linear-gradient(rgba(27,35,48,.018) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(27,35,48,.018) 1px, transparent 1px);
+      linear-gradient(rgba(27,35,48,.016) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(27,35,48,.016) 1px, transparent 1px);
     background-size:46px 46px;
     mask-image:radial-gradient(circle at 50% 25%, black, transparent 72%);
     -webkit-mask-image:radial-gradient(circle at 50% 25%, black, transparent 72%);
@@ -64,213 +66,302 @@
 
   .wrap{position:relative;z-index:1;max-width:1440px;margin:0 auto;padding:0 48px}
 
-  /* ---------- header ---------- */
-  header{padding:64px 0 40px;border-bottom:1px solid var(--line-soft)}
-
-  /* logo badge */
-  .logo-badge{
-    display:flex;align-items:center;gap:12px;margin-bottom:32px;
-    opacity:0;animation:rise .7s .05s forwards cubic-bezier(.2,.7,.2,1);
+  /* ============================================================
+     TOP NAV
+  ============================================================ */
+  .topnav{
+    position:sticky;top:0;z-index:100;
+    background:rgba(255,255,255,.92);
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--line);
+    padding:0 48px;
   }
+  .topnav-inner{
+    max-width:1440px;margin:0 auto;
+    display:flex;align-items:center;justify-content:space-between;
+    height:60px;gap:24px;
+  }
+  .nav-left{display:flex;align-items:center;gap:12px}
   .logo-icon{
-    width:40px;height:40px;border-radius:12px;
+    width:36px;height:36px;border-radius:10px;
     background:#fff;
     box-shadow:0 2px 4px rgba(0,0,0,.08),0 0 0 1px rgba(0,163,196,.15);
     display:grid;place-items:center;flex-shrink:0;overflow:hidden;padding:4px;
   }
-  .logo-icon svg{width:32px;height:32px}
-  .avira-wordmark{height:44px;width:auto;display:block}
-  .logo-badge-pill{
-    padding:3px 8px;border-radius:4px;background:var(--accent-soft);
-    font-size:11px;font-style:italic;font-weight:700;color:var(--accent);line-height:1.4;
-    letter-spacing:.01em;border:1px solid rgba(247,148,29,.2);
+  .logo-icon svg{width:28px;height:28px}
+  .avira-wordmark{height:36px;width:auto;display:block}
+  .nav-badge-pill{
+    padding:3px 9px;border-radius:5px;
+    background:var(--accent-soft);
+    font-size:11px;font-style:italic;font-weight:700;color:var(--accent);
+    line-height:1.4;letter-spacing:.01em;
+    border:1px solid rgba(247,148,29,.22);
+  }
+  .nav-right{display:flex;align-items:center;gap:8px}
+  .nav-meta{
+    font-size:11px;font-weight:600;letter-spacing:.07em;
+    text-transform:uppercase;color:var(--faint);
   }
 
+  /* ============================================================
+     HERO
+  ============================================================ */
+  .hero{padding:80px 0 64px}
+
   .eyebrow{
-    display:flex;width:fit-content;align-items:center;gap:8px;
-    font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:.04em;
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:12px;font-weight:600;letter-spacing:.05em;
     text-transform:uppercase;color:var(--primary);
     border:1px solid rgba(0,163,196,.25);border-radius:100px;
     padding:6px 14px 6px 10px;background:var(--primary-soft);
-    opacity:0;animation:rise .7s .08s forwards cubic-bezier(.2,.7,.2,1);
+    opacity:0;animation:rise .7s .05s forwards cubic-bezier(.2,.7,.2,1);
   }
-  .pulse{width:7px;height:7px;border-radius:50%;background:var(--primary)}
-  .pulse{animation:pulse 2.4s infinite}
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(0,163,196,.4)}70%{box-shadow:0 0 0 9px rgba(0,163,196,0)}100%{box-shadow:0 0 0 0 rgba(0,163,196,0)}}
+  .pulse{width:7px;height:7px;border-radius:50%;background:var(--primary);animation:pulse 2.4s infinite}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(0,163,196,.4)}
+    70%{box-shadow:0 0 0 9px rgba(0,163,196,0)}
+    100%{box-shadow:0 0 0 0 rgba(0,163,196,0)}
+  }
 
   h1{
     font-family:'Inter',sans-serif;font-weight:800;
-    font-size:clamp(38px,6.5vw,72px);line-height:1.05;letter-spacing:-.03em;
-    margin:20px 0 0;max-width:14ch;
-    opacity:0;animation:rise .8s .16s forwards cubic-bezier(.2,.7,.2,1);
+    font-size:clamp(52px,7vw,88px);
+    line-height:1.0;letter-spacing:-.04em;
+    margin:24px 0 0;
+    opacity:0;animation:rise .8s .14s forwards cubic-bezier(.2,.7,.2,1);
   }
-  h1 em{font-style:normal;color:var(--primary);font-weight:800}
+  h1 em{font-style:normal;color:var(--primary)}
+  h1 .h1-line2{display:block;color:var(--text)}
 
-  .lede{margin-top:20px;max-width:54ch;font-size:16px;color:var(--muted);
-    opacity:0;animation:rise .8s .26s forwards cubic-bezier(.2,.7,.2,1)}
-
-  /* stats row — inspired by reference metric display */
-  .stats{display:flex;flex-wrap:wrap;gap:0;margin-top:36px;
-    background:var(--panel);border:1px solid var(--line);border-radius:14px;
-    overflow:hidden;box-shadow:var(--shadow);
-    opacity:0;animation:rise .8s .34s forwards cubic-bezier(.2,.7,.2,1)}
-  .stat{
-    flex:1;min-width:120px;padding:16px 24px;
-    border-right:1px solid var(--line-soft);
+  .lede{
+    margin-top:20px;max-width:48ch;
+    font-size:18px;color:var(--muted);line-height:1.65;
+    opacity:0;animation:rise .8s .24s forwards cubic-bezier(.2,.7,.2,1);
   }
-  .stat:last-child{border-right:none}
-  .stat .n{font-size:26px;font-weight:800;color:var(--text);line-height:1;letter-spacing:.02em}
-  .stat .l{font-size:11px;font-weight:900;letter-spacing:.1em;
-    text-transform:uppercase;color:#9DACC1;margin-top:6px}
 
-  /* ---------- section headings ---------- */
-  .sec{padding:48px 0 8px}
+  /* floating inline stats — no card */
+  .stats{
+    display:flex;align-items:center;gap:0;
+    margin-top:44px;
+    opacity:0;animation:rise .8s .34s forwards cubic-bezier(.2,.7,.2,1);
+  }
+  .stat{padding:0 36px 0 0}
+  .stat:first-child{padding-left:0}
+  .stat+.stat{
+    padding-left:36px;
+    border-left:1px solid var(--line);
+  }
+  .stat .n{
+    font-size:40px;font-weight:800;color:var(--text);
+    line-height:1;letter-spacing:-.03em;
+  }
+  .stat .l{
+    font-size:11px;font-weight:600;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--faint);margin-top:6px;
+  }
+
+  /* ============================================================
+     SECTION HEADERS
+  ============================================================ */
+  .sec{padding:32px 0 8px}
   .sec-head{
-    display:flex;align-items:center;justify-content:space-between;
-    gap:16px;margin-bottom:20px;flex-wrap:wrap;
-    border-bottom:1px solid var(--line-soft);padding-bottom:0;
+    display:flex;align-items:stretch;justify-content:space-between;
+    gap:0;margin-bottom:24px;
+    border-bottom:1px solid var(--line-soft);
   }
 
-  /* tab-style section titles */
   .sec-title{
-    font-size:13.5px;font-weight:700;color:var(--primary);
-    display:inline-flex;align-items:center;gap:6px;
-    padding:10px 16px;border-bottom:2px solid var(--primary);
-    margin-bottom:-1px;
+    font-size:13px;font-weight:600;color:var(--primary);
+    display:inline-flex;align-items:center;gap:7px;
+    padding:10px 20px 10px 0;
+    border-bottom:2px solid var(--primary);
+    margin-bottom:-1px;letter-spacing:.01em;
   }
   .sec-title .count{
-    width:20px;height:20px;border-radius:50%;background:var(--primary-soft);
+    min-width:20px;height:20px;border-radius:50%;
+    background:var(--primary-soft);
     display:inline-flex;align-items:center;justify-content:center;
-    font-size:12px;font-weight:700;color:var(--primary);
+    font-size:11px;font-weight:700;color:var(--primary);padding:0 5px;
   }
-  .sec-rule{flex:1;height:1px;background:transparent;min-width:40px}
   .sec-note{
-    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--faint);
-    letter-spacing:.1em;text-transform:uppercase;padding:10px 16px;
+    font-size:11px;font-weight:600;color:var(--faint);
+    letter-spacing:.09em;text-transform:uppercase;
+    display:flex;align-items:center;padding:10px 0;
   }
 
-  /* ---------- card grid ---------- */
-  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-  @media(max-width:880px){.grid{grid-template-columns:repeat(2,1fr)}}
-  @media(max-width:560px){.grid{grid-template-columns:1fr}}
+  /* ============================================================
+     CARD GRID
+  ============================================================ */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:960px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:580px){.grid{grid-template-columns:1fr}}
 
   .card{
-    position:relative;display:flex;flex-direction:column;gap:12px;
-    padding:20px 20px 16px;
-    border:1px solid var(--line-soft);border-radius:14px;
+    position:relative;display:flex;flex-direction:column;gap:14px;
+    padding:24px 24px 20px;
+    border:1px solid var(--line-soft);border-radius:16px;
     background:var(--panel);box-shadow:var(--shadow-card);
     text-decoration:none;color:inherit;overflow:hidden;
-    transition:transform .26s cubic-bezier(.2,.7,.2,1),border-color .26s,box-shadow .26s;
+    transition:transform .28s cubic-bezier(.2,.7,.2,1),border-color .28s,box-shadow .28s;
     opacity:0;transform:translateY(12px);
   }
-  .card::after{content:"";position:absolute;left:0;top:0;height:100%;width:3px;
+  .card::after{
+    content:"";position:absolute;left:0;top:0;height:100%;width:3px;
     background:var(--primary);transform:scaleY(0);transform-origin:top;
-    transition:transform .28s cubic-bezier(.2,.7,.2,1)}
-  .card:hover{transform:translateY(-4px);border-color:rgba(21,93,252,.3);
-    box-shadow:var(--shadow-lift)}
+    transition:transform .3s cubic-bezier(.2,.7,.2,1);
+  }
+  .card:hover{transform:translateY(-6px);border-color:rgba(0,163,196,.3);box-shadow:var(--shadow-lift)}
   .card:hover::after{transform:scaleY(1)}
   .card:hover .ico{color:#fff;background:var(--primary);border-color:var(--primary)}
   .card:hover .arrow{transform:translate(3px,-3px);color:var(--primary)}
 
   .card-top{display:flex;align-items:center;justify-content:space-between}
   .ico{
-    width:40px;height:40px;display:grid;place-items:center;border-radius:11px;
-    border:1px solid var(--line);background:var(--primary-soft);color:var(--primary);transition:.26s;
+    width:48px;height:48px;display:grid;place-items:center;
+    border-radius:14px;border:1px solid rgba(0,163,196,.18);
+    background:var(--primary-soft);color:var(--primary);
+    transition:.28s;flex-shrink:0;
   }
-  .ico svg{width:19px;height:19px;stroke-width:1.7}
+  .ico svg{width:21px;height:21px;stroke-width:1.7}
   .code{
     font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;
-    color:var(--faint);
-    padding:2px 7px;background:#F8FAFC;border:1px solid #F1F5F9;border-radius:4px;
+    color:var(--faint);padding:3px 8px;
+    background:#F8FAFC;border:1px solid #EEF2F7;border-radius:5px;
   }
-  .card h3{font-size:15.5px;font-weight:700;letter-spacing:-.01em;line-height:1.25;margin-top:2px}
-  .card p{font-size:13px;color:var(--muted);line-height:1.45}
-  .card-foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid var(--line-soft)}
+  .card h3{font-size:17px;font-weight:700;letter-spacing:-.015em;line-height:1.25;margin-top:2px}
+  .card p{font-size:13.5px;color:var(--muted);line-height:1.5}
+  .card-foot{
+    margin-top:auto;display:flex;align-items:center;
+    justify-content:space-between;
+    padding-top:12px;border-top:1px solid var(--line-soft);
+  }
   .open{font-size:12px;font-weight:600;color:var(--muted)}
   .status-badge{
-    padding:2px 8px;border-radius:100px;
+    padding:3px 10px;border-radius:100px;
     background:var(--signal-soft);
     font-size:11px;font-weight:700;text-transform:uppercase;
-    letter-spacing:.04em;color:var(--signal);
+    letter-spacing:.05em;color:var(--signal);
   }
-  .arrow{color:var(--muted);transition:.26s;display:grid;place-items:center}
+  .arrow{color:var(--muted);transition:.28s;display:grid;place-items:center}
   .arrow svg{width:16px;height:16px;stroke-width:2}
 
-  /* brand studio cards */
-  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  /* ============================================================
+     BRAND STUDIO CARDS
+  ============================================================ */
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
   @media(max-width:760px){.grid-2{grid-template-columns:1fr}}
+
   .studio{
-    position:relative;padding:24px;border-radius:14px;text-decoration:none;color:inherit;
-    border:1px solid var(--line-soft);overflow:hidden;box-shadow:var(--shadow-card);
+    position:relative;padding:32px;border-radius:16px;
+    text-decoration:none;color:inherit;
+    border:1px solid var(--line-soft);overflow:hidden;
+    box-shadow:var(--shadow-card);
     background:
-      radial-gradient(130% 130% at 100% 0%, var(--accent-soft), transparent 55%),
+      radial-gradient(140% 140% at 100% 0%, var(--accent-soft) 0%, transparent 56%),
       var(--panel);
-    transition:transform .26s cubic-bezier(.2,.7,.2,1),border-color .26s,box-shadow .26s;
+    transition:transform .28s cubic-bezier(.2,.7,.2,1),border-color .28s,box-shadow .28s;
     opacity:0;transform:translateY(12px);
   }
-  .studio:hover{transform:translateY(-4px);border-color:rgba(0,163,196,.3);box-shadow:var(--shadow-lift)}
+  .studio:hover{transform:translateY(-6px);border-color:rgba(0,163,196,.3);box-shadow:var(--shadow-lift)}
   .studio:hover .arrow{transform:translate(3px,-3px);color:var(--primary)}
   .studio .tag{
     font-size:11px;font-weight:700;letter-spacing:.1em;
+    font-style:italic;
     text-transform:uppercase;color:var(--accent);
-    padding:2px 8px;border-radius:4px;background:var(--accent-soft);
-    display:inline-block;
+    padding:3px 9px;border-radius:5px;background:var(--accent-soft);
+    display:inline-block;border:1px solid rgba(247,148,29,.2);
   }
-  .studio h3{font-family:'Inter',sans-serif;font-weight:700;font-size:20px;
-    line-height:1.2;margin:12px 0 8px;letter-spacing:-.02em;color:var(--text)}
-  .studio p{font-size:13px;color:var(--muted);max-width:34ch}
-  .studio .card-foot{margin-top:20px;padding-top:16px;border-top:1px solid rgba(226,232,240,.7)}
+  .studio h3{
+    font-family:'Inter',sans-serif;font-weight:800;
+    font-size:28px;line-height:1.15;
+    margin:14px 0 10px;letter-spacing:-.03em;color:var(--text);
+  }
+  .studio p{font-size:13.5px;color:var(--muted);max-width:34ch;line-height:1.5}
+  .studio .card-foot{
+    margin-top:24px;padding-top:18px;
+    border-top:1px solid rgba(226,232,240,.75);
+  }
 
+  /* ============================================================
+     ANIMATIONS
+  ============================================================ */
   .reveal{animation:rise .55s forwards cubic-bezier(.2,.7,.2,1)}
   @keyframes rise{to{opacity:1;transform:translateY(0)}}
 
-  footer{margin-top:56px;padding:28px 0 52px;border-top:1px solid var(--line-soft);
-    display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
-  footer .mono{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;
-    text-transform:uppercase;color:var(--faint)}
+  /* ============================================================
+     FOOTER
+  ============================================================ */
+  footer{
+    margin-top:72px;padding:28px 0 52px;
+    border-top:1px solid var(--line-soft);
+    display:flex;justify-content:space-between;align-items:center;
+    gap:16px;flex-wrap:wrap;
+  }
+  footer .mono{
+    font-family:'Inter',sans-serif;font-size:11px;font-weight:600;
+    letter-spacing:.09em;text-transform:uppercase;color:var(--faint);
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <header>
-    <div class="logo-badge">
+<!-- ============================================================
+     STICKY TOP NAV
+============================================================ -->
+<nav class="topnav">
+  <div class="topnav-inner">
+    <div class="nav-left">
       <img src="avira-logo.svg" class="avira-wordmark" alt="Avira Digital">
-      <span class="logo-badge-pill">Insights Studio</span>
+      <span class="nav-badge-pill">Insights Studio</span>
     </div>
-    <span class="eyebrow"><span class="pulse"></span>Live · 18 modules</span>
-    <h1>Insights <em>Studio</em> Dashboards</h1>
+    <div class="nav-right">
+      <span class="nav-meta">18 Modules · 2026</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ============================================================
+     HERO
+============================================================ -->
+<div class="wrap">
+  <div class="hero">
+    <span class="eyebrow"><span class="pulse"></span>Live · 18 Modules</span>
+    <h1><em>Insights Studio</em><span class="h1-line2">Dashboards</span></h1>
     <p class="lede">A unified command surface for medical-affairs and competitive intelligence — from congress signals and KOL networks to launch readiness and portfolio health.</p>
     <div class="stats">
       <div class="stat"><div class="n">18</div><div class="l">Workspaces</div></div>
       <div class="stat"><div class="n">14</div><div class="l">Core Dashboards</div></div>
       <div class="stat"><div class="n">04</div><div class="l">Brand Studios</div></div>
     </div>
-  </header>
+  </div>
 
+  <!-- ============================================================
+       CORE DASHBOARDS
+  ============================================================ -->
   <section class="sec">
     <div class="sec-head">
       <div class="sec-title">Core Dashboards <span class="count">14</span></div>
-      <div class="sec-rule"></div>
-      <div class="sec-note">14 modules</div>
+      <div class="sec-note">14 Modules</div>
     </div>
     <div class="grid" id="coreGrid"></div>
   </section>
 
+  <!-- ============================================================
+       BRAND STUDIOS
+  ============================================================ -->
   <section class="sec">
     <div class="sec-head">
       <div class="sec-title">Brand Studios <span class="count">4</span></div>
-      <div class="sec-rule"></div>
-      <div class="sec-note">Asset deep-dives</div>
+      <div class="sec-note">Asset Deep-Dives</div>
     </div>
     <div class="grid-2" id="studioGrid"></div>
   </section>
 
   <footer>
-    <span class="mono">Insights Studio © 2026</span>
+    <span class="mono">Insights Studio &copy; 2026</span>
     <span class="mono">aviralabs.ai</span>
   </footer>
-
 </div>
 
 <script>
